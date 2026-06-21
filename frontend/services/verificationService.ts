@@ -35,7 +35,7 @@ export const verificationService = {
         CONTRACTS.rewardDistributor,
 
       marketTreasury:
-        CONTRACTS.marketTreasury,
+  CONTRACTS.treasury,
 
       vault:
         CONTRACTS.arcVault,
