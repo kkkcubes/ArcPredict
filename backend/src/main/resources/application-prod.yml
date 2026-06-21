@@ -1,0 +1,44 @@
+spring:
+
+  datasource:
+    url: ${DB_URL}
+
+    username: ${DB_USERNAME}
+
+    password: ${DB_PASSWORD}
+
+  jpa:
+
+    hibernate:
+      ddl-auto: validate
+
+    show-sql: false
+
+server:
+  port: ${PORT:8080}
+
+arc:
+
+  rpc:
+    url: ${ARC_RPC_URL:https://rpc.testnet.arc.network}
+
+contracts:
+
+  vault:
+    address: ${VAULT_ADDRESS}
+
+  treasury:
+    address: ${TREASURY_ADDRESS}
+
+  reward-distributor:
+    address: ${REWARD_DISTRIBUTOR_ADDRESS}
+
+  market-factory:
+    address: ${MARKET_FACTORY_ADDRESS}
+
+  prediction-market:
+    address: ${PREDICTION_MARKET_ADDRESS}
+
+logging:
+  level:
+    root: INFO

@@ -1,0 +1,31 @@
+USER
+ │
+ ▼
+Next.js Frontend
+ │
+ ├──────────────┐
+ ▼              ▼
+Wagmi      Arc App Kit
+ │              │
+ └──────┬───────┘
+        ▼
+PredictionMarket.sol
+        │
+        ▼
+Arc Testnet
+        │
+ ┌──────┼──────────┐
+ ▼      ▼          ▼
+Trades Markets Events
+        │
+        ▼
+Spring Boot Backend
+        │
+        ▼
+PostgreSQL
+        │
+        ▼
+Analytics Engine
+        │
+        ▼
+MCP AI Assistant

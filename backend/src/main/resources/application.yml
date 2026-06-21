@@ -1,0 +1,37 @@
+spring:
+
+  profiles:
+    active: dev
+
+server:
+  port: 8080
+
+arc:
+
+  network: Arc Testnet
+
+  chain-id: 5042002
+
+  rpc:
+    url: https://rpc.testnet.arc.network
+
+contracts:
+
+  vault:
+    address: "0xD8ab29273E6BAFd3C659f8A1E94D1731D2b7C528"
+
+  treasury:
+    address: "0x5231d42D846d1309A2bbFBE51d4bC7350096b3bf"
+
+  reward-distributor:
+    address: "0xF9484893Ab34474a10166716609B22Cd6Cad488C"
+
+  market-factory:
+    address: "0xbd92524ba4501f442A6cb76cFe6b2B7F8EBaF3B4"
+
+  prediction-market:
+    address: "0xDaaC34E8C1167b15417b13c19DA52C2555FE06Fd"
+
+logging:
+  level:
+    root: INFO

@@ -1,0 +1,49 @@
+version: "3.9"
+
+services:
+
+  postgres:
+    image: postgres:16
+
+    container_name: arcpredict-postgres
+
+    restart: always
+
+    environment:
+      POSTGRES_DB: arcpredict
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build: ./backend
+
+    container_name: arcpredict-backend
+
+    depends_on:
+      - postgres
+
+    ports:
+      - "8080:8080"
+
+    env_file:
+      - .env
+
+  mcp:
+    build: ./mcp
+
+    container_name: arcpredict-mcp
+
+    ports:
+      - "3001:3001"
+
+    env_file:
+      - .env
+
+volumes:
+  postgres_data:

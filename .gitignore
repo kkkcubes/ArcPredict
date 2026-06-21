@@ -1,0 +1,46 @@
+# Frontend
+frontend/node_modules/
+frontend/.next/
+frontend/.env.local
+frontend/.env*
+
+# Backend
+backend/target/
+backend/*.log
+backend/src/main/resources/application-dev.yml
+
+# Contracts
+contracts/node_modules/
+contracts/artifacts/
+contracts/cache/
+contracts/typechain-types/
+contracts/.env
+contracts/.env*
+
+# General
+.env
+.env.*
+!.env.example
+
+dist/
+build/
+out/
+
+.vscode/
+.idea/
+
+.DS_Store
+Thumbs.db
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# MCP
+mcp/node_modules/
+
+# MCP Build
+mcp/dist/
+mcp/.env
+mcp/.env*
+

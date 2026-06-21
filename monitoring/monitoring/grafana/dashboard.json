@@ -1,0 +1,22 @@
+{
+  "title": "ArcPredict Dashboard",
+  "timezone": "browser",
+  "panels": [
+    {
+      "title": "API Requests",
+      "type": "stat"
+    },
+    {
+      "title": "Prediction Markets",
+      "type": "stat"
+    },
+    {
+      "title": "Trading Volume",
+      "type": "graph"
+    },
+    {
+      "title": "Active Traders",
+      "type": "graph"
+    }
+  ]
+}

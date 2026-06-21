@@ -1,0 +1,16 @@
+{
+  "alerts": [
+    {
+      "name": "Backend Down",
+      "condition": "up == 0"
+    },
+    {
+      "name": "RPC Failure",
+      "condition": "rpc_errors > 10"
+    },
+    {
+      "name": "High Latency",
+      "condition": "latency_ms > 500"
+    }
+  ]
+}
