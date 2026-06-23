@@ -17,14 +17,18 @@ import {
   useArcBalance,
 } from "@/hooks/useArcBalance";
 
-import {
-  useBackendRealtime,
-} from "@/hooks/useBackendRealtime";
+//import {
+ // useBackendRealtime,
+// } from "@/hooks/useBackendRealtime";
 
 import { useAnalytics } from "@/hooks/useAnalytics";
 
 
 export default function HomePage() {
+  
+  console.log(
+    "HOME PAGE RENDERED"
+  );
 
   const [markets, setMarkets] =
     useState<any[]>([]);
@@ -111,7 +115,56 @@ export default function HomePage() {
       }
     );
 
+    /*
    useBackendRealtime(
+
+  (market) => {
+
+    setMarkets(
+      (previous) => {
+
+        const exists =
+          previous.find(
+            (m) =>
+              m.marketId ===
+              market.marketId
+          );
+
+        if (exists) {
+
+          return previous.map(
+            (m) =>
+              m.marketId ===
+              market.marketId
+                ? market
+                : m
+          );
+        }
+
+        return [
+          market,
+          ...previous,
+        ];
+      }
+    );
+  },
+
+  (trade) => {
+
+    setTrades(
+      (previous) => [
+        trade,
+        ...previous,
+      ]
+    );
+  },
+
+  () => {}
+
+); 
+*/
+
+useBackendRealtime(
 
   (market) => {
 
