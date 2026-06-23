@@ -17,9 +17,9 @@ import {
   useArcBalance,
 } from "@/hooks/useArcBalance";
 
-//import {
- // useBackendRealtime,
-// } from "@/hooks/useBackendRealtime";
+import {
+  useBackendRealtime,
+} from "@/hooks/useBackendRealtime";
 
 import { useAnalytics } from "@/hooks/useAnalytics";
 
@@ -115,8 +115,8 @@ export default function HomePage() {
       }
     );
 
-    /*
-   useBackendRealtime(
+    
+   /*useBackendRealtime(
 
   (market) => {
 
@@ -161,8 +161,7 @@ export default function HomePage() {
 
   () => {}
 
-); 
-*/
+); */
 
 useBackendRealtime(
 
