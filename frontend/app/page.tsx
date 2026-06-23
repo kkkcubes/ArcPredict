@@ -44,36 +44,46 @@ export default function HomePage() {
 
   useEffect(() => {
 
-    fetch(
-  `${process.env.NEXT_PUBLIC_API_URL}/api/markets`
-)
-      .then((r) => r.json())
-      .then((data) => {
+  console.log(
+    "API URL =",
+    process.env.NEXT_PUBLIC_API_URL
+  );
 
-        setMarkets(data);
+  fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/markets`
+  )
+    .then((r) => r.json())
+    .then((data) => {
 
-      })
-      .catch((e) => {
+      console.log(
+        "MARKETS FROM API =",
+        data
+      );
 
-        console.error(
-          "FAILED TO LOAD MARKETS",
-          e
-        );
+      setMarkets(data);
 
-      });
+    })
+    .catch((e) => {
 
-    fetch(
-  `${process.env.NEXT_PUBLIC_API_URL}/api/trades`
-)
-      .then((r) => r.json())
-      .then((data) => {
+      console.error(
+        "FAILED TO LOAD MARKETS",
+        e
+      );
 
-        setTrades(data);
+    });
 
-      })
-      .catch(console.error);
+  fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/trades`
+  )
+    .then((r) => r.json())
+    .then((data) => {
 
-  }, []);
+      setTrades(data);
+
+    })
+    .catch(console.error);
+
+}, []);
 
   const filteredMarkets =
     markets.filter(
