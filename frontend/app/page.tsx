@@ -17,10 +17,6 @@ import {
   useArcBalance,
 } from "@/hooks/useArcBalance";
 
-import {
-  useBackendRealtime,
-} from "@/hooks/useBackendRealtime";
-
 import { useAnalytics } from "@/hooks/useAnalytics";
 
 
@@ -59,14 +55,19 @@ export default function HomePage() {
     .then((r) => r.json())
     .then((data) => {
 
-      console.log(
-        "MARKETS FROM API =",
-        data
-      );
+  console.log(
+    "MARKETS FROM API =",
+    data
+  );
 
-      setMarkets(data);
+  console.log(
+    "MARKET COUNT =",
+    data.length
+  );
 
-    })
+  setMarkets(data);
+
+})
     .catch((e) => {
 
       console.error(
@@ -111,104 +112,13 @@ export default function HomePage() {
           matchesSearch &&
           matchesCategory
         );
-
       }
     );
-
     
-   /*useBackendRealtime(
-
-  (market) => {
-
-    setMarkets(
-      (previous) => {
-
-        const exists =
-          previous.find(
-            (m) =>
-              m.marketId ===
-              market.marketId
-          );
-
-        if (exists) {
-
-          return previous.map(
-            (m) =>
-              m.marketId ===
-              market.marketId
-                ? market
-                : m
-          );
-        }
-
-        return [
-          market,
-          ...previous,
-        ];
-      }
+    console.log(
+  "FILTERED MARKETS =",
+  filteredMarkets
     );
-  },
-
-  (trade) => {
-
-    setTrades(
-      (previous) => [
-        trade,
-        ...previous,
-      ]
-    );
-  },
-
-  () => {}
-
-); */
-
-useBackendRealtime(
-
-  (market) => {
-
-    setMarkets(
-      (previous) => {
-
-        const exists =
-          previous.find(
-            (m) =>
-              m.marketId ===
-              market.marketId
-          );
-
-        if (exists) {
-
-          return previous.map(
-            (m) =>
-              m.marketId ===
-              market.marketId
-                ? market
-                : m
-          );
-        }
-
-        return [
-          market,
-          ...previous,
-        ];
-      }
-    );
-  },
-
-  (trade) => {
-
-    setTrades(
-      (previous) => [
-        trade,
-        ...previous,
-      ]
-    );
-  },
-
-  () => {}
-
-);
 
   return (
     <main className="container">
