@@ -12,6 +12,7 @@ import VolumeGrowthChart from "@/components/analytics/VolumeGrowthChart";
 import MarketGrowthChart from "@/components/analytics/MarketGrowthChart";
 import TraderGrowthChart from "@/components/analytics/TraderGrowthChart";
 import LeaderboardWidget from "@/components/dashboard/LeaderboardWidget"; 
+import ContractInfo from "@/components/dashboard/ContractInfo";
 
 import {
   useArcBalance,
@@ -298,18 +299,9 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div>
-            <p className="text-gray-400">
-              PredictionMarket
-            </p>
-
-            <p className="break-all">
-              {
-                process.env
-                  .NEXT_PUBLIC_PREDICTION_MARKET
-              }
-            </p>
-          </div>
+          <div className="col-span-2">
+  <ContractInfo />
+</div>
 
         </div>
 

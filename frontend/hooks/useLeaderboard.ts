@@ -53,44 +53,52 @@ export function useLeaderboard() {
 
   useEffect(() => {
 
-    loadLeaderboard();
+  loadLeaderboard();
 
-    const subscribe = () => {
+  let subscription: any;
 
-  stompClient.subscribe(
-    "/topic/leaderboard",
-    (message) => {
+  const subscribe = () => {
 
-      const data =
-        JSON.parse(
-          message.body
+    subscription = stompClient.subscribe(
+      "/topic/leaderboard",
+      (message) => {
+
+        setLeaderboard(
+          JSON.parse(message.body)
         );
 
-      setLeaderboard(
-        data
-      );
+      }
+    );
 
-    }
-  );
+  };
 
-};
+  if (stompClient.connected) {
 
-if (
-  stompClient.connected
-) {
+    subscribe();
 
-  subscribe();
+  } else {
 
-} else {
+    const previous =
+      stompClient.onConnect;
 
-  stompClient.onConnect =
-    subscribe;
+    stompClient.onConnect =
+      (frame) => {
 
-}
+        previous?.(frame);
 
-    return () => {};
+        subscribe();
 
-  }, []);
+      };
+
+  }
+
+  return () => {
+
+    subscription?.unsubscribe();
+
+  };
+
+}, []);
 
   return {
 

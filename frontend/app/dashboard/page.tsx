@@ -22,6 +22,8 @@ import ContractInfo
 
 export default function DashboardPage() {
 
+    console.log("Dashboard mounted");
+
   const {
     stats,
     setStats,
@@ -31,6 +33,8 @@ export default function DashboardPage() {
     markets,
     setMarkets,
   } = useBackendMarkets();
+
+  console.log("Calling useBackendRealtime");
 
   useBackendRealtime(
 

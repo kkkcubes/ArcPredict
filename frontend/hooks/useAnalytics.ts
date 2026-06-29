@@ -52,42 +52,37 @@ setAnalytics(
 
   useEffect(() => {
 
-    loadAnalytics();
+  loadAnalytics();
 
-    const subscribe =
-      () => {
+  let subscription: any;
 
-        stompClient.subscribe(
+  const subscribe = () => {
 
-          "/topic/analytics",
+    subscription = stompClient.subscribe(
+      "/topic/analytics",
+      (message) => {
+        setAnalytics(JSON.parse(message.body));
+      }
+    );
 
-          (message) => {
+  };
 
-            setAnalytics(
-              JSON.parse(
-                message.body
-              )
-            );
+  if (stompClient.connected) {
+    subscribe();
+  } else {
+    const previous = stompClient.onConnect;
 
-          }
-        );
-
-      };
-
-    if (
-      stompClient.connected
-    ) {
-
+    stompClient.onConnect = (frame) => {
+      previous?.(frame);
       subscribe();
+    };
+  }
 
-    } else {
+  return () => {
+    subscription?.unsubscribe();
+  };
 
-      stompClient.onConnect =
-        subscribe;
-
-    }
-
-  }, []);
+}, []);
 
   return {
 

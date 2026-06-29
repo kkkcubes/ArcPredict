@@ -81,27 +81,23 @@ export default function MarketDetailsPage() {
 
   useEffect(() => {
 
+  let subscription: any;
+
   const subscribe = () => {
 
-    stompClient.subscribe(
+    subscription = stompClient.subscribe(
       "/topic/markets",
       (message) => {
 
         const updatedMarket =
-          JSON.parse(
-            message.body
-          );
+          JSON.parse(message.body);
 
         if (
-          String(
-            updatedMarket.marketId
-          ) ===
+          String(updatedMarket.marketId) ===
           String(params.id)
         ) {
 
-          setMarket(
-            updatedMarket
-          );
+          setMarket(updatedMarket);
 
         }
 
@@ -110,18 +106,31 @@ export default function MarketDetailsPage() {
 
   };
 
-  if (
-    stompClient.connected
-  ) {
+  if (stompClient.connected) {
 
     subscribe();
 
   } else {
 
+    const previous =
+      stompClient.onConnect;
+
     stompClient.onConnect =
-      subscribe;
+      (frame) => {
+
+        previous?.(frame);
+
+        subscribe();
+
+      };
 
   }
+
+  return () => {
+
+    subscription?.unsubscribe();
+
+  };
 
 }, [params.id]);
 
