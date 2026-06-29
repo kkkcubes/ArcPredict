@@ -14,6 +14,8 @@ import {
   WebSocketProvider,
 } from "@/providers/WebSocketProvider";
 
+import { Analytics } from "@vercel/analytics/next";
+
 export const metadata: Metadata = {
 
   title: "ArcPredict",
@@ -49,6 +51,8 @@ export default function RootLayout({
           </WebSocketProvider>
 
         </Providers>
+
+        <Analytics />
 
       </body>
 
