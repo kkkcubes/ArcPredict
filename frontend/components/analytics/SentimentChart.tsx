@@ -1,38 +1,79 @@
 "use client";
 
-import { useAnalytics } from "@/hooks/useAnalytics";
+import {
+  TrendingUp,
+} from "lucide-react";
+
+import LoadingSkeleton from "@/components/ui/LoadingSkeleton";
+import {
+  useAnalyticsContext,
+} from "@/providers/AnalyticsProvider";
 
 export default function SentimentChart() {
 
-  const { analytics } =
-    useAnalytics();
+  const {
+  analytics,
+  loading,
+} = useAnalyticsContext();
 
-  const bullish =
-    analytics?.bullish || 0;
+  <LoadingSkeleton
+  className="
+    h-[280px]
+    md:h-[360px]
+    rounded-3xl
+    bg-white
+    border
+    border-gray-200
+  "
+/>
 
-  const bearish =
-    analytics?.bearish || 0;
+  const bullish = analytics?.bullish ?? 0;
+  const bearish = analytics?.bearish ?? 0;
 
   return (
-    <div className="card p-6">
 
-      <h2
-        className="
-          text-2xl
-          font-bold
-          mb-6
-        "
-      >
-        Market Sentiment
-      </h2>
+    <section className="dashboard-card p-8 h-full">
 
-      <div className="space-y-4">
+      <div className="flex items-center justify-between mb-8">
 
         <div>
 
-          <div className="flex justify-between">
+          <p className="text-sm text-gray-500">
+            Analytics
+          </p>
 
-            <span>
+          <h2 className="text-3xl font-bold text-gray-900 mt-1">
+            Market Sentiment
+          </h2>
+
+        </div>
+
+        <div
+          className="
+            h-14
+            w-14
+            rounded-2xl
+            bg-green-100
+            flex
+            items-center
+            justify-center
+          "
+        >
+          <TrendingUp
+            size={26}
+            className="text-green-600"
+          />
+        </div>
+
+      </div>
+
+      <div className="space-y-6">
+
+        <div>
+
+          <div className="flex justify-between mb-2">
+
+            <span className="font-medium">
               Bullish
             </span>
 
@@ -42,34 +83,24 @@ export default function SentimentChart() {
 
           </div>
 
-          <div
-            className="
-              h-4
-              bg-gray-800
-              rounded-full
-              mt-2
-            "
-          >
+          <div className="h-3 rounded-full bg-gray-200">
+
             <div
-              className="
-                h-4
-                bg-green-500
-                rounded-full
-              "
+              className="h-3 rounded-full bg-green-500"
               style={{
-                width:
-                  `${bullish}%`,
+                width: `${bullish}%`,
               }}
             />
+
           </div>
 
         </div>
 
         <div>
 
-          <div className="flex justify-between">
+          <div className="flex justify-between mb-2">
 
-            <span>
+            <span className="font-medium">
               Bearish
             </span>
 
@@ -79,31 +110,22 @@ export default function SentimentChart() {
 
           </div>
 
-          <div
-            className="
-              h-4
-              bg-gray-800
-              rounded-full
-              mt-2
-            "
-          >
+          <div className="h-3 rounded-full bg-gray-200">
+
             <div
-              className="
-                h-4
-                bg-red-500
-                rounded-full
-              "
+              className="h-3 rounded-full bg-red-500"
               style={{
-                width:
-                  `${bearish}%`,
+                width: `${bearish}%`,
               }}
             />
+
           </div>
 
         </div>
 
       </div>
 
-    </div>
+    </section>
+
   );
 }
