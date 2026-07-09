@@ -1,24 +1,39 @@
 "use client";
 
-import { usePortfolio } from "@/hooks/usePortfolio";
+import {
+  usePortfolioContext,
+} from "@/providers/PortfolioProvider";
+import LoadingSkeleton from "@/components/ui/LoadingSkeleton";
 
 export default function PositionTable() {
 
   const {
-    portfolio,
-    loading,
-  } = usePortfolio();
+  portfolio,
+  loading,
+} = usePortfolioContext();
 
   if (loading) {
     return (
-      <div>
-        Loading Positions...
-      </div>
+      <LoadingSkeleton
+        className="
+          h-[260px]
+          rounded-3xl
+          bg-white
+          border
+          border-gray-200
+        "
+      />
     );
   }
 
   return (
-    <div className="card p-6">
+
+    <div
+      className="
+        dashboard-card
+        p-6
+      "
+    >
 
       <h2
         className="
@@ -30,67 +45,132 @@ export default function PositionTable() {
         Position Summary
       </h2>
 
-      <table
+      <div
         className="
-          w-full
+          overflow-x-auto
         "
       >
 
-        <thead>
+        <table
+          className="
+            w-full
+            min-w-[520px]
+          "
+        >
 
-          <tr
-            className="
-              border-b
-              border-gray-800
-            "
-          >
-            <th className="text-left py-3">
-              Metric
-            </th>
+          <thead>
 
-            <th className="text-left py-3">
-              Value
-            </th>
-          </tr>
+            <tr
+              className="
+                border-b
+                border-gray-200
+              "
+            >
 
-        </thead>
+              <th
+                className="
+                  text-left
+                  py-4
+                  px-2
+                  text-sm
+                  font-semibold
+                  text-gray-500
+                "
+              >
+                Metric
+              </th>
 
-        <tbody>
+              <th
+                className="
+                  text-left
+                  py-4
+                  px-2
+                  text-sm
+                  font-semibold
+                  text-gray-500
+                "
+              >
+                Value
+              </th>
 
-          <tr>
-            <td className="py-3">
-              YES Positions
-            </td>
+            </tr>
 
-            <td className="py-3">
-              {portfolio?.yesPositions ?? 0}
-            </td>
-          </tr>
+          </thead>
 
-          <tr>
-            <td className="py-3">
-              NO Positions
-            </td>
+          <tbody>
 
-            <td className="py-3">
-              {portfolio?.noPositions ?? 0}
-            </td>
-          </tr>
+            <tr
+              className="
+                border-b
+                border-gray-100
+              "
+            >
 
-          <tr>
-            <td className="py-3">
-              Total Trades
-            </td>
+              <td className="py-4 px-2">
+                YES Positions
+              </td>
 
-            <td className="py-3">
-              {portfolio?.totalTrades ?? 0}
-            </td>
-          </tr>
+              <td
+                className="
+                  py-4
+                  px-2
+                  font-semibold
+                "
+              >
+                {portfolio?.yesPositions ?? 0}
+              </td>
 
-        </tbody>
+            </tr>
 
-      </table>
+            <tr
+              className="
+                border-b
+                border-gray-100
+              "
+            >
+
+              <td className="py-4 px-2">
+                NO Positions
+              </td>
+
+              <td
+                className="
+                  py-4
+                  px-2
+                  font-semibold
+                "
+              >
+                {portfolio?.noPositions ?? 0}
+              </td>
+
+            </tr>
+
+            <tr>
+
+              <td className="py-4 px-2">
+                Total Trades
+              </td>
+
+              <td
+                className="
+                  py-4
+                  px-2
+                  font-semibold
+                "
+              >
+                {portfolio?.totalTrades ?? 0}
+              </td>
+
+            </tr>
+
+          </tbody>
+
+        </table>
+
+      </div>
 
     </div>
+
   );
+
 }
