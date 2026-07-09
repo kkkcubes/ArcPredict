@@ -14,6 +14,18 @@ import {
   WebSocketProvider,
 } from "@/providers/WebSocketProvider";
 
+import {
+  PortfolioProvider,
+} from "@/providers/PortfolioProvider";
+
+import {
+  AnalyticsProvider,
+} from "@/providers/AnalyticsProvider";
+
+import {
+  MarketsProvider,
+} from "@/providers/MarketsProvider";
+
 export const metadata: Metadata = {
 
   title: "ArcPredict",
@@ -37,6 +49,12 @@ export default function RootLayout({
 
           <WebSocketProvider>
 
+          <PortfolioProvider>
+
+          <AnalyticsProvider>
+
+           <MarketsProvider> 
+
             <Toaster
               position="top-right"
               toastOptions={{
@@ -45,6 +63,12 @@ export default function RootLayout({
             />
 
             {children}
+
+          </MarketsProvider>  
+
+          </AnalyticsProvider>
+
+          </PortfolioProvider>
 
           </WebSocketProvider>
 

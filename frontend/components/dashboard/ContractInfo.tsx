@@ -1,114 +1,161 @@
 "use client";
 
+import {
+  Copy,
+  ExternalLink,
+  ShieldCheck,
+} from "lucide-react";
+
 export default function ContractInfo() {
 
-  const address =
-    process.env
-      .NEXT_PUBLIC_PREDICTION_MARKET || "";
-
-  const explorer =
-    process.env
-      .NEXT_PUBLIC_EXPLORER || "";
+  const predictionMarket =
+    process.env.NEXT_PUBLIC_PREDICTION_MARKET || "";
 
   const treasury =
-  process.env
-    .NEXT_PUBLIC_MARKET_TREASURY || "";
+    process.env.NEXT_PUBLIC_MARKET_TREASURY || "";
 
-const vault =
-  process.env
-    .NEXT_PUBLIC_USDC_VAULT || "";    
+  const vault =
+    process.env.NEXT_PUBLIC_USDC_VAULT || "";
 
-  const shortAddress =
-    `${address.slice(0, 6)}...${address.slice(-4)}`;
+  const explorer =
+    process.env.NEXT_PUBLIC_EXPLORER || "";
 
-  const copyAddress = async () => {
-
-    await navigator.clipboard.writeText(
-      address
-    );
-
-    alert("Address copied");
+  const copy = async (value: string) => {
+    await navigator.clipboard.writeText(value);
   };
+
+  const cards = [
+    {
+      title: "Prediction Market",
+      address: predictionMarket,
+    },
+    {
+      title: "Treasury",
+      address: treasury,
+    },
+    {
+      title: "Vault",
+      address: vault,
+    },
+  ];
 
   return (
 
-    <div>
+    <section
+      id="contracts"
+      className="dashboard-card p-8"
+    >
 
-      <p className="text-gray-400">
-        Prediction Market
-      </p>
+      <div className="flex items-center justify-between mb-8">
 
-      <p className="font-medium">
-        {shortAddress}
-      </p>
+        <div>
 
-      <div className="flex gap-3 mt-2">
+          <p className="text-sm text-gray-500">
+            Smart Contracts
+          </p>
 
-        <button
-          onClick={copyAddress}
+          <h2 className="text-3xl font-bold text-gray-900 mt-1">
+            Contract Information
+          </h2>
+
+        </div>
+
+        <div
           className="
-            text-blue-400
-            text-sm
+            h-14
+            w-14
+            rounded-2xl
+            bg-violet-100
+            flex
+            items-center
+            justify-center
           "
         >
-          Copy
-        </button>
-
-        <a
-          href={`${explorer}/address/${address}`}
-          target="_blank"
-          rel="noreferrer"
-          className="
-            text-green-400
-            text-sm
-          "
-        >
-          View Contract
-        </a>
+          <ShieldCheck
+            size={26}
+            className="text-[#6D4AFF]"
+          />
+        </div>
 
       </div>
 
-      <div className="mt-4">
+      <div className="space-y-5">
 
-  <p className="text-gray-400">
-    Treasury
-  </p>
+        {cards.map((card) => (
 
-  <a
-    href={`${explorer}/address/${treasury}`}
-    target="_blank"
-    rel="noreferrer"
-    className="
-      text-green-400
-      text-sm
-    "
-  >
-    View Treasury
-  </a>
+          <div
+            key={card.title}
+            className="
+              rounded-2xl
+              border
+              border-gray-200
+              p-5
+            "
+          >
 
-</div>
+            <div className="flex justify-between items-center">
 
-<div className="mt-4">
+              <div>
 
-  <p className="text-gray-400">
-    Vault
-  </p>
+                <p className="text-sm text-gray-500">
+                  {card.title}
+                </p>
 
-  <a
-    href={`${explorer}/address/${vault}`}
-    target="_blank"
-    rel="noreferrer"
-    className="
-      text-green-400
-      text-sm
-    "
-  >
-    View Vault
-  </a>
+                <p className="mt-2 font-semibold break-all">
+                  {card.address}
+                </p>
 
-</div>
+              </div>
 
-    </div>
+              <div className="flex gap-3">
+
+                <button
+                  onClick={() => copy(card.address)}
+                  className="
+                    h-10
+                    w-10
+                    rounded-xl
+                    bg-gray-100
+                    flex
+                    items-center
+                    justify-center
+                  "
+                >
+                  <Copy size={18} />
+                </button>
+
+                <a
+                  href={`${explorer}/address/${card.address}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="
+                    h-10
+                    w-10
+                    rounded-xl
+                    bg-violet-100
+                    flex
+                    items-center
+                    justify-center
+                  "
+                >
+                  <ExternalLink
+                    size={18}
+                    className="text-violet-600"
+                  />
+                </a>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        ))}
+
+      </div>
+
+    </section>
 
   );
+
 }

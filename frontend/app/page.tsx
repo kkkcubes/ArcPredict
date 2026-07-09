@@ -1,25 +1,23 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import MarketCard from "@/components/market/MarketCard";
-import ConnectWallet from "@/components/ConnectWallet";
-import PortfolioSummary from "@/components/portfolio/PortfolioSummary";
-import PositionTable from "@/components/portfolio/PositionTable";
-import PnLChart from "@/components/portfolio/PnLChart";
-import RewardsPanel from "@/components/portfolio/RewardsPanel";
-import VolumeGrowthChart from "@/components/analytics/VolumeGrowthChart";
-import MarketGrowthChart from "@/components/analytics/MarketGrowthChart";
-import TraderGrowthChart from "@/components/analytics/TraderGrowthChart";
-import LeaderboardWidget from "@/components/dashboard/LeaderboardWidget"; 
-import ContractInfo from "@/components/dashboard/ContractInfo";
-
-import {
-  useArcBalance,
-} from "@/hooks/useArcBalance";
-
-import { useAnalytics } from "@/hooks/useAnalytics";
-
+import LoadingSkeleton from "@/components/ui/LoadingSkeleton";
+import { useMarkets } from "@/hooks/useMarkets";
+import Hero from "@/components/dashboard/Hero";
+import KPICards from "@/components/dashboard/KPICards";
+import ProtocolHealth
+  from "@/components/dashboard/ProtocolHealth";
+import VerificationSection from "@/components/dashboard/VerificationSection";
+import PortfolioSection from "@/components/dashboard/PortfolioSection";
+import LeaderboardSection from "@/components/dashboard/LeaderboardSection";
+import RecentTradesSection from "@/components/dashboard/RecentTradesSection";
+import AnalyticsSection from "@/components/dashboard/AnalyticsSection";
+import { useTradesData } from "@/hooks/useTradesData";
+import EmptyState from "@/components/ui/EmptyState";
+import DashboardLayout
+  from "@/components/layout/DashboardLayout";
 
 export default function HomePage() {
   
@@ -27,69 +25,23 @@ export default function HomePage() {
     "HOME PAGE RENDERED"
   );
 
-  const [markets, setMarkets] =
-    useState<any[]>([]);
+  const {
+  markets,
+  loading: marketsLoading,
+  refresh: refreshMarkets,
+} = useMarkets();
 
-  const [trades, setTrades] =
-    useState<any[]>([]);
+  const {
+  trades,
+  loading: tradesLoading,
+  error: tradesError,
+} = useTradesData();
 
   const [search, setSearch] =
     useState("");
 
   const [category, setCategory] =
     useState("All");
-
-  const {
-  analytics,
-} = useAnalytics();
-
-  useEffect(() => {
-
-  console.log(
-    "API URL =",
-    process.env.NEXT_PUBLIC_API_URL
-  );
-
-  fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/markets`
-  )
-    .then((r) => r.json())
-    .then((data) => {
-
-  console.log(
-    "MARKETS FROM API =",
-    data
-  );
-
-  console.log(
-    "MARKET COUNT =",
-    data.length
-  );
-
-  setMarkets(data);
-
-})
-    .catch((e) => {
-
-      console.error(
-        "FAILED TO LOAD MARKETS",
-        e
-      );
-
-    });
-
-  fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/trades`
-  )
-    .then((r) => r.json())
-    .then((data) => {
-
-      setTrades(data);
-
-    })
-    .catch(console.error);
-
-}, []);
 
   const filteredMarkets =
     markets.filter(
@@ -122,282 +74,115 @@ export default function HomePage() {
     );
 
   return (
-    <main className="container">
-
-      <header
-  className="
-    mb-10
-    rounded-3xl
-    border
-    border-gray-800
-    p-10
-    bg-gradient-to-r
-    from-blue-950
-    to-black
-  "
+      <DashboardLayout>
+    <main
+  id="top"
+  className="container"
 >
 
-  <h1
-    className="
-      text-6xl
-      font-extrabold
-      mb-4
-    "
-  >
-    Predict The Future
-  </h1>
-
-  <p
-    className="
-      text-xl
-      text-gray-300
-      max-w-2xl
-    "
-  >
-    Trade on real-world outcomes
-    secured by Arc Network.
-  </p>
-
-  <div
-    className="
-      flex
-      flex-wrap
-      gap-4
-      mt-8
-    "
-  >
-
-    <a
-      href="#markets"
-      className="
-        px-6
-        py-3
-        rounded-xl
-        bg-blue-600
-        hover:bg-blue-700
-        transition
-      "
-    >
-      Explore Markets
-    </a>
-
-    <a
-      href="/create"
-      className="
-        px-6
-        py-3
-        rounded-xl
-        border
-        border-gray-600
-        hover:border-blue-500
-        transition
-      "
-    >
-      Create Market
-    </a>
-
-    <ConnectWallet />
-
-  </div>
-
-</header>
-
-<section
-  className="
-    grid
-    grid-cols-1
-    md:grid-cols-3
-    gap-4
-    mb-6
-  "
+     <section
+  id="top"
+  className="animate-fade-up"
 >
-
-  <a
-    href="/create"
-    className="
-      card
-      p-6
-      hover:border-blue-500
-      transition
-    "
-  >
-    <h3 className="text-xl font-bold">
-      Create Market
-    </h3>
-
-    <p className="text-gray-400 mt-2">
-      Launch a new prediction market
-    </p>
-
-  </a>
-
-  <div className="card p-6">
-
-    <h3 className="text-xl font-bold">
-      Active Markets
-    </h3>
-
-    <p className="text-gray-400 mt-2">
-      {markets.length} live markets
-    </p>
-
-  </div>
-
-  <div className="card p-6">
-
-    <h3 className="text-xl font-bold">
-      Live Trading
-    </h3>
-
-    <p className="text-gray-400 mt-2">
-      Real-time Arc Network activity
-    </p>
-
-  </div>
-
+  <Hero />
 </section>
 
-      {/* Verification */}
-
-      <section 
-      id="markets"
-      className="card p-6 mb-6">
-
-        <h2 className="text-xl font-semibold mb-4">
-          Network Verification
-        </h2>
-
-        <div className="grid grid-cols-2 gap-4">
-
-          <div>
-            <p className="text-gray-400">
-              Network
-            </p>
-
-            <p>
-              Arc Testnet
-            </p>
-          </div>
-
-          <div>
-            <p className="text-gray-400">
-              Chain ID
-            </p>
-
-            <p>
-              5042002
-            </p>
-          </div>
-
-          <div>
-            <p className="text-gray-400">
-              RPC Status
-            </p>
-
-            <p className="text-green-500">
-              Connected
-            </p>
-          </div>
-
-          <div className="col-span-2">
-  <ContractInfo />
+     <div className="animate-fade-up">
+  <KPICards />
 </div>
 
-        </div>
-
-      </section>
-
-
-      {/* Dashboard */}
+<div className="animate-fade-up">
+  <ProtocolHealth />
+</div>
 
       <section
-        className="
-          grid
-          grid-cols-1
-          md:grid-cols-2
-          xl:grid-cols-4
-          gap-4
-          mb-6
-        "
-      >
-
-        <div className="card p-5">
-          <p className="text-gray-400">
-            Active Markets
-          </p>
-
-          <h3 className="text-3xl font-bold mt-2">
-              {analytics?.totalMarkets ?? 0}
-          </h3>
-        </div>
-
-        <div className="card p-5">
-          <p className="text-gray-400">
-            Total Volume
-          </p>
-
-          <h3 className="text-3xl font-bold mt-2">
-  {analytics?.totalVolume ?? 0}
-</h3>
-        </div>
-
-        <div className="card p-5">
-          <p className="text-gray-400">
-            Traders
-          </p>
-
-          <h3 className="text-3xl font-bold mt-2">
-  {analytics?.totalTraders ?? 0}
-</h3>
-        </div>
-
-        <div className="card p-5">
-          <p className="text-gray-400">
-            Open Interest
-          </p>
-
-          <h3 className="text-3xl font-bold mt-2">
-  {analytics?.openInterest ?? 0}
-</h3>
-        </div>
-
-      </section>
+  id="verification"
+  className="animate-fade-up"
+>
+  <VerificationSection />
+</section>
 
       {/* Markets */}
 
-      <section className="card p-6 mb-6">
+      <section
+      id="markets"
+  className="
+    animate-fade-up
+    dashboard-card
+    p-8
+    mt-8
+    mb-8
+  "
+>
 
-        <h2 className="text-xl font-semibold mb-4">
-          Markets
-        </h2>
+        <div className="flex items-center justify-between mb-8">
 
-        <input
-          value={search}
-          onChange={(e) =>
-            setSearch(
-              e.target.value
-            )
-          }
-          placeholder="Search markets..."
-          className="
-            w-full
-            p-3
-            rounded-xl
-            bg-card
-            border
-            border-border
-            mb-4
-          "
-        />
+  <div>
 
-        <div
-          className="
-            flex
-            flex-wrap
-            gap-2
-            mb-4
-          "
-        >
+    <h2 className="text-3xl font-bold text-gray-900">
+      Prediction Markets
+    </h2>
+
+    <p className="text-gray-500 mt-2">
+      Explore live prediction markets powered by ArcPredict.
+    </p>
+
+  </div>
+
+  <button
+    className="dashboard-button-secondary"
+  >
+    View All
+  </button>
+
+</div>
+
+        <div className="relative mb-6">
+
+  <input
+    value={search}
+    onChange={(e) =>
+      setSearch(
+        e.target.value
+      )
+    }
+    placeholder="Search prediction markets..."
+    className="
+      w-full
+      h-14
+      rounded-2xl
+      border
+      border-gray-200
+      bg-white
+      pl-14
+      pr-5
+      text-gray-900
+      placeholder:text-gray-400
+      outline-none
+      focus:border-violet-500
+      focus:ring-4
+      focus:ring-violet-100
+      transition-all
+    "
+  />
+
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M21 21l-4.35-4.35M17 10a7 7 0 11-14 0 7 7 0 0114 0z"
+    />
+  </svg>
+
+</div>
+<div className="flex flex-wrap gap-3 mb-8">
 
           {[
             "All",
@@ -414,17 +199,19 @@ export default function HomePage() {
                   setCategory(item)
                 }
                 className={`
-                  px-4
-                  py-2
-                  rounded-xl
-                  border
-                  transition
-                  ${
-                    category === item
-                      ? "bg-blue-600 border-blue-600"
-                      : "border-gray-700"
-                  }
-                `}
+  px-5
+  py-2.5
+  rounded-full
+  text-sm
+  font-semibold
+  transition-all
+  duration-300
+  ${
+    category === item
+      ? "bg-[#6D4AFF] text-white shadow-lg"
+      : "bg-white border border-gray-200 text-gray-600 hover:bg-gray-50"
+  }
+`}
               >
                 {item}
               </button>
@@ -434,259 +221,108 @@ export default function HomePage() {
 
         </div>
 
-        {filteredMarkets.length === 0 ? (
+        {marketsLoading ? (
 
-          <div className="text-gray-400">
-            No markets found
-          </div>
+  <div
+    className="
+      grid
+      grid-cols-1
+      xl:grid-cols-2
+      gap-6
+      mt-8
+    "
+  >
 
-        ) : (
+    {Array.from({ length: 4 }).map((_, index) => (
 
-          <div className="grid gap-4">
+      <LoadingSkeleton
+        key={index}
+        className="
+          h-[320px]
+          rounded-3xl
+          bg-white
+          border
+          border-gray-200
+        "
+      />
 
-            {filteredMarkets.map(
-  (market) => (
+    ))}
 
-    <MarketCard
-  key={market.marketId}
-  market={{
-    marketId: market.marketId,
-    question: market.question,
-    category: market.category,
-    yesPool: market.yesPool,
-    noPool: market.noPool,
-    participants: market.participants,
-    endTime: market.endTime,
-    totalVolume: market.totalVolume,
-    resolved: market.resolved,
-  }}
+  </div>
+
+) : filteredMarkets.length === 0 ? (
+
+  <EmptyState
+  title="No Markets Found"
+  description="Try changing your search or category filters."
 />
 
-  )
-)}
-          </div>
+) : (
 
-        )}
+  <div
+    className="
+      grid
+      grid-cols-1
+      xl:grid-cols-2
+      gap-6
+      mt-8
+    "
+  >
+
+    {filteredMarkets.map((market) => (
+
+      <MarketCard
+        key={market.marketId}
+        market={{
+          marketId: market.marketId,
+          question: market.question,
+          category: market.category,
+          yesPool: market.yesPool,
+          noPool: market.noPool,
+          participants: market.participants,
+          endTime: market.endTime,
+          totalVolume: market.totalVolume,
+          resolved: market.resolved,
+        }}
+      />
+
+    ))}
+
+  </div>
+
+)}
 
       </section>
 
-      <section className="mb-6">
-
-  <h2
-    className="
-      text-3xl
-      font-bold
-      mb-6
-    "
-  >
-    Top Traders
-  </h2>
-
-  <LeaderboardWidget />
-
+      <section
+  id="leaderboard"
+  className="animate-fade-up"
+>
+  <LeaderboardSection />
 </section>
 
-      <section className="mb-6">
-
-  <h2
-    className="
-      text-3xl
-      font-bold
-      mb-6
-    "
-  >
-    Portfolio
-  </h2>
-
-  <PortfolioSummary />
-
-  <div
-    className="
-      grid
-      grid-cols-1
-      lg:grid-cols-3
-      gap-6
-      mt-6
-    "
-  >
-
-    <PnLChart />
-
-    <RewardsPanel />
-
-    <PositionTable />
-
-  </div>
-
+      <section
+  id="analytics"
+  className="animate-fade-up"
+>
+  <AnalyticsSection />
 </section>
 
-<section className="mb-6">
-
-  <h2
-    className="
-      text-3xl
-      font-bold
-      mb-6
-    "
-  >
-    Analytics
-  </h2>
-
-  <div
-    className="
-      grid
-      grid-cols-1
-      lg:grid-cols-3
-      gap-6
-    "
-  >
-
-    <VolumeGrowthChart />
-
-    <MarketGrowthChart />
-
-    <TraderGrowthChart />
-
-  </div>
-
+<section
+  id="portfolio"
+  className="animate-fade-up"
+>
+  <PortfolioSection />
 </section>
 
-<section className="mb-6">
-
-  <h2
-    className="
-      text-3xl
-      font-bold
-      mb-6
-    "
-  >
-    Leaderboard
-  </h2>
-
-  <LeaderboardWidget />
-
-</section>
-
-      {/* Recent Trades */}
-
-<section className="card p-6">
-
-  <h2
-    className="
-      text-2xl
-      font-bold
-      mb-6
-    "
-  >
-    Recent Trades
-  </h2>
-
-  {trades.length === 0 ? (
-
-    <div className="text-gray-400">
-      No trades found
-    </div>
-
-  ) : (
-
-    <div className="overflow-x-auto">
-
-      <table
-        className="
-          w-full
-          text-left
-        "
-      >
-
-        <thead>
-
-          <tr
-            className="
-              border-b
-              border-gray-800
-            "
-          >
-
-            <th className="py-3">
-              Market
-            </th>
-
-            <th className="py-3">
-              Side
-            </th>
-
-            <th className="py-3">
-              Amount
-            </th>
-
-            <th className="py-3">
-              Wallet
-            </th>
-
-          </tr>
-
-        </thead>
-
-        <tbody>
-
-          {trades.map(
-            (trade) => (
-
-              <tr
-                key={`${trade.txHash}-${trade.marketId}`}
-                className="
-                  border-b
-                  border-gray-900
-                "
-              >
-
-                <td className="py-4">
-                  #{trade.marketId}
-                </td>
-
-                <td className="py-4">
-
-                  <span
-                    className={
-                      trade.yesPosition
-                        ? "text-green-500"
-                        : "text-red-500"
-                    }
-                  >
-                    {trade.yesPosition
-                      ? "YES"
-                      : "NO"}
-                  </span>
-
-                </td>
-
-                <td className="py-4">
-                  {trade.amount}
-                </td>
-
-                <td className="py-4">
-
-                  {trade.trader?.slice(0, 6)}
-                  ...
-                  {trade.trader?.slice(-4)}
-
-                </td>
-
-              </tr>
-
-            )
-          )}
-
-        </tbody>
-
-      </table>
-
-    </div>
-
-  )}
-
-</section>
+     <div className="animate-fade-up">
+  <RecentTradesSection
+    trades={trades}
+  />
+</div>
 
     </main>
+    </DashboardLayout>
+
   );
 }

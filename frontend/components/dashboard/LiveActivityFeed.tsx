@@ -1,30 +1,94 @@
 "use client";
 
 import {
+  Activity,
+  Wallet,
+  ArrowUpRight,
+} from "lucide-react";
+
+import {
   formatDistanceToNow,
 } from "date-fns";
 
-import { useRealtimeEvents }
-  from "@/hooks/useRealtimeEvents";
+import {
+  useRealtimeEvents,
+} from "@/hooks/useRealtimeEvents";
+import LoadingSkeleton from "@/components/ui/LoadingSkeleton";
+import EmptyState from "@/components/ui/EmptyState";
 
 export default function LiveActivityFeed() {
 
-  const { events } =
-    useRealtimeEvents();
+  const {
+  events,
+  loading,
+} = useRealtimeEvents();
+
+if (loading) {
+  return (
+    <LoadingSkeleton
+      className="
+        h-[520px]
+        rounded-3xl
+        bg-white
+        border
+        border-gray-200
+      "
+    />
+  );
+}
 
   return (
-    <div className="card p-6">
 
-      <h2 className="text-2xl font-bold mb-4">
-        Live Activity Feed
-      </h2>
+    <section
+  className="
+    dashboard-card
+    p-5
+    md:p-8
+  "
+>
 
-      <div className="space-y-3">
+      <div className="flex items-center justify-between mb-8">
+
+        <div>
+
+          <p className="text-sm text-gray-500">
+            Real-Time
+          </p>
+
+          <h2 className="text-3xl font-bold text-gray-900 mt-1">
+            Live Activity
+          </h2>
+
+        </div>
+
+        <div
+          className="
+            h-14
+            w-14
+            rounded-2xl
+            bg-violet-100
+            flex
+            items-center
+            justify-center
+          "
+        >
+          <Activity
+            size={26}
+            className="text-[#6D4AFF]"
+          />
+        </div>
+
+      </div>
+
+      <div className="space-y-5">
 
         {events.length === 0 && (
-          <p>
-            Waiting for events...
-          </p>
+
+          <EmptyState
+  title="No Live Activity"
+  description="Waiting for live trading activity..."
+/>
+
         )}
 
         {events.map(
@@ -36,49 +100,121 @@ export default function LiveActivityFeed() {
             <div
               key={index}
               className="
-                border-b
-                border-gray-800
-                pb-2
-              "
+  rounded-3xl
+  border
+  border-gray-200
+  p-5
+  transition-all
+  duration-300
+  ease-out
+  hover:-translate-y-1
+  hover:shadow-xl
+  hover:border-violet-200
+"
             >
 
-              <div className="flex items-center gap-2">
+              <div className="flex items-start justify-between">
 
-                <span
-                  className="
-                    px-2
-                    py-1
-                    text-xs
-                    rounded-full
-                    bg-green-600
-                  "
-                >
-                  TRADE
-                </span>
+                <div>
 
-                <p className="font-medium">
-                  Trade Executed
-                </p>
+                  <div className="flex items-center gap-3">
+
+                    <span
+                      className="
+  inline-flex
+  items-center
+  rounded-full
+  bg-green-100
+  px-3
+  py-1
+  text-xs
+  font-bold
+  uppercase
+  tracking-wide
+  text-green-700
+"
+                    >
+                      TRADE
+                    </span>
+
+                    <span className="font-semibold text-gray-900">
+                      Trade Executed
+                    </span>
+
+                  </div>
+
+                  <p className="mt-3 text-gray-500">
+                    Market #{event.marketId}
+                  </p>
+
+                </div>
+
+                <ArrowUpRight
+                  size={20}
+                  className="text-violet-600"
+                />
 
               </div>
 
-              <p className="text-sm text-gray-400">
-                Market #{event.marketId}
-              </p>
+              <div
+  className="
+    mt-5
+    grid
+    grid-cols-1
+    sm:grid-cols-2
+    gap-4
+  "
+>
 
-              <p className="text-sm">
-                {event.amount} USDC
-              </p>
+                <div>
 
-              <p className="text-xs text-gray-500">
+                  <p className="text-xs text-gray-500">
+                    Amount
+                  </p>
 
-                {event.wallet
-                  ? `${event.wallet.slice(0, 6)}...${event.wallet.slice(-4)}`
-                  : "Unknown Wallet"}
+                  <p className="font-bold text-lg">
+                    {event.amount} USDC
+                  </p>
 
-              </p>
+                </div>
 
-              <p className="text-xs text-gray-500">
+                <div>
+
+                  <p className="text-xs text-gray-500">
+                    Wallet
+                  </p>
+
+                  <div className="flex items-center gap-2">
+
+                    <Wallet
+                      size={16}
+                      className="text-gray-400"
+                    />
+
+                    <span className="font-medium">
+
+                      {event.wallet
+                        ? `${event.wallet.slice(0,6)}...${event.wallet.slice(-4)}`
+                        : "Unknown"}
+
+                    </span>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+              <div
+  className="
+    mt-5
+    border-t
+    border-gray-100
+    pt-4
+    text-sm
+    text-gray-500
+  "
+>
 
                 {event.timestamp
                   ? formatDistanceToNow(
@@ -87,16 +223,19 @@ export default function LiveActivityFeed() {
                         addSuffix: true,
                       }
                     )
-                  : ""}
+                  : "Just now"}
 
-              </p>
+              </div>
 
             </div>
+
           )
         )}
 
       </div>
 
-    </div>
+    </section>
+
   );
+
 }
