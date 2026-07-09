@@ -8,7 +8,6 @@ import java.time.Instant;
 
 @Entity
 @Table(name = "markets")
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -46,5 +45,9 @@ public class MarketEntity {
 
     private Long participants;
 
+    private Long blockNumber;
+
     private Instant createdAt;
+
+    private Instant updatedAt;
 }

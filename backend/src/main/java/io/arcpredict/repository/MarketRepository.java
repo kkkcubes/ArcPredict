@@ -3,6 +3,7 @@ package io.arcpredict.repository;
 import io.arcpredict.entity.MarketEntity;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -23,4 +24,16 @@ public interface MarketRepository
     findByCategory(
         String category
     );
+
+       @Query("""
+        select coalesce(max(m.blockNumber), 0)
+        from MarketEntity m
+    """)
+    Long findLatestBlock();
+
+    @Query("""
+        select coalesce(sum(m.totalVolume), 0)
+        from MarketEntity m
+    """)
+    Long findTotalVolume();
 }

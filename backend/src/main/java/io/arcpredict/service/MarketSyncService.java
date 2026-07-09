@@ -88,10 +88,6 @@ public class MarketSyncService {
             trade
         );
 
-        tradeRepository.save(
-    trade
-);
-
 MarketEntity market =
     marketRepository
         .findById(marketId)
@@ -145,6 +141,10 @@ if (market != null) {
     market.setParticipants(
         participants
     );
+
+    market.setUpdatedAt(
+    Instant.now()
+);
 
     marketRepository.save(
         market
