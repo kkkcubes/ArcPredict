@@ -27,8 +27,7 @@ export default function MarketCard({
     total === 0
       ? 50
       : Math.round(
-          (yesPool / total) *
-            100
+          (yesPool / total) * 100
         );
 
   const noPercent =
@@ -45,127 +44,170 @@ export default function MarketCard({
       href={`/market/${market.marketId}`}
       className="
         block
-        card
-        p-6
-        cursor-pointer
+        h-full
+        bg-white
+        border
+        border-gray-200
+        rounded-[28px]
+        p-5
+        sm:p-6
+        lg:p-7
         transition-all
-        duration-300
-        hover:scale-[1.02]
-        hover:border-blue-500
-        hover:shadow-xl
+duration-300
+ease-out
+hover:-translate-y-2
+hover:scale-[1.01]
+hover:shadow-2xl
+hover:border-violet-300
       "
     >
+
+      {/* Header */}
 
       <div
         className="
           flex
-          items-start
-          justify-between
-          mb-4
+          flex-col
+          gap-4
         "
       >
-
-        <div>
-
-          <h3
-            className="
-              text-xl
-              font-bold
-              mb-2
-            "
-          >
-            {market.question}
-          </h3>
-
-          <p
-            className="
-              text-gray-400
-            "
-          >
-            {market.category}
-          </p>
-
-        </div>
-
-        <span
-  className={`
-    px-3
-    py-1
-    rounded-full
-    text-xs
-    font-medium
-    border
-    ${
-      market.resolved
-        ? `
-          bg-red-500/10
-          text-red-400
-          border-red-500/20
-        `
-        : `
-          bg-green-500/10
-          text-green-400
-          border-green-500/20
-        `
-    }
-  `}
->
-
-  {market.resolved
-    ? "Resolved"
-    : "Active"}
-
-</span>
-
-      </div>
-
-      <div className="mb-5">
 
         <div
           className="
             flex
-            justify-between
-            mb-2
+            flex-wrap
+            items-center
+            gap-2
           "
         >
 
           <span
             className="
-              text-green-500
+              px-3
+              py-1
+              rounded-full
+              bg-violet-100
+              text-violet-700
+              text-xs
               font-semibold
             "
           >
-            YES {yesPercent}%
+            {market.category || "General"}
+          </span>
+
+          <span
+            className={`
+              px-3
+              py-1
+              rounded-full
+              text-xs
+              font-semibold
+              ${
+                market.resolved
+                  ? "bg-red-100 text-red-600"
+                  : "bg-green-100 text-green-600"
+              }
+            `}
+          >
+            {market.resolved
+              ? "Resolved"
+              : "Live"}
+          </span>
+
+        </div>
+
+        <h3
+          className="
+            text-xl
+            sm:text-2xl
+            font-bold
+            text-gray-900
+            leading-snug
+            break-words
+          "
+        >
+          {market.question}
+        </h3>
+
+        <p
+  className="
+    text-sm
+    text-gray-500
+  "
+>
+  Resolution:
+
+  {" "}
+
+  {market.endTime && Number(market.endTime) > 0
+  ? new Date(
+      Number(market.endTime) * 1000
+    ).toLocaleDateString(
+      "en-US",
+      {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      }
+    )
+  : "Unknown"}
+</p>
+
+      </div>
+
+      {/* YES / NO */}
+
+      <div className="mt-8">
+
+        <div
+          className="
+            flex
+            items-center
+            justify-between
+            mb-3
+            text-sm
+            sm:text-base
+          "
+        >
+
+          <span
+            className="
+              font-bold
+              text-green-600
+            "
+          >
+            YES ({yesPool})
           </span>
 
           <span
             className="
+              font-bold
               text-red-500
-              font-semibold
             "
           >
-            NO {noPercent}%
+            NO ({noPool})
           </span>
 
         </div>
 
         <div
           className="
-            h-3
-            bg-gray-800
+            h-4
             rounded-full
+            bg-gray-200
             overflow-hidden
           "
         >
 
           <div
             className="
-              bg-green-500
               h-full
+              bg-green-500
+              transition-all
+              duration-500
             "
             style={{
-              width:
-                `${yesPercent}%`,
+              width: `${yesPercent}%`,
             }}
           />
 
@@ -173,14 +215,18 @@ export default function MarketCard({
 
       </div>
 
+      {/* Footer */}
+
       <div
         className="
-          grid
-          grid-cols-2
-          gap-4
-          pt-4
+          mt-8
+          pt-6
           border-t
-          border-gray-800
+          border-gray-200
+          grid
+          grid-cols-1
+          sm:grid-cols-3
+          gap-5
         "
       >
 
@@ -189,22 +235,24 @@ export default function MarketCard({
           <p
             className="
               text-xs
-              text-gray-500
               uppercase
+              tracking-wide
+              text-gray-400
             "
           >
             Volume
           </p>
 
-          <p
-  className="
-    text-lg
-    font-semibold
-    mt-1
-  "
->
-  {market.totalVolume ?? 0}
-</p>
+          <h4
+            className="
+              mt-2
+              text-lg
+              font-bold
+              text-gray-900
+            "
+          >
+            {market.totalVolume ?? 0} USDC
+          </h4>
 
         </div>
 
@@ -213,28 +261,56 @@ export default function MarketCard({
           <p
             className="
               text-xs
-              text-gray-500
               uppercase
+              tracking-wide
+              text-gray-400
             "
           >
-            Participants
+            Traders
           </p>
 
-          <p
+          <h4
             className="
+              mt-2
               text-lg
-              font-semibold
-              mt-1
+              font-bold
+              text-gray-900
             "
           >
             {participants}
-          </p>
+          </h4>
 
         </div>
+
+        <div>
+
+  <p
+    className="
+      text-xs
+      uppercase
+      tracking-wide
+      text-gray-400
+    "
+  >
+    Market
+  </p>
+
+  <h4
+    className="
+      mt-2
+      font-semibold
+      text-violet-600
+    "
+  >
+    #{market.marketId}
+  </h4>
+
+</div>
 
       </div>
 
     </Link>
 
   );
+
 }

@@ -45,7 +45,9 @@ export function useLeaderboard() {
 
       } finally {
 
-        setLoading(false);
+        setLoading(
+          false
+        );
 
       }
 
@@ -53,52 +55,62 @@ export function useLeaderboard() {
 
   useEffect(() => {
 
-  loadLeaderboard();
+    loadLeaderboard();
 
-  let subscription: any;
+    let subscription: any;
 
-  const subscribe = () => {
+    const subscribe = () => {
 
-    subscription = stompClient.subscribe(
-      "/topic/leaderboard",
-      (message) => {
+      subscription =
+        stompClient.subscribe(
 
-        setLeaderboard(
-          JSON.parse(message.body)
+          "/topic/leaderboard",
+
+          (message) => {
+
+            setLeaderboard(
+              JSON.parse(
+                message.body
+              )
+            );
+
+          }
+
         );
 
-      }
-    );
+    };
 
-  };
+    if (
+      stompClient.connected
+    ) {
 
-  if (stompClient.connected) {
+      subscribe();
 
-    subscribe();
+    } else {
 
-  } else {
+      const previous =
+        stompClient.onConnect;
 
-    const previous =
-      stompClient.onConnect;
+      stompClient.onConnect =
+        (frame) => {
 
-    stompClient.onConnect =
-      (frame) => {
+          previous?.(
+            frame
+          );
 
-        previous?.(frame);
+          subscribe();
 
-        subscribe();
+        };
 
-      };
+    }
 
-  }
+    return () => {
 
-  return () => {
+      subscription?.unsubscribe();
 
-    subscription?.unsubscribe();
+    };
 
-  };
-
-}, []);
+  }, []);
 
   return {
 
@@ -108,5 +120,7 @@ export function useLeaderboard() {
 
     refresh:
       loadLeaderboard,
+
   };
+
 }

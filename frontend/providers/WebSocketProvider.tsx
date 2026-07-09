@@ -10,6 +10,10 @@ import {
   stompClient,
 } from "@/lib/stomp";
 
+import {
+  useTransactionConfirmation,
+} from "@/hooks/useTransactionConfirmation";
+
 const WebSocketContext =
   createContext(null);
 
@@ -30,6 +34,8 @@ export function WebSocketProvider({
     }
 
   }, []);
+
+  useTransactionConfirmation();
 
   return (
 

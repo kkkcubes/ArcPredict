@@ -12,12 +12,16 @@ import {
 export function useRealtimeEvents() {
 
   const [events, setEvents] =
-    useState<any[]>([]);
+  useState<any[]>([]);
+
+const [loading, setLoading] =
+  useState(true);
 
   useEffect(() => {
 
     const subscribe =
       () => {
+        setLoading(false);
 
         stompClient.subscribe(
           "/topic/trades",
@@ -56,6 +60,7 @@ export function useRealtimeEvents() {
   }, []);
 
   return {
-    events,
-  };
+  events,
+  loading,
+};
 }

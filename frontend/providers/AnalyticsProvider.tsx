@@ -1,6 +1,8 @@
 "use client";
 
 import {
+  createContext,
+  useContext,
   useEffect,
   useState,
 } from "react";
@@ -13,13 +15,36 @@ import {
   stompClient,
 } from "@/lib/stomp";
 
-export function useAnalytics() {
+interface AnalyticsContextType {
 
-  const [analytics, setAnalytics] =
-    useState<any>(null);
+  analytics: any;
 
-  const [loading, setLoading] =
-    useState(true);
+  loading: boolean;
+
+  refresh: () => Promise<void>;
+
+}
+
+const AnalyticsContext =
+  createContext<AnalyticsContextType | null>(
+    null
+  );
+
+export function AnalyticsProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+
+  const [
+    analytics,
+    setAnalytics,
+  ] = useState<any>(null);
+
+  const [
+    loading,
+    setLoading,
+  ] = useState(true);
 
   const loadAnalytics =
     async () => {
@@ -47,6 +72,10 @@ export function useAnalytics() {
 
     loadAnalytics();
 
+  }, []);
+
+  useEffect(() => {
+
     let subscription: any;
 
     const subscribe = () => {
@@ -59,7 +88,9 @@ export function useAnalytics() {
           (message) => {
 
             setAnalytics(
-              JSON.parse(message.body)
+              JSON.parse(
+                message.body
+              )
             );
 
           }
@@ -98,14 +129,44 @@ export function useAnalytics() {
 
   }, []);
 
-  return {
+  return (
 
-    analytics,
+    <AnalyticsContext.Provider
+      value={{
 
-    loading,
+        analytics,
 
-    refresh: loadAnalytics,
+        loading,
 
-  };
+        refresh:
+          loadAnalytics,
+
+      }}
+    >
+
+      {children}
+
+    </AnalyticsContext.Provider>
+
+  );
+
+}
+
+export function useAnalyticsContext() {
+
+  const context =
+    useContext(
+      AnalyticsContext
+    );
+
+  if (!context) {
+
+    throw new Error(
+      "useAnalyticsContext must be used inside AnalyticsProvider"
+    );
+
+  }
+
+  return context;
 
 }

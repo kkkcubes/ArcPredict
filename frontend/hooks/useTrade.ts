@@ -14,6 +14,10 @@ import PredictionMarketABI
 import { CONTRACTS }
   from "@/lib/contracts";
 
+import {
+  registerTransactionToast,
+} from "@/lib/transactionToastStore";  
+
 export function useTrade() {
 
   const {
@@ -26,37 +30,52 @@ export function useTrade() {
     amount: number
   ) => {
 
+    const toastId = toast.loading(
+  "Transaction submitted..."
+);
+
     try {
 
-      const tx =
-        await writeContractAsync({
-          address:
-            CONTRACTS.predictionMarket as `0x${string}`,
-          abi:
-            PredictionMarketABI.abi,
-          functionName:
-            "buyYes",
-          args: [
-            BigInt(marketId),
-            BigInt(amount),
-          ],
-        });
+const tx =
+  await writeContractAsync({
+    address:
+      CONTRACTS.predictionMarket as `0x${string}`,
+    abi:
+      PredictionMarketABI.abi,
+    functionName:
+      "buyYes",
+    args: [
+      BigInt(marketId),
+      BigInt(amount),
+    ],
+  });
 
-      toast.success(
-        "YES position submitted"
-      );
+toast.loading(
+  "Waiting for blockchain confirmation...",
+  {
+    id: toastId,
+  }
+);
 
-      return tx;
+registerTransactionToast(
+  tx,
+  toastId
+);
+
+return tx;
 
     } catch (error) {
 
       console.error(error);
 
       toast.error(
-        "Transaction failed"
-      );
+  "Transaction failed",
+  {
+    id: toastId,
+  }
+);
 
-      throw error;
+throw error;
     }
   };
 
@@ -65,37 +84,54 @@ export function useTrade() {
     amount: number
   ) => {
 
+    const toastId = toast.loading(
+  "Transaction submitted..."
+);
+
     try {
 
-      const tx =
-        await writeContractAsync({
-          address:
-            CONTRACTS.predictionMarket as `0x${string}`,
-          abi:
-            PredictionMarketABI.abi,
-          functionName:
-            "buyNo",
-          args: [
-            BigInt(marketId),
-            BigInt(amount),
-          ],
-        });
+const tx =
+  await writeContractAsync({
+    address:
+      CONTRACTS.predictionMarket as `0x${string}`,
+    abi:
+      PredictionMarketABI.abi,
+    functionName:
+      "buyNo",
+    args: [
+      BigInt(marketId),
+      BigInt(amount),
+    ],
+  });
 
-      toast.success(
-        "NO position submitted"
-      );
+toast.loading(
+  "Waiting for blockchain confirmation...",
+  {
+    id: toastId,
+  }
+);
 
-      return tx;
+registerTransactionToast(
+  tx,
+  toastId
+);
+
+return tx;
+
+return tx;
 
     } catch (error) {
 
       console.error(error);
 
       toast.error(
-        "Transaction failed"
-      );
+  "Transaction failed",
+  {
+    id: toastId,
+  }
+);
 
-      throw error;
+throw error;
     }
   };
 

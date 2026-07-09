@@ -1,7 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { getMarkets } from "@/services/backendMarketService";
+import {
+  useEffect,
+  useState,
+} from "react";
+
+import {
+  getMarkets,
+} from "@/services/backendMarketService";
+
+import {
+  stompClient,
+} from "@/lib/stomp";
 
 export function useMarkets() {
 
@@ -17,7 +27,7 @@ export function useMarkets() {
       try {
 
         const data =
-  await getMarkets();
+          await getMarkets();
 
         setMarkets(data);
 
@@ -28,16 +38,99 @@ export function useMarkets() {
       } finally {
 
         setLoading(false);
+
       }
+
     };
 
   useEffect(() => {
+
     loadMarkets();
+
+    let subscription: any;
+
+    const subscribe = () => {
+
+      subscription =
+        stompClient.subscribe(
+
+          "/topic/markets",
+
+          (message) => {
+
+            const updatedMarket =
+              JSON.parse(
+                message.body
+              );
+
+            setMarkets(
+              (previous) => {
+
+                const exists =
+                  previous.some(
+                    (market) =>
+                      market.marketId ===
+                      updatedMarket.marketId
+                  );
+
+                if (!exists) {
+
+                  return [
+                    updatedMarket,
+                    ...previous,
+                  ];
+
+                }
+
+                return previous.map(
+                  (market) =>
+
+                    market.marketId ===
+                    updatedMarket.marketId
+
+                      ? updatedMarket
+
+                      : market
+                );
+
+              }
+            );
+
+          }
+
+        );
+
+    };
+
+    if (
+      stompClient.connected
+    ) {
+
+      subscribe();
+
+    } else {
+
+      stompClient.onConnect =
+        subscribe;
+
+    }
+
+    return () => {
+
+      subscription?.unsubscribe();
+
+    };
+
   }, []);
 
   return {
+
     markets,
+
     loading,
+
     refresh: loadMarkets,
+
   };
+
 }

@@ -379,6 +379,34 @@ if (market === undefined) {
 
           </div>
 
+          <div>
+
+  <p className="text-gray-500">
+    Resolution Date
+  </p>
+
+  <p
+    className="
+      text-lg
+      font-semibold
+    "
+  >
+    {market.endTime && Number(market.endTime) > 0
+  ? new Date(
+      Number(market.endTime) * 1000
+    ).toLocaleDateString(
+      "en-US",
+      {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      }
+    )
+  : "Unknown"}
+  </p>
+
+</div>
+
         </div>
 
         <div className="mb-8">
@@ -453,8 +481,56 @@ if (market === undefined) {
             Trade Amount
           </label>
 
+          <div
+  className="
+    flex
+    gap-2
+    flex-wrap
+    mb-4
+  "
+>
+
+  {[1, 5, 10, 25].map((value) => (
+
+    <button
+      key={value}
+      type="button"
+      onClick={() =>
+        setAmount(value)
+      }
+      className={
+        amount === value
+          ? `
+              px-4
+              py-2
+              rounded-xl
+              bg-violet-600
+              text-white
+              border
+              border-violet-600
+            `
+          : `
+              px-4
+              py-2
+              rounded-xl
+              bg-white
+              text-gray-700
+              border
+              border-gray-300
+              hover:bg-gray-100
+            `
+      }
+    >
+      {value}
+    </button>
+
+  ))}
+
+</div>
+
           <input
-            type="number"
+  type="number"
+  placeholder="Enter USDC amount"
             min={1}
             value={amount}
             onChange={(e) =>
@@ -465,14 +541,20 @@ if (market === undefined) {
               )
             }
             className="
-              w-full
-              p-3
-              rounded-xl
-              bg-black
-              border
-              border-gray-700
-              mb-4
-            "
+  w-full
+  p-3
+  rounded-xl
+  bg-white
+  text-gray-900
+  border
+  border-gray-300
+  mb-4
+  focus:outline-none
+  focus:ring-2
+  focus:ring-violet-500
+  focus:border-violet-500
+  transition
+"
           />
 
           <div
@@ -493,7 +575,8 @@ if (market === undefined) {
               }
               disabled={
   isPending ||
-  market.resolved
+  market.resolved ||
+  amount <= 0
 }
               className="
                 bg-green-600
@@ -504,7 +587,7 @@ if (market === undefined) {
                 font-semibold
               "
             >
-              Buy YES
+              Buy YES Shares
             </button>
 
             <button
@@ -516,7 +599,8 @@ if (market === undefined) {
               }
               disabled={
   isPending ||
-  market.resolved
+  market.resolved ||
+  amount <= 0
 }
               className="
                 bg-red-600
@@ -527,7 +611,7 @@ if (market === undefined) {
                 font-semibold
               "
             >
-              Buy NO
+              Buy NO Shares
             </button>
 
           </div>

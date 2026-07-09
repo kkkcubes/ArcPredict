@@ -1,6 +1,8 @@
 "use client";
 
 import {
+  createContext,
+  useContext,
   useEffect,
   useState,
 } from "react";
@@ -13,17 +15,40 @@ import {
   stompClient,
 } from "@/lib/stomp";
 
-export function usePortfolio() {
+interface PortfolioContextType {
+
+  portfolio: any;
+
+  loading: boolean;
+
+  refresh: () => Promise<void>;
+
+}
+
+const PortfolioContext =
+  createContext<PortfolioContextType | null>(
+    null
+  );
+
+export function PortfolioProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
 
   const {
     address,
   } = useAccount();
 
-  const [portfolio, setPortfolio] =
-    useState<any>(null);
+  const [
+    portfolio,
+    setPortfolio,
+  ] = useState<any>(null);
 
-  const [loading, setLoading] =
-    useState(true);
+  const [
+    loading,
+    setLoading,
+  ] = useState(true);
 
   const loadPortfolio =
     async () => {
@@ -31,6 +56,7 @@ export function usePortfolio() {
       if (!address) {
 
         setPortfolio(null);
+
         setLoading(false);
 
         return;
@@ -87,15 +113,14 @@ export function usePortfolio() {
 
           (message) => {
 
-            const updatedPortfolio =
+            const updated =
               JSON.parse(
                 message.body
               );
 
             if (
 
-              updatedPortfolio.wallet
-                ?.toLowerCase()
+              updated.wallet?.toLowerCase()
 
               ===
 
@@ -103,9 +128,7 @@ export function usePortfolio() {
 
             ) {
 
-              setPortfolio(
-                updatedPortfolio
-              );
+              setPortfolio(updated);
 
             }
 
@@ -145,15 +168,44 @@ export function usePortfolio() {
 
   }, [address]);
 
-  return {
+  return (
 
-    portfolio,
+    <PortfolioContext.Provider
+      value={{
 
-    loading,
+        portfolio,
 
-    refresh:
-      loadPortfolio,
+        loading,
 
-  };
+        refresh:
+          loadPortfolio,
+
+      }}
+    >
+
+      {children}
+
+    </PortfolioContext.Provider>
+
+  );
+
+}
+
+export function usePortfolioContext() {
+
+  const context =
+    useContext(
+      PortfolioContext
+    );
+
+  if (!context) {
+
+    throw new Error(
+      "usePortfolioContext must be used inside PortfolioProvider"
+    );
+
+  }
+
+  return context;
 
 }
