@@ -70,4 +70,14 @@ public class WebSocketBroadcastService {
             payload
         );
     }
+    public void broadcastTransactionConfirmed(
+    Object payload
+) {
+
+    messagingTemplate.convertAndSend(
+        "/topic/transaction-confirmed",
+        payload
+    );
+
+}
 }

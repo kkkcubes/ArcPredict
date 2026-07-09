@@ -8,10 +8,18 @@ import io.arcpredict.util.ContractEvents;
 
 import org.springframework.stereotype.Service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.web3j.protocol.core.methods.response.Log;
 
 @Service
 public class BlockchainDecoderService {
+
+    private static final Logger log =
+    LoggerFactory.getLogger(
+        BlockchainDecoderService.class
+    );
 
     public String eventType(
         Log log
@@ -51,28 +59,28 @@ public class BlockchainDecoderService {
     }
 
     public MarketCreatedEvent
-    decodeMarketCreated(
-        Log log
-    ) {
+decodeMarketCreated(
+    Log receiptLog
+) {
 
         Long marketId =
             Long.parseLong(
-                log.getTopics()
+                receiptLog.getTopics()
                     .get(1)
                     .substring(2),
                 16
             );
 
-        System.out.println(
-            "RAW DATA => "
-            + log.getData()
-        );
+        log.debug(
+    "MarketCreated raw data: {}",
+    receiptLog.getData()
+);
 
         String creator =
-            "0x"
-            + log.getTopics()
-                .get(2)
-                .substring(26);
+    "0x"
+    + receiptLog.getTopics()
+        .get(2)
+        .substring(26);
 
         return MarketCreatedEvent
             .builder()
@@ -83,8 +91,8 @@ public class BlockchainDecoderService {
                 new String(
                     org.web3j.utils.Numeric
                         .hexStringToByteArray(
-                            log.getData()
-                                .substring(130)
+                            receiptLog.getData()
+    .substring(130)
                         )
                 ).trim()
             )
@@ -92,10 +100,10 @@ public class BlockchainDecoderService {
                 creator
             )
             .txHash(
-                log.getTransactionHash()
+                receiptLog.getTransactionHash()
             )
             .blockNumber(
-                log.getBlockNumber()
+                receiptLog.getBlockNumber()
                     .longValue()
             )
             .build();
@@ -103,35 +111,35 @@ public class BlockchainDecoderService {
 
     public SharesPurchasedEvent
     decodeSharesPurchased(
-        Log log
-    ) {
+    Log receiptLog
+) {
 
         String trader =
-            "0x"
-            + log.getTopics()
-                .get(1)
-                .substring(26);
+    "0x"
+    + receiptLog.getTopics()
+        .get(1)
+        .substring(26);
 
         Long marketId =
-            Long.parseLong(
-                log.getTopics()
-                    .get(2)
-                    .substring(2),
-                16
-            );
+    Long.parseLong(
+        receiptLog.getTopics()
+            .get(2)
+            .substring(2),
+        16
+    );
 
         String data =
-            log.getData();
+    receiptLog.getData();
 
-        System.out.println(
-            "TRADE RAW DATA => "
-            + data
-        );
+        log.debug(
+    "Trade raw data: {}",
+    data
+);
 
-        System.out.println(
-            "TRADE DATA LENGTH => "
-            + data.length()
-        );
+        log.debug(
+    "Trade data length: {}",
+    data.length()
+);
 
         boolean side =
             new java.math.BigInteger(
@@ -170,38 +178,38 @@ public class BlockchainDecoderService {
                 amount
             )
             .txHash(
-                log.getTransactionHash()
-            )
+    receiptLog.getTransactionHash()
+)
             .blockNumber(
-                log.getBlockNumber()
-                    .longValue()
-            )
+    receiptLog.getBlockNumber()
+        .longValue()
+)
             .build();
     }
 
     public MarketResolvedEvent
-    decodeMarketResolved(
-        Log log
-    )
+decodeMarketResolved(
+    Log receiptLog
+)
     {
 
         Long marketId =
             Long.parseLong(
-                log.getTopics()
+                receiptLog.getTopics()
                     .get(1)
                     .substring(2),
                 16
             );
 
         boolean outcome =
-            new java.math.BigInteger(
-                log.getData()
-                    .substring(
-                        2,
-                        66
-                    ),
-                16
-            )
+    new java.math.BigInteger(
+        receiptLog.getData()
+            .substring(
+                2,
+                66
+            ),
+        16
+    )
             .equals(
                 java.math.BigInteger.ONE
             );
@@ -215,12 +223,12 @@ public class BlockchainDecoderService {
                 outcome
             )
             .txHash(
-                log.getTransactionHash()
-            )
+    receiptLog.getTransactionHash()
+)
             .blockNumber(
-                log.getBlockNumber()
-                    .longValue()
-            )
+    receiptLog.getBlockNumber()
+        .longValue()
+)
             .build();
     }
 }

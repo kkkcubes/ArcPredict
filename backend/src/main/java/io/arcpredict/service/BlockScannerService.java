@@ -2,8 +2,10 @@ package io.arcpredict.service;
 
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import org.web3j.protocol.Web3j;
@@ -14,6 +16,11 @@ import org.web3j.protocol.core.methods.response.Transaction;
 @Service
 @RequiredArgsConstructor
 public class BlockScannerService {
+
+    private static final Logger log =
+        LoggerFactory.getLogger(
+            BlockScannerService.class
+        );
 
     private final Web3j web3j;
 
@@ -27,10 +34,10 @@ public class BlockScannerService {
         EthBlock.Block block
     ) {
 
-        System.out.println(
-            "SCANNING BLOCK => "
-            + block.getNumber()
-        );
+        log.debug(
+    "Scanning block {}",
+    block.getNumber()
+);
 
         try {
 
@@ -44,13 +51,13 @@ public class BlockScannerService {
                     )
                     .send();
 
-            System.out.println(
-                "BLOCK TX COUNT => "
-                + fullBlock
-                    .getBlock()
-                    .getTransactions()
-                    .size()
-            );
+            log.debug(
+    "Block transaction count: {}",
+    fullBlock
+        .getBlock()
+        .getTransactions()
+        .size()
+);
 
             fullBlock
                 .getBlock()
@@ -69,14 +76,14 @@ public class BlockScannerService {
                             )
                         ) {
 
-                            System.out.println(
-                                "FOUND TEST TX"
-                            );
+                            log.debug(
+    "Found test transaction"
+);
 
-                            System.out.println(
-                                "TO => "
-                                + tx.getTo()
-                            );
+                            log.debug(
+    "Transaction recipient: {}",
+    tx.getTo()
+);
                         }
 
                         if (
@@ -95,26 +102,35 @@ public class BlockScannerService {
                             return;
                         }
 
-                        System.out.println(
-                            "PREDICTION TX => "
-                            + tx.getHash()
-                        );
+                        log.info(
+    "Prediction market transaction: {}",
+    tx.getHash()
+);
 
                         receiptScannerService
                             .scanReceipt(
                                 tx.getHash()
                             );
 
-                    } catch (Exception e) {
+                                        } catch (Exception e) {
 
-                        e.printStackTrace();
+                        log.error(
+                            "Failed to process transaction",
+                            e
+                        );
+
                     }
 
                 });
 
         } catch (Exception e) {
 
-            e.printStackTrace();
+            log.error(
+                "Failed to scan block {}",
+                block.getNumber(),
+                e
+            );
+
         }
     }
 }

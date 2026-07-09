@@ -4,15 +4,25 @@ import jakarta.annotation.PostConstruct;
 
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.web3j.protocol.Web3j;
 
 @Service
 @RequiredArgsConstructor
 public class ArcEventListenerService {
+
+    private static final Logger log =
+        LoggerFactory.getLogger(
+            ArcEventListenerService.class
+        );
 
     private final Web3j web3j;
 
@@ -31,13 +41,13 @@ public class ArcEventListenerService {
     @PostConstruct
     public void start() {
 
-        System.out.println(
-            "PREDICTION CONTRACT => "
-            + predictionMarketAddress
+        log.info(
+            "Prediction contract: {}",
+            predictionMarketAddress
         );
 
-        System.out.println(
-            "LISTENER STARTED"
+        log.info(
+            "Arc event listener started"
         );
 
         subscribeToLogs();
@@ -50,16 +60,16 @@ public class ArcEventListenerService {
             .subscribe(
                 block -> {
 
-                    System.out.println(
-                        "NEW BLOCK => "
-                        + block.getBlock().getNumber()
+                    log.debug(
+                        "New block: {}",
+                        block.getBlock().getNumber()
                     );
 
-                    System.out.println(
-                        "BLOCK TX COUNT => "
-                        + block.getBlock()
-                               .getTransactions()
-                               .size()
+                    log.debug(
+                        "Block transaction count: {}",
+                        block.getBlock()
+                             .getTransactions()
+                             .size()
                     );
 
                     blockScannerService.scanBlock(
@@ -69,11 +79,11 @@ public class ArcEventListenerService {
                 },
                 error -> {
 
-                    System.out.println(
-                        "FLOWABLE ERROR"
+                    log.error(
+                        "Block flowable error",
+                        error
                     );
 
-                    error.printStackTrace();
                 }
             );
     }
