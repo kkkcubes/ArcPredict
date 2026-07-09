@@ -5,7 +5,7 @@ const API_URL =
 export async function getDashboardStats() {
 
   const response = await fetch(
-    `${API_URL}/api/analytics`,
+    `${API_URL}/api/dashboard`,
     {
       cache: "no-store",
     }
@@ -14,27 +14,33 @@ export async function getDashboardStats() {
   if (!response.ok) {
 
     throw new Error(
-      "Failed to fetch analytics"
+      "Failed to fetch dashboard stats"
     );
 
   }
 
-  const analytics =
+  const dashboard =
     await response.json();
 
   return {
 
-    activeMarkets:
-      analytics.totalMarkets ?? 0,
+    latestBlock:
+      dashboard.latestBlock ?? 0,
+
+    totalMarkets:
+      dashboard.totalMarkets ?? 0,
+
+    totalTrades:
+      dashboard.totalTrades ?? 0,
 
     totalVolume:
-      analytics.totalVolume ?? 0,
+      dashboard.totalVolume ?? 0,
 
-    participants:
-      analytics.totalTraders ?? 0,
+    activeMarkets:
+      dashboard.activeMarkets ?? 0,
 
-    openInterest:
-      analytics.openInterest ?? 0,
+    resolvedMarkets:
+      dashboard.resolvedMarkets ?? 0,
 
   };
 

@@ -20,6 +20,10 @@ import LiveActivityFeed
 import ContractInfo
   from "@/components/dashboard/ContractInfo";  
 
+import {
+  useRpcHealth,
+} from "@/hooks/useRpcHealth";  
+
 export default function DashboardPage() {
 
     console.log("Dashboard mounted");
@@ -28,6 +32,10 @@ export default function DashboardPage() {
     stats,
     setStats,
   } = useDashboardStats();
+
+  const {
+  rpc,
+} = useRpcHealth();
 
   const {
     markets,
@@ -97,15 +105,14 @@ export default function DashboardPage() {
           }
 
           return {
-            ...previous,
-            totalVolume:
-              previous.totalVolume +
-              Number(event.amount || 0),
+    ...previous,
+    totalVolume:
+        previous.totalVolume +
+        Number(event.amount || 0),
 
-            openInterest:
-              previous.openInterest +
-              Number(event.amount || 0),
-          };
+    totalTrades:
+        previous.totalTrades + 1,
+};
         }
       );
 
@@ -169,21 +176,49 @@ export default function DashboardPage() {
             </p>
 
             <p>
-              5042002
-            </p>
+  {rpc?.chainId ?? "-"}
+</p>
           </div>
 
           <ContractInfo />
 
           <div>
-            <p className="text-gray-400">
-              RPC Status
-            </p>
+  <p className="text-gray-400">
+    RPC Status
+  </p>
 
-            <p className="text-green-500">
-              Connected
-            </p>
-          </div>
+  <p
+    className={
+      rpc?.connected
+        ? "text-green-500"
+        : "text-red-500"
+    }
+  >
+    {rpc?.connected
+      ? "Connected"
+      : "Disconnected"}
+  </p>
+</div>
+
+<div>
+  <p className="text-gray-400">
+    RPC Latency
+  </p>
+
+  <p>
+    {rpc?.latency ?? 0} ms
+  </p>
+</div>
+
+<div>
+  <p className="text-gray-400">
+    Latest RPC Block
+  </p>
+
+  <p>
+    {rpc?.latestBlock ?? 0}
+  </p>
+</div>
 
         </div>
 
@@ -212,24 +247,24 @@ export default function DashboardPage() {
         </div>
 
         <div className="card p-5">
-          <p className="text-gray-400">
-            Traders
-          </p>
+  <p className="text-gray-400">
+    Total Trades
+  </p>
 
-          <h3 className="text-3xl font-bold mt-2">
-            {stats?.participants ?? 0}
-          </h3>
-        </div>
+  <h3 className="text-3xl font-bold mt-2">
+    {stats?.totalTrades ?? 0}
+  </h3>
+</div>
 
         <div className="card p-5">
-          <p className="text-gray-400">
-            Open Interest
-          </p>
+  <p className="text-gray-400">
+    Latest Block
+  </p>
 
-          <h3 className="text-3xl font-bold mt-2">
-            {stats?.openInterest ?? 0} USDC
-          </h3>
-        </div>
+  <h3 className="text-3xl font-bold mt-2">
+    {stats?.latestBlock ?? 0}
+  </h3>
+</div>
 
       </section>
 
