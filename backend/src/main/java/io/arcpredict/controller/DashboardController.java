@@ -17,7 +17,8 @@ public class DashboardController {
     private final DashboardService dashboardService;
 
     @GetMapping
-    public DashboardResponse getDashboard() {
+   public DashboardResponse getDashboard()
+    throws Exception {
 
         return dashboardService.getDashboard();
 

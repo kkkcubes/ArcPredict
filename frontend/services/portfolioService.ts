@@ -6,6 +6,10 @@ import { CONTRACTS } from "@/lib/contracts";
 import RewardDistributorArtifact
   from "@/abi/RewardDistributor.json";
 
+const API_URL =
+  process.env
+    .NEXT_PUBLIC_API_URL!;
+
 export const portfolioService = {
 
   async getReward(
@@ -31,6 +35,7 @@ export const portfolioService = {
         ],
       }
     );
+
   },
 
   async getClaimStatus(
@@ -56,5 +61,33 @@ export const portfolioService = {
         ],
       }
     );
+
   },
+
+  async getPortfolioAnalytics(
+    wallet: string
+  ) {
+
+    const response =
+      await fetch(
+        `${API_URL}/api/portfolio/analytics/${wallet}`,
+        {
+          cache: "no-store",
+        }
+      );
+
+    if (
+      !response.ok
+    ) {
+
+      throw new Error(
+        "Failed to fetch portfolio analytics"
+      );
+
+    }
+
+    return response.json();
+
+  },
+
 };

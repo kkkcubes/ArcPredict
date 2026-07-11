@@ -43,6 +43,8 @@ public class MarketEntity {
 
     private Long totalVolume;
 
+    private Long protocolFees;
+
     private Long participants;
 
     private Long blockNumber;

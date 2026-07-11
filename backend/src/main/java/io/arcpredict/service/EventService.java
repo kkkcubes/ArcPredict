@@ -1,7 +1,10 @@
 package io.arcpredict.service;
 
+import io.arcpredict.dto.ActivityResponse;
 import io.arcpredict.entity.EventEntity;
+import io.arcpredict.entity.TradeEntity;
 import io.arcpredict.repository.EventRepository;
+import io.arcpredict.repository.TradeRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -16,6 +19,9 @@ public class EventService {
 
     private final EventRepository
         eventRepository;
+
+    private final TradeRepository
+        tradeRepository;
 
     public EventEntity saveEvent(
         String eventType,
@@ -47,4 +53,71 @@ public class EventService {
         return eventRepository
             .findTop50ByOrderByTimestampDesc();
     }
+
+    public List<ActivityResponse>
+    getActivityFeed() {
+
+        return eventRepository
+            .findTop50ByOrderByTimestampDesc()
+            .stream()
+            .map(event -> {
+
+                TradeEntity trade =
+                    tradeRepository
+                        .findByTxHash(
+                            event.getTxHash()
+                        )
+                        .orElse(null);
+
+                return ActivityResponse
+                    .builder()
+                    .id(
+                        event.getId()
+                    )
+                    .eventType(
+                        event.getEventType()
+                    )
+                    .marketId(
+                        event.getMarketId()
+                    )
+                    .wallet(
+                        trade == null
+                            ? null
+                            : trade.getTrader()
+                    )
+                    .amount(
+                        trade == null
+                            ? null
+                            : trade.getAmount()
+                    )
+                    .position(
+                        trade == null
+                            ? null
+                            : (
+                                trade.getYesPosition()
+                                    ? "YES"
+                                    : "NO"
+                            )
+                    )
+                    .txHash(
+                        event.getTxHash()
+                    )
+                    .blockNumber(
+                        event.getBlockNumber()
+                    )
+                    .timestamp(
+                        event.getTimestamp()
+                    )
+                    .summary(
+                        event.getEventType()
+                            + " on Market #"
+                            + event.getMarketId()
+                    )
+                    .build();
+
+            })
+            .toList();
+
+    }
+
 }

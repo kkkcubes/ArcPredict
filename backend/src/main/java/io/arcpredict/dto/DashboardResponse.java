@@ -19,7 +19,24 @@ public class DashboardResponse {
 
     private Long totalVolume;
 
+    private Long totalProtocolFees;
+
+    private Long vaultBalance;
+
+    private Long totalLiquidity;
+
+    private Long totalLockedLiquidity;
+
+    private Long totalReleasedLiquidity;
+
     private Long activeMarkets;
 
     private Long resolvedMarkets;
+
+    private Long availableLiquidity;
+
+private Double treasuryUtilization;
+
+private String treasuryHealth;
+
 }

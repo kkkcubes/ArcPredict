@@ -16,9 +16,12 @@ import {
 
 import LiveActivityFeed
   from "@/components/dashboard/LiveActivityFeed";
+  
+import SystemMetrics
+  from "@/components/dashboard/SystemMetrics";  
 
-import ContractInfo
-  from "@/components/dashboard/ContractInfo";  
+import TreasuryOverview
+  from "@/components/dashboard/TreasuryOverview";  
 
 import {
   useRpcHealth,
@@ -29,9 +32,10 @@ export default function DashboardPage() {
     console.log("Dashboard mounted");
 
   const {
-    stats,
-    setStats,
-  } = useDashboardStats();
+  stats,
+  setStats,
+  refresh,
+} = useDashboardStats();
 
   const {
   rpc,
@@ -78,45 +82,36 @@ export default function DashboardPage() {
         }
       );
 
-      setStats(
-        (previous: any) => {
-
-          if (!previous) {
-            return previous;
-          }
-
-          return {
-            ...previous,
-            activeMarkets:
-              previous.activeMarkets + 1,
-          };
-        }
-      );
+      refresh();
 
     },
 
-    (event) => {
+    async (event) => {
 
-      setStats(
-        (previous: any) => {
+  const amount =
+    Number(event.amount || 0);
 
-          if (!previous) {
-            return previous;
-          }
+  setStats(
+    (previous: any) => {
 
-          return {
-    ...previous,
-    totalVolume:
-        previous.totalVolume +
-        Number(event.amount || 0),
+      if (!previous) {
+        return previous;
+      }
 
-    totalTrades:
-        previous.totalTrades + 1,
-};
-        }
-      );
+      return {
+        ...previous,
+        totalVolume:
+          previous.totalVolume + amount,
+        totalTrades:
+          previous.totalTrades + 1,
+      };
 
-    },
+    }
+  );
+
+  refresh();
+
+},
 
     () => {}
 
@@ -180,8 +175,6 @@ export default function DashboardPage() {
 </p>
           </div>
 
-          <ContractInfo />
-
           <div>
   <p className="text-gray-400">
     RPC Status
@@ -224,49 +217,151 @@ export default function DashboardPage() {
 
       </section>
 
-      <section className="grid grid-cols-4 gap-4 mb-6">
+      <SystemMetrics />
 
-        <div className="card p-5">
-          <p className="text-gray-400">
-            Active Markets
-          </p>
+      <TreasuryOverview
+  stats={stats}
+/>
 
-          <h3 className="text-3xl font-bold mt-2">
-            {stats?.activeMarkets ?? 0}
-          </h3>
-        </div>
+      <section className="grid grid-cols-1 md:grid-cols-3 xl:grid-cols-4 gap-4 mb-6">
 
-        <div className="card p-5">
-          <p className="text-gray-400">
-            Total Volume
-          </p>
+  <div className="card p-5">
+    <p className="text-gray-400">
+      Active Markets
+    </p>
 
-          <h3 className="text-3xl font-bold mt-2">
-            {stats?.totalVolume ?? 0} USDC
-          </h3>
-        </div>
+    <h3 className="text-3xl font-bold mt-2">
+      {stats?.activeMarkets ?? 0}
+    </h3>
+  </div>
 
-        <div className="card p-5">
+  <div className="card p-5">
+    <p className="text-gray-400">
+      Total Volume
+    </p>
+
+    <h3 className="text-3xl font-bold mt-2">
+      {stats?.totalVolume ?? 0} USDC
+    </h3>
+  </div>
+
+  <div className="card p-5">
+    <p className="text-gray-400">
+      Protocol Fees
+    </p>
+
+    <h3 className="text-3xl font-bold mt-2">
+      {stats?.totalProtocolFees ?? 0} USDC
+    </h3>
+  </div>
+
+  <div className="card p-5">
+    <p className="text-gray-400">
+      Vault Balance
+    </p>
+
+    <h3 className="text-3xl font-bold mt-2">
+      {stats?.vaultBalance ?? 0} USDC
+    </h3>
+  </div>
+
+  <div className="card p-5">
+
   <p className="text-gray-400">
-    Total Trades
+    Available Liquidity
   </p>
 
   <h3 className="text-3xl font-bold mt-2">
-    {stats?.totalTrades ?? 0}
+    {stats?.availableLiquidity ?? 0} USDC
   </h3>
+
 </div>
 
-        <div className="card p-5">
+<div className="card p-5">
+
   <p className="text-gray-400">
-    Latest Block
+    Treasury Utilization
   </p>
 
   <h3 className="text-3xl font-bold mt-2">
-    {stats?.latestBlock ?? 0}
+    {Number(
+      stats?.treasuryUtilization ?? 0
+    ).toFixed(1)}%
+  </h3>
+
+</div>
+
+<div className="card p-5">
+
+  <p className="text-gray-400">
+    Treasury Health
+  </p>
+
+  <h3
+    className={`text-3xl font-bold mt-2 ${
+      stats?.treasuryHealth === "Healthy"
+        ? "text-green-600"
+        : stats?.treasuryHealth === "Warning"
+        ? "text-yellow-500"
+        : "text-red-600"
+    }`}
+  >
+    {stats?.treasuryHealth ?? "Unknown"}
+  </h3>
+
+</div>
+
+  <div className="card p-5">
+    <p className="text-gray-400">
+      Total Liquidity
+    </p>
+
+    <div className="card p-5">
+  <p className="text-gray-400">
+    Locked Liquidity
+  </p>
+
+  <h3 className="text-3xl font-bold mt-2">
+    {stats?.totalLockedLiquidity ?? 0}
   </h3>
 </div>
 
-      </section>
+<div className="card p-5">
+  <p className="text-gray-400">
+    Released Liquidity
+  </p>
+
+  <h3 className="text-3xl font-bold mt-2">
+    {stats?.totalReleasedLiquidity ?? 0}
+  </h3>
+</div>
+
+    <h3 className="text-3xl font-bold mt-2">
+      {stats?.totalLiquidity ?? 0}
+    </h3>
+  </div>
+
+  <div className="card p-5">
+    <p className="text-gray-400">
+      Total Trades
+    </p>
+
+    <h3 className="text-3xl font-bold mt-2">
+      {stats?.totalTrades ?? 0}
+    </h3>
+  </div>
+
+  <div className="card p-5">
+    <p className="text-gray-400">
+      Latest Block
+    </p>
+
+    <h3 className="text-3xl font-bold mt-2">
+      {stats?.latestBlock ?? 0}
+    </h3>
+  </div>
+
+</section>
 
       <section className="card p-6 mb-6">
 

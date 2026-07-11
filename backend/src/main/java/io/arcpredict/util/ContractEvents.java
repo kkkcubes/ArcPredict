@@ -20,4 +20,9 @@ public final class ContractEvents {
         Hash.sha3String(
             "MarketResolved(uint256,bool)"
         );
+
+        public static final String REWARD_CLAIMED =
+    Hash.sha3String(
+        "RewardClaimed(uint256,address,uint256)"
+    );
 }

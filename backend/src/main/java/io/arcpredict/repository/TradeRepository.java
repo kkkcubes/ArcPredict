@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface TradeRepository
@@ -24,6 +25,11 @@ public interface TradeRepository
     List<TradeEntity>
     findByTrader(
         String trader
+    );
+
+    Optional<TradeEntity>
+    findByTxHash(
+        String txHash
     );
 
     long countByMarketId(

@@ -1,5 +1,6 @@
 package io.arcpredict.controller;
 
+import io.arcpredict.dto.AnalyticsHistoryResponse;
 import io.arcpredict.entity.AnalyticsEntity;
 import io.arcpredict.service.AnalyticsService;
 
@@ -22,4 +23,12 @@ public class AnalyticsController {
         return analyticsService
             .getAnalytics();
     }
+    @GetMapping("/history")
+public AnalyticsHistoryResponse
+history() {
+
+    return analyticsService
+        .getAnalyticsHistory();
+
+}
 }

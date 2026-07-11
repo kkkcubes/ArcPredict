@@ -1,5 +1,4 @@
 spring:
-
   profiles:
     active: dev
 
@@ -7,9 +6,7 @@ server:
   port: 8080
 
 arc:
-
   network: Arc Testnet
-
   chain-id: 5042002
 
   rpc:
@@ -31,6 +28,10 @@ contracts:
 
   prediction-market:
     address: "0xDaaC34E8C1167b15417b13c19DA52C2555FE06Fd"
+
+protocol:
+  settlement:
+    fee-percentage: 0
 
 logging:
   level:

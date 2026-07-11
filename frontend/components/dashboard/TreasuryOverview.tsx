@@ -1,0 +1,259 @@
+"use client";
+
+
+import CountUp from "react-countup";
+
+import {
+  Wallet,
+  Coins,
+  Lock,
+  Unlock,
+  PiggyBank,
+  Activity,
+  ShieldCheck,
+} from "lucide-react";
+
+type Props = {
+  stats: any;
+};
+
+type TreasuryCardProps = {
+  title: string;
+  value: React.ReactNode;
+  icon: React.ReactNode;
+};
+
+function TreasuryCard({
+  title,
+  value,
+  icon,
+}: TreasuryCardProps) {
+
+  return (
+
+    <div
+      className="
+        rounded-2xl
+        border
+        border-gray-200
+        bg-white
+        p-5
+        shadow-sm
+      "
+    >
+
+      <div
+        className="
+          flex
+          items-center
+          justify-between
+          mb-4
+        "
+      >
+
+        <p className="text-gray-500">
+          {title}
+        </p>
+
+        <div
+          className="
+            w-10
+            h-10
+            rounded-xl
+            bg-violet-50
+            flex
+            items-center
+            justify-center
+          "
+        >
+          {icon}
+        </div>
+
+      </div>
+
+      <div className="text-3xl font-bold">
+        {value}
+      </div>
+
+    </div>
+
+  );
+
+}
+
+export default function TreasuryOverview({
+  stats,
+}: Props) {
+
+  const utilization =
+    Number(
+      stats?.treasuryUtilization ?? 0
+    );
+
+  const progressColor =
+    utilization < 50
+      ? "bg-green-500"
+      : utilization < 80
+      ? "bg-yellow-500"
+      : "bg-red-500";
+
+  const healthColor =
+    stats?.treasuryHealth === "Healthy"
+      ? "text-green-600"
+      : stats?.treasuryHealth === "Warning"
+      ? "text-yellow-500"
+      : "text-red-600";
+
+  return (
+
+    <section
+      className="
+        card
+        p-6
+        mb-6
+      "
+    >
+
+      <h2
+        className="
+          text-2xl
+          font-bold
+          mb-6
+        "
+      >
+        Treasury Overview
+      </h2>
+
+      <div
+        className="
+          grid
+          grid-cols-1
+          md:grid-cols-2
+          xl:grid-cols-4
+          gap-6
+        "
+      >
+
+        <div>
+          <p className="text-gray-400">
+            Vault Balance
+          </p>
+
+          <h3 className="text-3xl font-bold mt-2">
+            <CountUp
+              end={stats?.vaultBalance ?? 0}
+              duration={1.5}
+              separator=","
+            />
+            {" "}USDC
+          </h3>
+        </div>
+
+        <div>
+          <p className="text-gray-400">
+            Total Liquidity
+          </p>
+
+          <h3 className="text-3xl font-bold mt-2">
+            <CountUp
+              end={stats?.totalLiquidity ?? 0}
+              duration={1.5}
+              separator=","
+            />
+            {" "}USDC
+          </h3>
+        </div>
+
+        <div>
+          <p className="text-gray-400">
+            Locked Liquidity
+          </p>
+
+          <h3 className="text-3xl font-bold mt-2">
+            <CountUp
+              end={stats?.totalLockedLiquidity ?? 0}
+              duration={1.5}
+              separator=","
+            />
+            {" "}USDC
+          </h3>
+        </div>
+
+        <div>
+          <p className="text-gray-400">
+            Released Liquidity
+          </p>
+
+          <h3 className="text-3xl font-bold mt-2">
+            <CountUp
+              end={stats?.totalReleasedLiquidity ?? 0}
+              duration={1.5}
+              separator=","
+            />
+            {" "}USDC
+          </h3>
+        </div>
+
+        <div>
+          <p className="text-gray-400">
+            Available Liquidity
+          </p>
+
+          <h3 className="text-3xl font-bold mt-2">
+            <CountUp
+              end={stats?.availableLiquidity ?? 0}
+              duration={1.5}
+              separator=","
+            />
+            {" "}USDC
+          </h3>
+        </div>
+
+        <div>
+          <p className="text-gray-400">
+            Treasury Utilization
+          </p>
+
+          <h3 className="text-3xl font-bold mt-2">
+            {utilization.toFixed(1)}%
+          </h3>
+
+          <div className="mt-4">
+
+            <div className="w-full h-3 rounded-full bg-gray-200">
+
+              <div
+                className={`h-3 rounded-full ${progressColor}`}
+                style={{
+                  width: `${Math.min(
+                    utilization,
+                    100
+                  )}%`
+                }}
+              />
+
+            </div>
+
+          </div>
+
+        </div>
+
+        <div>
+          <p className="text-gray-400">
+            Treasury Health
+          </p>
+
+          <h3
+            className={`text-3xl font-bold mt-2 ${healthColor}`}
+          >
+            {stats?.treasuryHealth ?? "Unknown"}
+          </h3>
+        </div>
+
+      </div>
+
+    </section>
+
+  );
+
+}

@@ -10,16 +10,17 @@ import {
 } from "recharts";
 
 import {
-  BarChart3,
+  Activity,
 } from "lucide-react";
 
 import {
   useAnalyticsHistory,
 } from "@/hooks/useAnalyticsHistory";
 
-import LoadingSkeleton from "@/components/ui/LoadingSkeleton";
+import LoadingSkeleton
+  from "@/components/ui/LoadingSkeleton";
 
-export default function VolumeGrowthChart() {
+export default function DailyTradesChart() {
 
   const {
     history,
@@ -46,7 +47,7 @@ export default function VolumeGrowthChart() {
 
   const data =
 
-    history?.dailyVolume?.map(
+    history?.dailyTrades?.map(
 
       (
         point: any
@@ -79,7 +80,7 @@ export default function VolumeGrowthChart() {
           </p>
 
           <h2 className="text-3xl font-bold text-gray-900 mt-1">
-            Volume Growth
+            Daily Trades
           </h2>
 
         </div>
@@ -96,7 +97,7 @@ export default function VolumeGrowthChart() {
           "
         >
 
-          <BarChart3
+          <Activity
             size={26}
             className="text-[#6D4AFF]"
           />

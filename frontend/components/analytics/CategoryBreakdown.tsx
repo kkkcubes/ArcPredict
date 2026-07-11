@@ -5,41 +5,38 @@ import {
 } from "lucide-react";
 
 import {
-  useMarkets,
-} from "@/hooks/useMarkets";
+  useAnalyticsHistory,
+} from "@/hooks/useAnalyticsHistory";
+
 import LoadingSkeleton from "@/components/ui/LoadingSkeleton";
 
 export default function CategoryBreakdown() {
 
   const {
-  markets,
-  loading,
-} = useMarkets();
+    history,
+    loading,
+  } = useAnalyticsHistory();
 
-if (loading) {
-  return (
-    <LoadingSkeleton
-      className="
-        h-[280px] md:h-[360px]
-        rounded-3xl
-        bg-white
-        border
-        border-gray-200
-      "
-    />
-  );
-}
+  if (loading) {
 
-  const categories: Record<string, number> = {};
+    return (
 
-  markets.forEach((market: any) => {
+      <LoadingSkeleton
+        className="
+          h-[280px] md:h-[360px]
+          rounded-3xl
+          bg-white
+          border
+          border-gray-200
+        "
+      />
 
-    const category = market.category || "Unknown";
+    );
 
-    categories[category] =
-      (categories[category] || 0) + 1;
+  }
 
-  });
+  const categories =
+    history?.categoryBreakdown ?? [];
 
   return (
 
@@ -70,21 +67,25 @@ if (loading) {
             justify-center
           "
         >
+
           <Layers3
             size={26}
             className="text-[#6D4AFF]"
           />
+
         </div>
 
       </div>
 
       <div className="space-y-4">
 
-        {Object.entries(categories).map(
-          ([category, count]) => (
+        {categories.map(
+          (
+            category: any
+          ) => (
 
             <div
-              key={category}
+              key={category.date}
               className="
                 flex
                 items-center
@@ -100,7 +101,7 @@ if (loading) {
             >
 
               <span className="font-semibold text-gray-900">
-                {category}
+                {category.date}
               </span>
 
               <span
@@ -113,7 +114,7 @@ if (loading) {
                   font-semibold
                 "
               >
-                {count}
+                {category.value}
               </span>
 
             </div>
@@ -126,4 +127,5 @@ if (loading) {
     </section>
 
   );
+
 }

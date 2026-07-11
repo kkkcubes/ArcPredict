@@ -4,6 +4,8 @@ import {
   Activity,
   Wallet,
   ArrowUpRight,
+  BarChart3,
+  CheckCircle2,
 } from "lucide-react";
 
 import {
@@ -120,26 +122,41 @@ if (loading) {
                   <div className="flex items-center gap-3">
 
                     <span
-                      className="
-  inline-flex
-  items-center
-  rounded-full
-  bg-green-100
-  px-3
-  py-1
-  text-xs
-  font-bold
-  uppercase
-  tracking-wide
-  text-green-700
-"
-                    >
-                      TRADE
-                    </span>
+  className={`
+    inline-flex
+    items-center
+    rounded-full
+    px-3
+    py-1
+    text-xs
+    font-bold
+    uppercase
+    tracking-wide
+    ${
+      event.eventType === "SHARES_PURCHASED"
+        ? "bg-green-100 text-green-700"
+        : event.eventType === "MARKET_CREATED"
+        ? "bg-blue-100 text-blue-700"
+        : event.eventType === "MARKET_RESOLVED"
+        ? "bg-purple-100 text-purple-700"
+        : "bg-gray-100 text-gray-700"
+    }
+  `}
+>
+  {event.eventType?.replace("_", " ")}
+</span>
 
-                    <span className="font-semibold text-gray-900">
-                      Trade Executed
-                    </span>
+<span className="font-semibold text-gray-900">
+  {
+  event.eventType === "SHARES_PURCHASED"
+    ? `Bought ${event.position ?? "-"} shares in Market #${event.marketId}`
+    : event.eventType === "MARKET_CREATED"
+    ? "New prediction market created"
+    : event.eventType === "MARKET_RESOLVED"
+    ? `Market #${event.marketId} has been resolved`
+    : event.summary ?? event.eventType
+}
+</span>
 
                   </div>
 
@@ -149,61 +166,133 @@ if (loading) {
 
                 </div>
 
-                <ArrowUpRight
-                  size={20}
-                  className="text-violet-600"
-                />
+                {event.eventType === "SHARES_PURCHASED" ? (
+
+  <Activity
+    size={22}
+    className="text-green-600"
+  />
+
+) : event.eventType === "MARKET_CREATED" ? (
+
+  <BarChart3
+    size={22}
+    className="text-blue-600"
+  />
+
+) : event.eventType === "MARKET_RESOLVED" ? (
+
+  <CheckCircle2
+    size={22}
+    className="text-purple-600"
+  />
+
+) : (
+
+  <ArrowUpRight
+    size={22}
+    className="text-gray-500"
+  />
+
+)}
 
               </div>
+{event.eventType === "SHARES_PURCHASED" && (
 
-              <div
-  className="
-    mt-5
-    grid
-    grid-cols-1
-    sm:grid-cols-2
-    gap-4
-  "
->
+  <div
+    className="
+      mt-5
+      grid
+      grid-cols-1
+      md:grid-cols-3
+      gap-4
+    "
+  >
 
-                <div>
+    <div>
 
-                  <p className="text-xs text-gray-500">
-                    Amount
-                  </p>
+      <p className="text-xs text-gray-500">
+        Amount
+      </p>
 
-                  <p className="font-bold text-lg">
-                    {event.amount} USDC
-                  </p>
+      <p className="font-bold text-lg">
+        {event.amount ?? 0} USDC
+      </p>
 
-                </div>
+    </div>
 
-                <div>
+    <div>
 
-                  <p className="text-xs text-gray-500">
-                    Wallet
-                  </p>
+      <p className="text-xs text-gray-500">
+        Position
+      </p>
 
-                  <div className="flex items-center gap-2">
+      <p className="font-bold">
+        {event.position ?? "-"}
+      </p>
 
-                    <Wallet
-                      size={16}
-                      className="text-gray-400"
-                    />
+    </div>
 
-                    <span className="font-medium">
+    <div>
 
-                      {event.wallet
-                        ? `${event.wallet.slice(0,6)}...${event.wallet.slice(-4)}`
-                        : "Unknown"}
+      <p className="text-xs text-gray-500">
+        Wallet
+      </p>
 
-                    </span>
+      <div className="flex items-center gap-2">
 
-                  </div>
+        <Wallet
+          size={16}
+          className="text-gray-400"
+        />
 
-                </div>
+        <span className="font-medium">
 
-              </div>
+          {event.wallet
+            ? `${event.wallet.slice(0, 6)}...${event.wallet.slice(-4)}`
+            : "Unknown"}
+
+        </span>
+
+      </div>
+
+    </div>
+
+  </div>
+
+)}
+
+{event.eventType === "MARKET_CREATED" && (
+
+  <div className="mt-5">
+
+    <p className="text-xs text-gray-500">
+      Market
+    </p>
+
+    <p className="font-bold">
+      #{event.marketId}
+    </p>
+
+  </div>
+
+)}
+
+{event.eventType === "MARKET_RESOLVED" && (
+
+  <div className="mt-5">
+
+    <p className="text-xs text-gray-500">
+      Market
+    </p>
+
+    <p className="font-bold">
+      #{event.marketId}
+    </p>
+
+  </div>
+
+)}
 
               <div
   className="
@@ -211,21 +300,73 @@ if (loading) {
     border-t
     border-gray-100
     pt-4
-    text-sm
-    text-gray-500
+    flex
+    flex-col
+    gap-3
+    sm:flex-row
+    sm:items-center
+    sm:justify-between
   "
 >
 
-                {event.timestamp
-                  ? formatDistanceToNow(
-                      new Date(event.timestamp),
-                      {
-                        addSuffix: true,
-                      }
-                    )
-                  : "Just now"}
+  <span
+    className="
+      text-sm
+      text-gray-500
+    "
+  >
+    {event.timestamp
+      ? formatDistanceToNow(
+          new Date(event.timestamp),
+          {
+            addSuffix: true,
+          }
+        )
+      : "Just now"}
+  </span>
 
-              </div>
+  {event.txHash && (
+
+    <div
+      className="
+        flex
+        items-center
+        gap-3
+      "
+    >
+
+      <code
+        className="
+          rounded-lg
+          bg-gray-100
+          px-2
+          py-1
+          text-xs
+          text-gray-700
+        "
+      >
+        {`${event.txHash.slice(0, 8)}...${event.txHash.slice(-6)}`}
+      </code>
+
+      <a
+        href={`https://explorer.testnet.arc.xyz/tx/${event.txHash}`}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="
+          text-sm
+          font-medium
+          text-violet-600
+          hover:text-violet-700
+        "
+      >
+        View Transaction
+      </a>
+
+    </div>
+
+  )}
+
+</div>
 
             </div>
 

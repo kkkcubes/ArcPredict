@@ -23,5 +23,29 @@ export const analyticsService = {
     }
 
     return response.json();
+
   },
+
+  async getAnalyticsHistory() {
+
+    const response =
+      await fetch(
+        `${API_URL}/api/analytics/history`,
+        {
+          cache: "no-store",
+        }
+      );
+
+    if (!response.ok) {
+
+      throw new Error(
+        "Failed to fetch analytics history"
+      );
+
+    }
+
+    return response.json();
+
+  },
+
 };

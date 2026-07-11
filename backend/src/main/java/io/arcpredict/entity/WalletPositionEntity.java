@@ -4,9 +4,10 @@ import jakarta.persistence.*;
 
 import lombok.*;
 
+import java.time.Instant;
+
 @Entity
 @Table(name = "wallet_positions")
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -33,4 +34,13 @@ public class WalletPositionEntity {
     private Long claimableRewards;
 
     private Boolean claimed;
+
+    private Boolean winner;
+
+    private Boolean settled;
+
+    private Long claimedAmount;
+
+    private Instant claimedAt;
+
 }

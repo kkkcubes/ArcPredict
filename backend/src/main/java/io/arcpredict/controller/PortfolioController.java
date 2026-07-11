@@ -1,8 +1,10 @@
 package io.arcpredict.controller;
 
+import io.arcpredict.dto.PortfolioAnalyticsResponse;
 import io.arcpredict.dto.PortfolioResponse;
 import io.arcpredict.entity.TradeEntity;
 import io.arcpredict.repository.TradeRepository;
+import io.arcpredict.service.PortfolioService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -13,13 +15,19 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
+@RequestMapping("/api/portfolio")
 public class PortfolioController {
 
-    private final TradeRepository tradeRepository;
+    private final TradeRepository
+        tradeRepository;
 
-    @GetMapping("/portfolio/{wallet}")
+    private final PortfolioService
+        portfolioService;
+
+    @GetMapping("/{wallet}")
     public PortfolioResponse portfolio(
-        @PathVariable String wallet
+        @PathVariable
+        String wallet
     ) {
 
         List<TradeEntity> trades =
@@ -44,21 +52,50 @@ public class PortfolioController {
                     trade.getYesPosition()
                 )
             ) {
+
                 yes++;
+
             } else {
+
                 no++;
+
             }
+
         }
 
         return PortfolioResponse
             .builder()
-            .wallet(wallet)
-            .totalInvested(invested)
-            .yesPositions(yes)
-            .noPositions(no)
+            .wallet(
+                wallet
+            )
+            .totalInvested(
+                invested
+            )
+            .yesPositions(
+                yes
+            )
+            .noPositions(
+                no
+            )
             .totalTrades(
                 (long) trades.size()
             )
             .build();
+
     }
+
+    @GetMapping("/analytics/{wallet}")
+    public PortfolioAnalyticsResponse
+    portfolioAnalytics(
+        @PathVariable
+        String wallet
+    ) {
+
+        return portfolioService
+            .getPortfolioAnalytics(
+                wallet
+            );
+
+    }
+
 }

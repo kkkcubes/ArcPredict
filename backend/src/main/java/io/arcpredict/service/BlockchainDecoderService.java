@@ -3,6 +3,7 @@ package io.arcpredict.service;
 import io.arcpredict.dto.MarketCreatedEvent;
 import io.arcpredict.dto.MarketResolvedEvent;
 import io.arcpredict.dto.SharesPurchasedEvent;
+import io.arcpredict.dto.RewardClaimedEvent;
 
 import io.arcpredict.util.ContractEvents;
 
@@ -54,6 +55,13 @@ public class BlockchainDecoderService {
         ) {
             return "MARKET_RESOLVED";
         }
+
+        if (
+    ContractEvents.REWARD_CLAIMED
+        .equalsIgnoreCase(topic0)
+) {
+    return "REWARD_CLAIMED";
+}
 
         return "UNKNOWN";
     }
@@ -108,6 +116,59 @@ decodeMarketCreated(
             )
             .build();
     }
+
+    public RewardClaimedEvent
+decodeRewardClaimed(
+    Log receiptLog
+) {
+
+    Long marketId =
+        Long.parseLong(
+            receiptLog.getTopics()
+                .get(1)
+                .substring(2),
+            16
+        );
+
+    String trader =
+        "0x"
+        + receiptLog.getTopics()
+            .get(2)
+            .substring(26);
+
+    Long amount =
+        new java.math.BigInteger(
+            receiptLog.getData()
+                .substring(
+                    2,
+                    66
+                ),
+            16
+        )
+        .longValue();
+
+    return RewardClaimedEvent
+        .builder()
+        .marketId(
+            marketId
+        )
+        .trader(
+            trader
+        )
+        .amount(
+            amount
+        )
+        .txHash(
+            receiptLog.getTransactionHash()
+        )
+        .blockNumber(
+            receiptLog
+                .getBlockNumber()
+                .longValue()
+        )
+        .build();
+
+}
 
     public SharesPurchasedEvent
     decodeSharesPurchased(

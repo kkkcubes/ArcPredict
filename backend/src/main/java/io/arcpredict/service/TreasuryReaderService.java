@@ -32,9 +32,42 @@ public class TreasuryReaderService {
     public Long getVaultBalance()
         throws Exception {
 
+        return callUint256Function(
+            "getVaultBalance"
+        );
+    }
+
+    public Long getTotalLiquidity()
+        throws Exception {
+
+        return callUint256Function(
+            "totalLiquidity"
+        );
+    }
+
+    public Long getTotalLockedLiquidity()
+        throws Exception {
+
+        return callUint256Function(
+            "totalLockedLiquidity"
+        );
+    }
+
+    public Long getTotalReleasedLiquidity()
+        throws Exception {
+
+        return callUint256Function(
+            "totalReleasedLiquidity"
+        );
+    }
+
+    private Long callUint256Function(
+        String functionName
+    ) throws Exception {
+
         Function function =
             new Function(
-                "getVaultBalance",
+                functionName,
                 Collections.emptyList(),
                 List.of(
                     new TypeReference<Uint256>() {}

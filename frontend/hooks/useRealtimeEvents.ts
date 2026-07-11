@@ -9,58 +9,145 @@ import {
   stompClient,
 } from "@/lib/stomp";
 
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL!;
+
 export function useRealtimeEvents() {
 
   const [events, setEvents] =
-  useState<any[]>([]);
+    useState<any[]>([]);
 
-const [loading, setLoading] =
-  useState(true);
+  const [loading, setLoading] =
+    useState(true);
+
+  const loadEvents =
+    async () => {
+
+      try {
+
+        const response =
+          await fetch(
+            `${API_URL}/api/events`,
+            {
+              cache: "no-store",
+            }
+          );
+
+        if (!response.ok) {
+
+          throw new Error(
+            "Failed to load activity feed"
+          );
+
+        }
+
+        const data =
+          await response.json();
+
+        setEvents(data);
+
+      } catch (error) {
+
+        console.error(error);
+
+      } finally {
+
+        setLoading(false);
+
+      }
+
+    };
 
   useEffect(() => {
 
-    const subscribe =
-      () => {
-        setLoading(false);
+  loadEvents();
 
-        stompClient.subscribe(
-          "/topic/trades",
-          (message) => {
+  const subscribe =
+    () => {
 
-            const event =
-              JSON.parse(
-                message.body
-              );
+      stompClient.subscribe(
+        "/topic/trades",
+        (message) => {
 
-            setEvents(
-              (previous) => [
-                event,
-                ...previous,
-              ]
+          const event =
+            JSON.parse(
+              message.body
             );
 
-          }
-        );
+          setEvents(
+  (previous) =>
 
-      };
+    [
 
-    if (
-      stompClient.connected
-    ) {
+      {
 
-      subscribe();
+        id: Date.now(),
 
-    } else {
+        eventType:
+          event.eventType,
 
-      stompClient.onConnect =
-        subscribe;
+        marketId:
+          event.marketId,
 
-    }
+        wallet:
+          event.wallet,
 
-  }, []);
+        amount:
+          event.amount,
+
+        position:
+          "-",
+
+        txHash:
+          "",
+
+        blockNumber:
+          0,
+
+        timestamp:
+          event.timestamp,
+
+        summary:
+          event.eventType
+            + " on Market #"
+            + event.marketId,
+
+      },
+
+      ...previous,
+
+    ].slice(0, 50)
+
+);
+
+        }
+      );
+
+    };
+
+  if (
+    stompClient.connected
+  ) {
+
+    subscribe();
+
+  } else {
+
+    stompClient.onConnect =
+      subscribe;
+
+  }
+
+}, []);
 
   return {
-  events,
-  loading,
-};
+
+    events,
+
+    loading,
+
+    refresh: loadEvents,
+
+  };
+
 }

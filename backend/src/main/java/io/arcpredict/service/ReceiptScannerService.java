@@ -174,6 +174,9 @@ MarketEntity market =
         .totalVolume(
             0L
         )
+        .protocolFees(
+    0L
+)
         .participants(
             0L
         )
@@ -257,6 +260,14 @@ log.debug(
                         trade.getBlockNumber()
                     );
 
+                    marketSyncService.saveEvent(
+    "SHARES_PURCHASED",
+    trade.getMarketId(),
+    trade.getTxHash(),
+    trade.getBlockNumber(),
+    receiptLog.toString()
+);
+
                     TransactionConfirmedMessage message =
     TransactionConfirmedMessage
         .builder()
@@ -333,6 +344,12 @@ webSocketBroadcastService
                                 market
                             );
 
+                            marketSyncService
+    .resolveMarket(
+        event.getMarketId(),
+        event.getOutcome()
+    );
+
                         log.info(
     "Market updated"
 );
@@ -349,7 +366,42 @@ webSocketBroadcastService
                     log.info(
     "Resolution event saved"
 );
+
                 }
+
+                if (
+                    "REWARD_CLAIMED"
+                        .equals(eventType)
+                )
+                {
+
+                    var event =
+                        blockchainDecoderService
+                            .decodeRewardClaimed(
+                                receiptLog
+                            );
+
+                    marketSyncService
+                        .markRewardClaimed(
+                            event.getMarketId(),
+                            event.getTrader(),
+                            event.getAmount()
+                        );
+
+                    marketSyncService.saveEvent(
+                        "REWARD_CLAIMED",
+                        event.getMarketId(),
+                        event.getTxHash(),
+                        event.getBlockNumber(),
+                        receiptLog.toString()
+                    );
+
+                    log.info(
+                        "Reward claimed"
+                    );
+
+                }
+
             }
 
         } catch (Exception e) {

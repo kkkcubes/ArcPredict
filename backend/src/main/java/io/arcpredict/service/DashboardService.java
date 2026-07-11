@@ -16,31 +16,108 @@ public class DashboardService {
 
     private final TradeRepository tradeRepository;
 
-    public DashboardResponse getDashboard() {
+    private final TreasuryReaderService treasuryReaderService;
+
+    public DashboardResponse getDashboard()
+        throws Exception {
+
+        Long totalLiquidity =
+            treasuryReaderService
+                .getTotalLiquidity();
+
+        Long totalLockedLiquidity =
+            treasuryReaderService
+                .getTotalLockedLiquidity();
+
+        Long availableLiquidity =
+            totalLiquidity -
+            totalLockedLiquidity;
+
+        double treasuryUtilization =
+            totalLiquidity == 0
+                ? 0.0
+                : (
+                    totalLockedLiquidity
+                        * 100.0
+                  ) / totalLiquidity;
+
+                  String treasuryHealth;
+
+if (treasuryUtilization < 50) {
+
+    treasuryHealth = "Healthy";
+
+} else if (treasuryUtilization < 80) {
+
+    treasuryHealth = "Warning";
+
+} else {
+
+    treasuryHealth = "Critical";
+}
 
         return DashboardResponse.builder()
+
             .latestBlock(
                 marketRepository.findLatestBlock()
             )
+
             .totalMarkets(
                 marketRepository.count()
             )
+
             .totalTrades(
                 tradeRepository.count()
             )
+
             .totalVolume(
                 marketRepository.findTotalVolume()
             )
+
+            .totalProtocolFees(
+                marketRepository.findTotalProtocolFees()
+            )
+
+            .vaultBalance(
+                treasuryReaderService.getVaultBalance()
+            )
+
+            .totalLiquidity(
+                totalLiquidity
+            )
+
+            .totalLockedLiquidity(
+                totalLockedLiquidity
+            )
+
+            .totalReleasedLiquidity(
+                treasuryReaderService.getTotalReleasedLiquidity()
+            )
+
+            .availableLiquidity(
+    availableLiquidity
+)
+
+.treasuryUtilization(
+    treasuryUtilization
+)
+
+.treasuryHealth(
+    treasuryHealth
+)
+
             .activeMarkets(
                 (long) marketRepository
                     .findByResolved(false)
                     .size()
             )
+
             .resolvedMarkets(
                 (long) marketRepository
                     .findByResolved(true)
                     .size()
             )
+
             .build();
     }
 }

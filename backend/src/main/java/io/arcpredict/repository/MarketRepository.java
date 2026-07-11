@@ -36,4 +36,10 @@ public interface MarketRepository
         from MarketEntity m
     """)
     Long findTotalVolume();
+
+    @Query("""
+    select coalesce(sum(m.protocolFees), 0)
+    from MarketEntity m
+""")
+Long findTotalProtocolFees();
 }

@@ -311,18 +311,25 @@ if (market === undefined) {
 
           <div>
 
-            <p className="text-gray-500">
-              Volume
-            </p>
+            <div>
+  <p className="text-gray-500">
+    Volume
+  </p>
 
-            <p
-              className="
-                text-2xl
-                font-bold
-              "
-            >
-              {market.totalVolume ?? 0}
-            </p>
+  <p className="text-2xl font-bold">
+    {market.totalVolume}
+  </p>
+</div>
+
+<div>
+  <p className="text-gray-500">
+    Protocol Fees
+  </p>
+
+  <p className="text-2xl font-bold text-violet-600">
+    {market.protocolFees ?? 0} USDC
+  </p>
+</div>
 
           </div>
 

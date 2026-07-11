@@ -15,37 +15,61 @@ import {
 } from "lucide-react";
 
 import {
-  useMarkets,
-} from "@/hooks/useMarkets";
-import LoadingSkeleton from "@/components/ui/LoadingSkeleton";
+  useAnalyticsHistory,
+} from "@/hooks/useAnalyticsHistory";
+
+import LoadingSkeleton
+  from "@/components/ui/LoadingSkeleton";
 
 export default function MarketGrowthChart() {
- 
+
   const {
-  markets,
-  loading,
-} = useMarkets();
+    history,
+    loading,
+  } = useAnalyticsHistory();
 
-if (loading) {
+  if (loading) {
+
+    return (
+
+      <LoadingSkeleton
+        className="
+          h-[280px] md:h-[360px]
+          rounded-3xl
+          bg-white
+          border
+          border-gray-200
+        "
+      />
+
+    );
+
+  }
+
+  const data =
+
+    history?.dailyMarkets?.map(
+
+      (
+        point: any
+      ) => ({
+
+        name:
+          point.date,
+
+        value:
+          Number(
+            point.value
+          ),
+
+      })
+
+    )
+
+    ?? [];
+
   return (
-    <LoadingSkeleton
-      className="
-        h-[280px] md:h-[360px]
-        rounded-3xl
-        bg-white
-        border
-        border-gray-200
-      "
-    />
-  );
-}
 
-  const data = markets.map((market, index) => ({
-    name: `#${market.marketId}`,
-    value: index + 1,
-  }));
-
-  return (
     <section className="dashboard-card p-8 h-full">
 
       <div className="flex items-center justify-between mb-8">
@@ -73,10 +97,12 @@ if (loading) {
             justify-center
           "
         >
+
           <TrendingUp
             size={26}
             className="text-[#6D4AFF]"
           />
+
         </div>
 
       </div>
@@ -99,6 +125,10 @@ if (loading) {
               dataKey="name"
               tickLine={false}
               axisLine={false}
+              tickFormatter={
+                (value) =>
+                  value.slice(5)
+              }
             />
 
             <YAxis
@@ -128,5 +158,7 @@ if (loading) {
       </div>
 
     </section>
+
   );
+
 }
