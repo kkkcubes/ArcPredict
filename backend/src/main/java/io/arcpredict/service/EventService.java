@@ -13,6 +13,11 @@ import org.springframework.stereotype.Service;
 import java.time.Instant;
 import java.util.List;
 
+import java.util.Map;
+import java.util.Set;
+import java.util.HashMap;
+import java.util.stream.Collectors;
+
 @Service
 @RequiredArgsConstructor
 public class EventService {
@@ -55,69 +60,129 @@ public class EventService {
     }
 
     public List<ActivityResponse>
-    getActivityFeed() {
+getActivityFeed() {
 
-        return eventRepository
-            .findTop50ByOrderByTimestampDesc()
-            .stream()
-            .map(event -> {
+    List<EventEntity> events =
+        eventRepository
+            .findTop50ByOrderByTimestampDesc();
 
-                TradeEntity trade =
-                    tradeRepository
-                        .findByTxHash(
-                            event.getTxHash()
-                        )
-                        .orElse(null);
+    Set<String> txHashes =
+        events.stream()
 
-                return ActivityResponse
-                    .builder()
-                    .id(
-                        event.getId()
-                    )
-                    .eventType(
-                        event.getEventType()
-                    )
-                    .marketId(
-                        event.getMarketId()
-                    )
-                    .wallet(
-                        trade == null
-                            ? null
-                            : trade.getTrader()
-                    )
-                    .amount(
-                        trade == null
-                            ? null
-                            : trade.getAmount()
-                    )
-                    .position(
-                        trade == null
-                            ? null
-                            : (
-                                trade.getYesPosition()
-                                    ? "YES"
-                                    : "NO"
-                            )
-                    )
-                    .txHash(
-                        event.getTxHash()
-                    )
-                    .blockNumber(
-                        event.getBlockNumber()
-                    )
-                    .timestamp(
-                        event.getTimestamp()
-                    )
-                    .summary(
-                        event.getEventType()
-                            + " on Market #"
-                            + event.getMarketId()
-                    )
-                    .build();
+            .map(
+                EventEntity::getTxHash
+            )
 
-            })
-            .toList();
+            .filter(
+                txHash -> txHash != null
+                    && !txHash.isBlank()
+            )
+
+            .collect(
+                Collectors.toSet()
+            );
+
+    Map<String, TradeEntity> tradesByTxHash =
+        new HashMap<>();
+
+    if (!txHashes.isEmpty()) {
+
+        tradeRepository
+
+            .findByTxHashIn(
+                List.copyOf(txHashes)
+            )
+
+            .forEach(
+
+                trade ->
+
+                    tradesByTxHash.put(
+
+                        trade.getTxHash(),
+
+                        trade
+
+                    )
+
+            );
 
     }
+
+    return events
+
+        .stream()
+
+        .map(event -> {
+
+            TradeEntity trade =
+
+                tradesByTxHash.get(
+                    event.getTxHash()
+                );
+
+            return ActivityResponse
+
+                .builder()
+
+                .id(
+                    event.getId()
+                )
+
+                .eventType(
+                    event.getEventType()
+                )
+
+                .marketId(
+                    event.getMarketId()
+                )
+
+                .wallet(
+                    trade == null
+                        ? null
+                        : trade.getTrader()
+                )
+
+                .amount(
+                    trade == null
+                        ? null
+                        : trade.getAmount()
+                )
+
+                .position(
+                    trade == null
+                        ? null
+                        : (
+                            trade.getYesPosition()
+                                ? "YES"
+                                : "NO"
+                        )
+                )
+
+                .txHash(
+                    event.getTxHash()
+                )
+
+                .blockNumber(
+                    event.getBlockNumber()
+                )
+
+                .timestamp(
+                    event.getTimestamp()
+                )
+
+                .summary(
+                    event.getEventType()
+                        + " on Market #"
+                        + event.getMarketId()
+                )
+
+                .build();
+
+        })
+
+        .toList();
+
+}
 
 }

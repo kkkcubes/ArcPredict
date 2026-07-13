@@ -2,6 +2,8 @@ package io.arcpredict.service;
 
 import io.arcpredict.dto.InfrastructureMetricsResponse;
 import io.arcpredict.dto.RpcHealthResponse;
+import io.arcpredict.dto.SystemHealthResponse;
+
 import io.arcpredict.repository.EventRepository;
 import io.arcpredict.repository.MarketRepository;
 import io.arcpredict.repository.TradeRepository;
@@ -40,44 +42,102 @@ public class SystemService {
         long usedMemoryMb =
 
             (
+
                 runtime.totalMemory()
-                - runtime.freeMemory()
+
+                -
+
+                runtime.freeMemory()
+
             )
 
             / (1024 * 1024);
 
         return InfrastructureMetricsResponse
+
             .builder()
+
             .rpcConnected(
                 rpc.getConnected()
             )
+
             .latestBlock(
                 rpc.getLatestBlock()
             )
+
             .rpcLatency(
                 rpc.getLatency()
             )
+
             .totalMarkets(
                 marketRepository.count()
             )
+
             .totalTrades(
                 tradeRepository.count()
             )
+
             .totalEvents(
                 eventRepository.count()
             )
+
             .websocketClients(
                 0L
             )
+
             .uptimeSeconds(
                 uptimeSeconds
             )
+
             .usedMemoryMb(
                 usedMemoryMb
             )
+
             .databaseStatus(
                 "Connected"
             )
+
+            .build();
+
+    }
+
+    public SystemHealthResponse getHealth() {
+
+        RpcHealthResponse rpc =
+            rpcHealthService.getRpcHealth();
+
+        return SystemHealthResponse
+
+            .builder()
+
+            .status(
+
+                Boolean.TRUE.equals(
+                    rpc.getConnected()
+                )
+
+                    ? "UP"
+
+                    : "DOWN"
+
+            )
+
+            .databaseConnected(
+                true
+            )
+
+            .rpcConnected(
+                rpc.getConnected()
+            )
+
+            .latestBlock(
+                rpc.getLatestBlock()
+            )
+
+            .timestamp(
+                System.currentTimeMillis()
+            )
+
             .build();
 
     }

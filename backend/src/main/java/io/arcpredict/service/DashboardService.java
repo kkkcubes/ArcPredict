@@ -107,16 +107,16 @@ if (treasuryUtilization < 50) {
 )
 
             .activeMarkets(
-                (long) marketRepository
-                    .findByResolved(false)
-                    .size()
-            )
+    marketRepository.countByResolved(
+        false
+    )
+)
 
             .resolvedMarkets(
-                (long) marketRepository
-                    .findByResolved(true)
-                    .size()
-            )
+    marketRepository.countByResolved(
+        true
+    )
+)
 
             .build();
     }
