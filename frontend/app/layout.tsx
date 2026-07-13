@@ -26,6 +26,10 @@ import {
   MarketsProvider,
 } from "@/providers/MarketsProvider";
 
+import {
+  TradesProvider,
+} from "@/providers/TradesProvider";
+
 export const metadata: Metadata = {
 
   title: "ArcPredict",
@@ -55,6 +59,9 @@ export default function RootLayout({
 
            <MarketsProvider> 
 
+
+      <TradesProvider>
+
             <Toaster
               position="top-right"
               toastOptions={{
@@ -63,6 +70,8 @@ export default function RootLayout({
             />
 
             {children}
+
+                  </TradesProvider>
 
           </MarketsProvider>  
 

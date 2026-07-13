@@ -3,10 +3,10 @@
 import BackButton
   from "@/components/ui/BackButton";
 
-import PortfolioSummary
-  from "@/components/portfolio/PortfolioSummary";
+import TrendingMarkets
+  from "@/components/dashboard/TrendingMarkets";
 
-export default function PortfolioPage() {
+export default function MyMarketsPage() {
 
   return (
 
@@ -17,18 +17,17 @@ export default function PortfolioPage() {
       <div className="mb-8">
 
         <h1 className="text-4xl font-bold">
-          Portfolio
+          My Markets
         </h1>
 
         <p className="mt-2 text-gray-500">
-          View your investments,
-          positions, ROI,
-          and trading performance.
+          Browse prediction markets you've created
+          and participated in.
         </p>
 
       </div>
 
-      <PortfolioSummary />
+      <TrendingMarkets />
 
     </main>
 

@@ -1,23 +1,17 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import BackButton from "@/components/ui/BackButton";
+import TrendingMarkets from "@/components/dashboard/TrendingMarkets";
 
 export default function MarketsPage() {
-
-  const router = useRouter();
-
-  useEffect(() => {
-
-    router.replace("/#markets");
-
-  }, [router]);
 
   return (
 
     <main className="container py-10">
 
-      Redirecting...
+      <BackButton />
+
+      <TrendingMarkets />
 
     </main>
 

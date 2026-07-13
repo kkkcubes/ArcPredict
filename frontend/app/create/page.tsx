@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { toast } from "react-hot-toast";
 
+import BackButton from "@/components/ui/BackButton";
+
 import {
   useCreateMarket,
 } from "@/hooks/useCreateMarket";
@@ -57,40 +59,57 @@ export default function CreateMarketPage() {
         );
 
       }
+
     };
 
   return (
-    <main className="container">
+
+    <main className="container py-10">
+
+      <BackButton />
+
+      <div className="mb-8">
+
+        <h1 className="text-4xl font-bold">
+          Create Prediction Market
+        </h1>
+
+        <p className="mt-2 text-gray-500">
+          Create a new on-chain prediction market on ArcPredict.
+        </p>
+
+      </div>
 
       <div className="mb-10">
 
-  <p className="text-sm text-violet-600 font-semibold uppercase tracking-wider">
-    Prediction Market
-  </p>
+        <p className="text-sm text-violet-600 font-semibold uppercase tracking-wider">
+          Prediction Market
+        </p>
 
-  <h1 className="text-5xl font-bold text-gray-900 mt-2">
-    Create a New Market
-  </h1>
+        <h2 className="text-5xl font-bold text-gray-900 mt-2">
+          Create a New Market
+        </h2>
 
-  <p className="text-lg text-gray-500 mt-4 max-w-2xl">
-    Launch a new prediction market on ArcPredict. Define a clear question,
-    choose a category, and set the resolution date.
-  </p>
+        <p className="text-lg text-gray-500 mt-4 max-w-2xl">
+          Launch a new prediction market on ArcPredict.
+          Define a clear question, choose a category,
+          and set the resolution date.
+        </p>
 
-</div>
+      </div>
 
       <section
-  className="
-    card
-    max-w-3xl
-    mx-auto
-    rounded-3xl
-    p-10
-    shadow-lg
-    border
-    border-gray-200
-  "
->
+        className="
+          card
+          max-w-3xl
+          mx-auto
+          rounded-3xl
+          p-10
+          shadow-lg
+          border
+          border-gray-200
+        "
+      >
 
         <div className="mb-5">
 
@@ -108,19 +127,19 @@ export default function CreateMarketPage() {
             }
             placeholder="Will BTC reach $150k before Dec 2026?"
             className="
-  w-full
-  p-3
-  rounded-xl
-  bg-white
-  text-gray-900
-  border
-  border-gray-300
-  focus:outline-none
-  focus:ring-2
-  focus:ring-violet-500
-  focus:border-violet-500
-  transition
-"
+              w-full
+              p-3
+              rounded-xl
+              bg-white
+              text-gray-900
+              border
+              border-gray-300
+              focus:outline-none
+              focus:ring-2
+              focus:ring-violet-500
+              focus:border-violet-500
+              transition
+            "
           />
 
         </div>
@@ -139,20 +158,21 @@ export default function CreateMarketPage() {
               )
             }
             className="
-  w-full
-  p-3
-  rounded-xl
-  bg-white
-  text-gray-900
-  border
-  border-gray-300
-  focus:outline-none
-  focus:ring-2
-  focus:ring-violet-500
-  focus:border-violet-500
-  transition
-"
+              w-full
+              p-3
+              rounded-xl
+              bg-white
+              text-gray-900
+              border
+              border-gray-300
+              focus:outline-none
+              focus:ring-2
+              focus:ring-violet-500
+              focus:border-violet-500
+              transition
+            "
           >
+
             <option>
               Crypto
             </option>
@@ -188,19 +208,19 @@ export default function CreateMarketPage() {
               )
             }
             className="
-  w-full
-  p-3
-  rounded-xl
-  bg-white
-  text-gray-900
-  border
-  border-gray-300
-  focus:outline-none
-  focus:ring-2
-  focus:ring-violet-500
-  focus:border-violet-500
-  transition
-"
+              w-full
+              p-3
+              rounded-xl
+              bg-white
+              text-gray-900
+              border
+              border-gray-300
+              focus:outline-none
+              focus:ring-2
+              focus:ring-violet-500
+              focus:border-violet-500
+              transition
+            "
           />
 
         </div>
@@ -208,33 +228,37 @@ export default function CreateMarketPage() {
         <button
           onClick={handleCreateMarket}
           disabled={
-  isPending ||
-  !question.trim() ||
-  !endDate
-}
+            isPending ||
+            !question.trim() ||
+            !endDate
+          }
           className="
-  w-full
-  py-4
-  rounded-2xl
-  bg-violet-600
-  text-white
-  font-semibold
-  text-lg
-  hover:bg-violet-700
-  transition-all
-  disabled:opacity-50
-  disabled:cursor-not-allowed
-"
+            w-full
+            py-4
+            rounded-2xl
+            bg-violet-600
+            text-white
+            font-semibold
+            text-lg
+            hover:bg-violet-700
+            transition-all
+            disabled:opacity-50
+            disabled:cursor-not-allowed
+          "
         >
+
           {
-  isPending
-    ? "Creating Market..."
-    : "Create Market"
-}
+            isPending
+              ? "Creating Market..."
+              : "Create Market"
+          }
+
         </button>
 
       </section>
 
     </main>
+
   );
+
 }

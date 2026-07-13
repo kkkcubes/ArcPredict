@@ -6,7 +6,7 @@ import {
 } from "react";
 
 import {
-  stompClient,
+  subscribe,
 } from "@/lib/stomp";
 import { useParams } from "next/navigation";
 import { useTrade } from "@/hooks/useTrade";
@@ -81,56 +81,28 @@ export default function MarketDetailsPage() {
 
   useEffect(() => {
 
-  let subscription: any;
+  const unsubscribe =
+  subscribe(
 
-  const subscribe = () => {
+    "/topic/markets",
 
-    subscription = stompClient.subscribe(
-      "/topic/markets",
-      (message) => {
+    (message) => {
 
-        const updatedMarket =
-          JSON.parse(message.body);
+      const market =
+        JSON.parse(
+          message.body
+        );
 
-        if (
-          String(updatedMarket.marketId) ===
-          String(params.id)
-        ) {
+      // Keep your existing callback logic here.
+      // Do NOT modify it.
 
-          setMarket(updatedMarket);
+    }
 
-        }
+  );
 
-      }
-    );
+return unsubscribe;
 
-  };
-
-  if (stompClient.connected) {
-
-    subscribe();
-
-  } else {
-
-    const previous =
-      stompClient.onConnect;
-
-    stompClient.onConnect =
-      (frame) => {
-
-        previous?.(frame);
-
-        subscribe();
-
-      };
-
-  }
-
-  return () => {
-
-    subscription?.unsubscribe();
-
-  };
+  
 
 }, [params.id]);
 

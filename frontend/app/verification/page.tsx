@@ -1,23 +1,28 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
+import BackButton from "@/components/ui/BackButton";
+
+import VerificationSection
+  from "@/components/dashboard/VerificationSection";
+
+import SystemMetrics
+  from "@/components/dashboard/SystemMetrics";
 
 export default function VerificationPage() {
-
-  const router = useRouter();
-
-  useEffect(() => {
-
-    router.replace("/#verification");
-
-  }, [router]);
 
   return (
 
     <main className="container py-10">
 
-      Redirecting...
+      <BackButton />
+
+      <VerificationSection />
+
+      <div className="mt-8">
+
+        <SystemMetrics />
+
+      </div>
 
     </main>
 

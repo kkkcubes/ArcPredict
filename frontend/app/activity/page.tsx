@@ -1,9 +1,9 @@
 "use client";
 
 import BackButton from "@/components/ui/BackButton";
-import LeaderboardWidget from "@/components/dashboard/LeaderboardWidget";
+import LiveActivityFeed from "@/components/dashboard/LiveActivityFeed";
 
-export default function LeaderboardPage() {
+export default function ActivityPage() {
 
   return (
 
@@ -11,7 +11,7 @@ export default function LeaderboardPage() {
 
       <BackButton />
 
-      <LeaderboardWidget />
+      <LiveActivityFeed />
 
     </main>
 
