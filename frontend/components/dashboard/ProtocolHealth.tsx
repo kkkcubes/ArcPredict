@@ -4,25 +4,30 @@ import { useState } from "react";
 
 import { Database, Wallet } from "lucide-react";
 import { toast } from "react-hot-toast";
-import { useArcBalance } from "@/hooks/useArcBalance";
 
-export default function ProtocolHealth() {
-  const {
-    vaultBalance,
-    liquidity,
-    loading,
-    refresh,
-  } = useArcBalance();
+type ProtocolHealthProps = {
+  stats: any;
+  loading?: boolean;
+  refresh?: () => Promise<void>;
+};
+
+export default function ProtocolHealth({
+  stats,
+  loading = false,
+  refresh,
+}: ProtocolHealthProps) {
 
   const [lastUpdated, setLastUpdated] =
-  useState(new Date());
+    useState(new Date());
 
   return (
+
     <section className="bg-white rounded-3xl border border-gray-200 p-6 mb-8">
 
       <div className="flex items-center justify-between mb-6">
 
         <div>
+
           <h2 className="text-2xl font-bold text-gray-900">
             Protocol Health
           </h2>
@@ -30,44 +35,44 @@ export default function ProtocolHealth() {
           <p className="text-gray-500 mt-1">
             Live protocol liquidity statistics.
           </p>
+
         </div>
 
         <button
-  disabled={loading}
-  onClick={async () => {
+          disabled={loading}
+          onClick={async () => {
 
-  await refresh();
+            await refresh?.();
 
-  setLastUpdated(
-    new Date()
-  );
+            setLastUpdated(
+              new Date()
+            );
 
-  toast.success(
-    "Protocol data refreshed"
-  );
+            toast.success(
+              "Protocol data refreshed"
+            );
 
-}}
-
-  
+          }}
           className="
-  rounded-xl
-  bg-violet-600
-  hover:bg-violet-700
-  disabled:opacity-50
-  disabled:cursor-not-allowed
-  px-4
-  py-2
-  text-white
-  text-sm
-  font-semibold
-  transition
-"
-          
+            rounded-xl
+            bg-violet-600
+            hover:bg-violet-700
+            disabled:opacity-50
+            disabled:cursor-not-allowed
+            px-4
+            py-2
+            text-white
+            text-sm
+            font-semibold
+            transition
+          "
         >
-          {loading
-  ? "Refreshing..."
-  : "Refresh"}
-                </button>
+          {
+            loading
+              ? "Refreshing..."
+              : "Refresh"
+          }
+        </button>
 
       </div>
 
@@ -100,9 +105,13 @@ export default function ProtocolHealth() {
           </div>
 
           <p className="text-3xl font-bold text-gray-900">
-            {loading
-  ? "Loading..."
-  : `${Number(vaultBalance).toLocaleString()} USDC`}
+            {
+              loading
+                ? "Loading..."
+                : `${Number(
+                    stats?.vaultBalance ?? 0
+                  ).toLocaleString()} USDC`
+            }
           </p>
 
         </div>
@@ -123,9 +132,13 @@ export default function ProtocolHealth() {
           </div>
 
           <p className="text-3xl font-bold text-gray-900">
-            {loading
-  ? "Loading..."
-  : `${Number(liquidity).toLocaleString()} USDC`}
+            {
+              loading
+                ? "Loading..."
+                : `${Number(
+                    stats?.availableLiquidity ?? 0
+                  ).toLocaleString()} USDC`
+            }
           </p>
 
         </div>
@@ -133,5 +146,7 @@ export default function ProtocolHealth() {
       </div>
 
     </section>
+
   );
+
 }

@@ -43,20 +43,20 @@ export default function Hero() {
         <div className="mt-10 flex flex-wrap gap-4">
 
           <Link
-            href="#markets"
-            className="
-              px-7
-              py-4
-              rounded-2xl
-              bg-white
-              text-[#4F46E5]
-              font-semibold
-              hover:scale-105
-              transition
-            "
-          >
-            Explore Markets
-          </Link>
+  href="/markets"
+  className="
+    px-7
+    py-4
+    rounded-2xl
+    bg-white
+    text-[#4F46E5]
+    font-semibold
+    hover:scale-105
+    transition
+  "
+>
+  Explore Markets
+</Link>
 
           <Link
             href="/create"

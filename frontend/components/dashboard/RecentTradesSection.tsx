@@ -97,26 +97,28 @@ export default function RecentTradesSection({
 
                     <td className="py-4">
 
-                     <span
-  className={`
-    inline-flex
-    items-center
-    rounded-full
-    px-3
-    py-1
-    text-xs
-    font-bold
-    ${
-      trade.yesPosition
-        ? "bg-green-100 text-green-700"
-        : "bg-red-100 text-red-700"
-    }
-  `}
->
-  {trade.yesPosition ? "YES" : "NO"}
-</span>
+  <span
+    className={`
+      inline-flex
+      items-center
+      rounded-full
+      px-3
+      py-1
+      text-xs
+      font-bold
+      ${
+        trade.yesPosition
+          ? "bg-green-100 text-green-700"
+          : "bg-red-100 text-red-700"
+      }
+    `}
+  >
+    {trade.yesPosition ? "YES" : "NO"}
+  </span>
 
-                    <td
+</td>
+
+<td
   className="
     py-4
     font-bold
@@ -132,11 +134,11 @@ export default function RecentTradesSection({
     font-medium
     text-gray-900
   "
-></td>
-                      {trade.trader?.slice(0, 6)}
-                      ...
-                      {trade.trader?.slice(-4)}
-                    </td>
+>
+  {trade.trader
+    ? `${trade.trader.slice(0, 6)}...${trade.trader.slice(-4)}`
+    : "-"}
+</td>
 
                   </tr>
 

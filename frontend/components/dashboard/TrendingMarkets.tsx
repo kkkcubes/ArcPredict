@@ -86,11 +86,15 @@ export default function TrendingMarkets() {
         </div>
 
         <Link
-          href="/markets"
-          className="dashboard-button-secondary"
-        >
-          View All
-        </Link>
+  href="/markets"
+  className="
+    text-violet-600
+    font-semibold
+    hover:underline
+  "
+>
+  View More →
+</Link>
 
       </div>
 

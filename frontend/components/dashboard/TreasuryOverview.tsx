@@ -1,6 +1,6 @@
 "use client";
 
-
+import Link from "next/link";
 import CountUp from "react-countup";
 
 import {
@@ -114,15 +114,36 @@ export default function TreasuryOverview({
       "
     >
 
-      <h2
-        className="
-          text-2xl
-          font-bold
-          mb-6
-        "
-      >
-        Treasury Overview
-      </h2>
+      <div
+  className="
+    flex
+    items-center
+    justify-between
+    mb-6
+  "
+>
+
+  <h2
+    className="
+      text-2xl
+      font-bold
+    "
+  >
+    Treasury Overview
+  </h2>
+
+  <Link
+    href="/treasury"
+    className="
+      text-violet-600
+      font-semibold
+      hover:underline
+    "
+  >
+    View More →
+  </Link>
+
+</div>
 
       <div
         className="
