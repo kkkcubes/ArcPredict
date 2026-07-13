@@ -6,11 +6,19 @@ import io.arcpredict.entity.TradeEntity;
 import io.arcpredict.repository.TradeRepository;
 import io.arcpredict.service.PortfolioService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
+@Tag(
+    name = "Portfolio",
+    description = "Portfolio management APIs"
+)
 
 @RestController
 @RequiredArgsConstructor
@@ -23,7 +31,11 @@ public class PortfolioController {
 
     private final PortfolioService
         portfolioService;
-
+    
+        @Operation(
+    summary = "Get portfolio",
+    description = "Returns the portfolio summary for a wallet."
+)
     @GetMapping("/{wallet}")
     public PortfolioResponse portfolio(
         @PathVariable
@@ -83,6 +95,11 @@ public class PortfolioController {
             .build();
 
     }
+
+    @Operation(
+    summary = "Get portfolio analytics",
+    description = "Returns portfolio analytics for a wallet."
+)
 
     @GetMapping("/analytics/{wallet}")
     public PortfolioAnalyticsResponse
