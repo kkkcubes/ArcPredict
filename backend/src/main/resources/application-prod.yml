@@ -24,20 +24,15 @@ arc:
 
 contracts:
 
-  vault:
-    address: ${VAULT_ADDRESS}
+  vault-address: ${VAULT_ADDRESS}
 
-  treasury:
-    address: ${TREASURY_ADDRESS}
+  treasury-address: ${TREASURY_ADDRESS}
 
-  reward-distributor:
-    address: ${REWARD_DISTRIBUTOR_ADDRESS}
+  reward-distributor-address: ${REWARD_DISTRIBUTOR_ADDRESS}
 
-  market-factory:
-    address: ${MARKET_FACTORY_ADDRESS}
+  market-factory-address: ${MARKET_FACTORY_ADDRESS}
 
-  prediction-market:
-    address: ${PREDICTION_MARKET_ADDRESS}
+  prediction-market-address: ${PREDICTION_MARKET_ADDRESS}
 
 logging:
   level:
