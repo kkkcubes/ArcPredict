@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 
-const API_URL =
-    process.env.NEXT_PUBLIC_API_URL!;
+import {
+  systemService,
+} from "@/services/systemService";
 
 export function useSystemMetrics() {
 
@@ -18,24 +19,9 @@ export function useSystemMetrics() {
 
             try {
 
-                const response =
-                    await fetch(
-                        `${API_URL}/api/system/metrics`,
-                        {
-                            cache: "no-store",
-                        }
-                    );
-
-                if (!response.ok) {
-
-                    throw new Error(
-                        "Failed to load system metrics"
-                    );
-
-                }
-
                 const data =
-                    await response.json();
+  await systemService
+    .getMetrics();
 
                 setMetrics(data);
 

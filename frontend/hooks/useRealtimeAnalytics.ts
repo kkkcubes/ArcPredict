@@ -5,7 +5,7 @@ import {
 } from "react";
 
 import {
-  stompClient
+  subscribe,
 } from "@/lib/stomp";
 
 export function useRealtimeAnalytics(
@@ -16,37 +16,24 @@ export function useRealtimeAnalytics(
 
   useEffect(() => {
 
-    if (!stompClient.active) {
+    const unsubscribe =
+  subscribe(
 
-      stompClient.activate();
+    "/topic/analytics",
+
+    (message) => {
+
+      callback(
+        JSON.parse(
+          message.body
+        )
+      );
 
     }
 
-    stompClient.onConnect =
-      () => {
+  );
 
-        const sub =
-          stompClient.subscribe(
-
-            "/topic/analytics",
-
-            (message) => {
-
-              callback(
-                JSON.parse(
-                  message.body
-                )
-              );
-
-            }
-          );
-
-        return () => {
-
-          sub.unsubscribe();
-
-        };
-      };
+return unsubscribe;
 
   }, [callback]);
 

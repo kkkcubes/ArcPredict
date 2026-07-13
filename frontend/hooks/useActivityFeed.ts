@@ -5,9 +5,9 @@ import {
   useState,
 } from "react";
 
-const API_URL =
-  process.env
-    .NEXT_PUBLIC_API_URL!;
+import {
+  activityService,
+} from "@/services/activityService";
 
 export function useActivityFeed() {
 
@@ -26,24 +26,9 @@ export function useActivityFeed() {
 
       try {
 
-        const response =
-          await fetch(
-            `${API_URL}/api/events`,
-            {
-              cache: "no-store",
-            }
-          );
-
-        if (!response.ok) {
-
-          throw new Error(
-            "Failed to load activity feed"
-          );
-
-        }
-
         const data =
-          await response.json();
+  await activityService
+    .getActivityFeed();
 
         setActivities(data);
 

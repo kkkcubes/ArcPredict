@@ -5,7 +5,7 @@ import {
 } from "react";
 
 import {
-  stompClient,
+  subscribe,
 } from "@/lib/stomp";
 
 export function useBackendRealtime(
@@ -16,66 +16,92 @@ export function useBackendRealtime(
 
   useEffect(() => {
 
-    const subscribe = () => {
+  const unsubscribers: (() => void)[] = [];
 
-      stompClient.subscribe(
-        "/topic/markets",
-        (message) => {
+  const marketSubscription =
+    subscribe(
+      "/topic/markets",
+      (message) => {
 
-          onMarket(
-            JSON.parse(
-              message.body
-            )
-          );
-
-        }
-      );
-
-      stompClient.subscribe(
-        "/topic/trades",
-        (message) => {
-
-          onTrade(
-            JSON.parse(
-              message.body
-            )
-          );
-
-        }
-      );
-
-      if (onEvent) {
-
-        stompClient.subscribe(
-          "/topic/events",
-          (message) => {
-
-            onEvent(
-              JSON.parse(
-                message.body
-              )
-            );
-
-          }
+        onMarket(
+          JSON.parse(
+            message.body
+          )
         );
 
       }
+    );
 
-    };
+  if (marketSubscription) {
 
-    if (
-      stompClient.connected
-    ) {
+    unsubscribers.push(
+      marketSubscription
+    );
 
-      subscribe();
+  }
 
-    } else {
+  const tradeSubscription =
+    subscribe(
+      "/topic/trades",
+      (message) => {
 
-      stompClient.onConnect =
-        subscribe;
+        onTrade(
+          JSON.parse(
+            message.body
+          )
+        );
+
+      }
+    );
+
+  if (tradeSubscription) {
+
+    unsubscribers.push(
+      tradeSubscription
+    );
+
+  }
+
+  if (onEvent) {
+
+    const eventSubscription =
+      subscribe(
+        "/topic/events",
+        (message) => {
+
+          onEvent(
+            JSON.parse(
+              message.body
+            )
+          );
+
+        }
+      );
+
+    if (eventSubscription) {
+
+      unsubscribers.push(
+        eventSubscription
+      );
 
     }
 
-  }, [onMarket, onTrade, onEvent]);
+  }
+
+  return () => {
+
+    unsubscribers.forEach(
+
+      (unsubscribe) => {
+
+        unsubscribe();
+
+      }
+
+    );
+
+  };
+
+}, [onMarket, onTrade, onEvent]);
 
 }

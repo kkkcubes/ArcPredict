@@ -1,9 +1,16 @@
 "use client";
 
-import { useEffect } from "react";
-import { toast } from "react-hot-toast";
+import {
+  useEffect,
+} from "react";
 
-import { stompClient } from "@/lib/stomp";
+import {
+  toast,
+} from "react-hot-toast";
+
+import {
+  subscribe,
+} from "@/lib/stomp";
 
 import {
   getTransactionToast,
@@ -11,80 +18,61 @@ import {
 } from "@/lib/transactionToastStore";
 
 interface TransactionConfirmedMessage {
+
   type: string;
+
   txHash: string;
+
   marketId: number;
+
 }
 
 export function useTransactionConfirmation() {
 
   useEffect(() => {
 
-    let subscription: any;
+    const unsubscribe =
+      subscribe(
 
-    const subscribe = () => {
+        "/topic/transaction-confirmed",
 
-      subscription =
-        stompClient.subscribe(
+        (message) => {
 
-          "/topic/transaction-confirmed",
-
-          (message) => {
-
-            const payload: TransactionConfirmedMessage =
-              JSON.parse(
-                message.body
-              );
-
-            console.log(
-              "Transaction confirmed:",
-              payload
+          const payload: TransactionConfirmedMessage =
+            JSON.parse(
+              message.body
             );
 
-            const toastId =
-              getTransactionToast(
-                payload.txHash
-              );
+          console.log(
+            "Transaction confirmed:",
+            payload
+          );
 
-            if (toastId) {
+          const toastId =
+            getTransactionToast(
+              payload.txHash
+            );
 
-              toast.success(
-                "Transaction confirmed",
-                {
-                  id: toastId,
-                }
-              );
+          if (toastId) {
 
-              removeTransactionToast(
-                payload.txHash
-              );
+            toast.success(
+              "Transaction confirmed",
+              {
+                id: toastId,
+              }
+            );
 
-            }
+            removeTransactionToast(
+              payload.txHash
+            );
 
           }
 
-        );
+        }
 
-    };
+      );
 
-    if (
-      stompClient.connected
-    ) {
-
-      subscribe();
-
-    } else {
-
-      stompClient.onConnect =
-        subscribe;
-
-    }
-
-    return () => {
-
-      subscription?.unsubscribe();
-
-    };
+    return unsubscribe;
 
   }, []);
 

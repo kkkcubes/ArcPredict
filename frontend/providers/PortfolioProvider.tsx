@@ -66,9 +66,9 @@ export function PortfolioProvider({
       try {
 
         const response =
-          await fetch(
-            `${process.env.NEXT_PUBLIC_API_URL}/portfolio/${address}`
-          );
+  await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/api/portfolio/${address}`
+  );
 
         const data =
           await response.json();

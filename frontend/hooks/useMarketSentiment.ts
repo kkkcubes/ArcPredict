@@ -5,9 +5,9 @@ import {
   useState,
 } from "react";
 
-const API_URL =
-  process.env
-    .NEXT_PUBLIC_API_URL!;
+import {
+  marketSentimentService,
+} from "@/services/marketSentimentService";
 
 export interface MarketSentiment {
 
@@ -44,27 +44,9 @@ export function useMarketSentiment() {
 
       try {
 
-        const response =
-          await fetch(
-
-            `${API_URL}/api/markets/sentiment`,
-
-            {
-              cache: "no-store",
-            }
-
-          );
-
-        if (!response.ok) {
-
-          throw new Error(
-            "Failed to fetch market sentiment"
-          );
-
-        }
-
         const data =
-          await response.json();
+  await marketSentimentService
+    .getMarketSentiment();
 
         setSentiment(
           data

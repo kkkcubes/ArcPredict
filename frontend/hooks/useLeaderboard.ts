@@ -10,7 +10,7 @@ import {
 } from "@/services/backendLeaderboardService";
 
 import {
-  stompClient,
+  subscribe,
 } from "@/lib/stomp";
 
 export function useLeaderboard() {
@@ -57,58 +57,24 @@ export function useLeaderboard() {
 
     loadLeaderboard();
 
-    let subscription: any;
+    const unsubscribe =
+      subscribe(
 
-    const subscribe = () => {
+        "/topic/leaderboard",
 
-      subscription =
-        stompClient.subscribe(
+        (message) => {
 
-          "/topic/leaderboard",
-
-          (message) => {
-
-            setLeaderboard(
-              JSON.parse(
-                message.body
-              )
-            );
-
-          }
-
-        );
-
-    };
-
-    if (
-      stompClient.connected
-    ) {
-
-      subscribe();
-
-    } else {
-
-      const previous =
-        stompClient.onConnect;
-
-      stompClient.onConnect =
-        (frame) => {
-
-          previous?.(
-            frame
+          setLeaderboard(
+            JSON.parse(
+              message.body
+            )
           );
 
-          subscribe();
+        }
 
-        };
+      );
 
-    }
-
-    return () => {
-
-      subscription?.unsubscribe();
-
-    };
+    return unsubscribe;
 
   }, []);
 
