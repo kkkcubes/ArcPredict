@@ -1,72 +1,283 @@
-package io.arcpredict.service;
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
 
-import lombok.RequiredArgsConstructor;
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
+interface IArcUSDCVault {
+    function transferToTreasury(
+        uint256 amount
+    ) external;
 
-import org.web3j.abi.FunctionEncoder;
-import org.web3j.abi.FunctionReturnDecoder;
-import org.web3j.abi.TypeReference;
-import org.web3j.abi.datatypes.Function;
-import org.web3j.abi.datatypes.Type;
-import org.web3j.abi.datatypes.generated.Uint256;
+    function receiveFromTreasury(
+        uint256 amount
+    ) external;
 
-import org.web3j.protocol.Web3j;
-import org.web3j.protocol.core.DefaultBlockParameterName;
-import org.web3j.protocol.core.methods.request.Transaction;
+    function vaultBalance()
+        external
+        view
+        returns (uint256);
+}
 
-import java.math.BigInteger;
-import java.util.Collections;
-import java.util.List;
+contract MarketTreasury is
+    Ownable,
+    ReentrancyGuard
+{
+    //////////////////////////////////////////////////////
+    // VAULT
+    //////////////////////////////////////////////////////
 
-@Service
-@RequiredArgsConstructor
-public class TreasuryReaderService {
+    IArcUSDCVault public vault;
 
-    private final Web3j web3j;
+    //////////////////////////////////////////////////////
+    // AUTHORIZED CONTRACTS
+    //////////////////////////////////////////////////////
 
-    @Value("${contracts.treasury.address}")
-    private String treasuryAddress;
+    address public predictionMarket;
+    address public rewardDistributor;
 
-    public Long getVaultBalance()
-        throws Exception {
+    //////////////////////////////////////////////////////
+    // ACCOUNTING
+    //////////////////////////////////////////////////////
 
-        Function function =
-            new Function(
-                "getVaultBalance",
-                Collections.emptyList(),
-                List.of(
-                    new TypeReference<Uint256>() {}
-                )
+    uint256 public totalLiquidity;
+    uint256 public totalLockedLiquidity;
+    uint256 public totalReleasedLiquidity;
+
+    //////////////////////////////////////////////////////
+    // MARKET LIQUIDITY
+    //////////////////////////////////////////////////////
+
+    mapping(uint256 => uint256)
+        public marketLiquidity;
+
+    //////////////////////////////////////////////////////
+    // EVENTS
+    //////////////////////////////////////////////////////
+
+    event PredictionMarketUpdated(
+        address indexed contractAddress
+    );
+
+    event RewardDistributorUpdated(
+        address indexed contractAddress
+    );
+
+    event LiquidityDeposited(
+        uint256 indexed marketId,
+        uint256 amount
+    );
+
+    event LiquidityLocked(
+        uint256 indexed marketId,
+        uint256 amount
+    );
+
+    event LiquidityReleased(
+        uint256 indexed marketId,
+        uint256 amount
+    );
+
+    //////////////////////////////////////////////////////
+    // CONSTRUCTOR
+    //////////////////////////////////////////////////////
+
+    constructor(
+        address vaultAddress
+    )
+        Ownable(msg.sender)
+    {
+        require(
+            vaultAddress != address(0),
+            "Invalid vault"
+        );
+
+        vault =
+            IArcUSDCVault(
+                vaultAddress
             );
+    }
 
-        String response =
-            web3j
-                .ethCall(
-                    Transaction.createEthCallTransaction(
-                        null,
-                        treasuryAddress,
-                        FunctionEncoder.encode(
-                            function
-                        )
-                    ),
-                    DefaultBlockParameterName.LATEST
-                )
-                .send()
-                .getValue();
+    //////////////////////////////////////////////////////
+    // MODIFIERS
+    //////////////////////////////////////////////////////
 
-        List<Type> output =
-            FunctionReturnDecoder.decode(
-                response,
-                function.getOutputParameters()
-            );
+    modifier onlyPredictionMarket() {
+        require(
+            msg.sender ==
+                predictionMarket,
+            "Not PredictionMarket"
+        );
+        _;
+    }
 
-        if (output.isEmpty()) {
-            return 0L;
-        }
+    modifier onlyRewardDistributor() {
+        require(
+            msg.sender ==
+                rewardDistributor,
+            "Not RewardDistributor"
+        );
+        _;
+    }
 
-        return ((BigInteger) output.get(0).getValue())
-            .longValue();
+    //////////////////////////////////////////////////////
+    // ADMIN
+    //////////////////////////////////////////////////////
+
+    function setPredictionMarket(
+        address contractAddress
+    )
+        external
+        onlyOwner
+    {
+        require(
+            contractAddress !=
+                address(0),
+            "Invalid address"
+        );
+
+        predictionMarket =
+            contractAddress;
+
+        emit PredictionMarketUpdated(
+            contractAddress
+        );
+    }
+
+    function setRewardDistributor(
+        address contractAddress
+    )
+        external
+        onlyOwner
+    {
+        require(
+            contractAddress !=
+                address(0),
+            "Invalid address"
+        );
+
+        rewardDistributor =
+            contractAddress;
+
+        emit RewardDistributorUpdated(
+            contractAddress
+        );
+    }
+
+    //////////////////////////////////////////////////////
+    // LIQUIDITY MANAGEMENT
+    //////////////////////////////////////////////////////
+
+    function depositLiquidity(
+        uint256 marketId,
+        uint256 amount
+    )
+        external
+        onlyPredictionMarket
+        nonReentrant
+    {
+        require(
+            amount > 0,
+            "Invalid amount"
+        );
+
+        marketLiquidity[
+            marketId
+        ] += amount;
+
+        totalLiquidity += amount;
+
+        emit LiquidityDeposited(
+            marketId,
+            amount
+        );
+    }
+
+    function lockLiquidity(
+        uint256 marketId,
+        uint256 amount
+    )
+        external
+        onlyPredictionMarket
+        nonReentrant
+    {
+        require(
+            amount > 0,
+            "Invalid amount"
+        );
+
+        require(
+            marketLiquidity[
+                marketId
+            ] >= amount,
+            "Insufficient liquidity"
+        );
+
+        totalLockedLiquidity +=
+            amount;
+
+        emit LiquidityLocked(
+            marketId,
+            amount
+        );
+    }
+
+    function releaseLiquidity(
+        uint256 marketId,
+        uint256 amount
+    )
+        external
+        onlyRewardDistributor
+        nonReentrant
+    {
+        require(
+            amount > 0,
+            "Invalid amount"
+        );
+
+        require(
+            marketLiquidity[
+                marketId
+            ] >= amount,
+            "Insufficient liquidity"
+        );
+
+        marketLiquidity[
+            marketId
+        ] -= amount;
+
+        totalReleasedLiquidity +=
+            amount;
+
+        emit LiquidityReleased(
+            marketId,
+            amount
+        );
+    }
+
+    //////////////////////////////////////////////////////
+    // VIEW FUNCTIONS
+    //////////////////////////////////////////////////////
+
+    function getMarketLiquidity(
+        uint256 marketId
+    )
+        external
+        view
+        returns (uint256)
+    {
+        return
+            marketLiquidity[
+                marketId
+            ];
+    }
+
+    function getVaultBalance()
+        external
+        view
+        returns (uint256)
+    {
+        return
+            vault.vaultBalance();
     }
 }
