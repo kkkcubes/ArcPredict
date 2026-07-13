@@ -1,11 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import {
-  usePathname,
-  useRouter,
-} from "next/navigation";
-import { useActiveSection } from "@/hooks/useActiveSection";
+import { usePathname } from "next/navigation";
 import clsx from "clsx";
 
 import {
@@ -34,42 +30,42 @@ const workspace = [
   {
     icon: LayoutDashboard,
     label: "Dashboard",
-    href: "/",
+    href: "/dashboard",
   },
   {
     icon: TrendingUp,
     label: "Markets",
-    href: "/#markets",
+    href: "/markets",
   },
   {
     icon: Bot,
     label: "AI Insights",
-    href: "/#ai",
+    href: "/ai",
   },
   {
     icon: Wallet,
     label: "Portfolio",
-    href: "/#portfolio",
+    href: "/portfolio",
   },
   {
     icon: PieChart,
     label: "Analytics",
-    href: "/#analytics",
+    href: "/analytics",
   },
   {
     icon: Trophy,
     label: "Leaderboard",
-    href: "/#leaderboard",
+    href: "/leaderboard",
   },
   {
     icon: ShieldCheck,
     label: "Verification",
-    href: "/#verification",
+    href: "/verification",
   },
   {
     icon: Landmark,
     label: "Arc Finance",
-    href: "/#contracts",
+    href: "/arc",
   },
 ];
 
@@ -77,27 +73,27 @@ const resources = [
   {
     icon: PlusCircle,
     label: "Create Market",
-    href: "#create-market",
+    href: "/create",
   },
   {
     icon: FolderOpen,
     label: "My Markets",
-    href: "#my-markets",
+    href: "/my-markets",
   },
   {
     icon: Activity,
     label: "Activity Feed",
-    href: "#activity",
+    href: "/activity",
   },
   {
     icon: BookOpen,
     label: "Documentation",
-    href: "#documentation",
+    href: "/docs",
   },
   {
     icon: LifeBuoy,
     label: "Support",
-    href: "#support",
+    href: "/support",
   },
 ];
 
@@ -106,11 +102,6 @@ export default function Sidebar({
   onClose,
 }: SidebarProps) {
   const pathname = usePathname();
-  const router = useRouter();
-
-const {
-  activeSection,
-} = useActiveSection();
 
   return (
     <>
@@ -186,49 +177,14 @@ const {
               const Icon = item.icon;
 
               const active =
-  pathname === "/"
-    ? item.href === "/"
-      ? activeSection === "top"
-      : activeSection === item.href.replace("/#", "")
-    : pathname === item.href;
+                pathname === item.href;
 
               return (
                 <Link
-  key={item.label}
-  href={item.href}
-  onClick={(e) => {
-
-    onClose();
-
-    if (item.href.startsWith("/#")) {
-
-      e.preventDefault();
-
-      if (pathname !== "/") {
-
-        router.push(item.href);
-
-        return;
-
-      }
-
-      const element = document.getElementById(
-        item.href.replace("/#", "")
-      );
-
-      if (element) {
-
-        element.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-
-      }
-
-    }
-
-  }}
-  className={clsx(
+                  key={item.label}
+                  href={item.href}
+                  onClick={onClose}
+                  className={clsx(
                     `
                       flex
                       items-center
@@ -267,26 +223,32 @@ const {
               {resources.map((item) => {
                 const Icon = item.icon;
 
+                const active =
+                  pathname === item.href;
+
                 return (
                   <Link
                     key={item.label}
                     href={item.href}
                     onClick={onClose}
-                    className="
-                      flex
-                      items-center
-                      gap-3
-                      rounded-xl
-                      px-4
-                      py-3
-                      text-gray-600
-                      transition-all
-                      hover:bg-gray-100
-                    "
+                    className={clsx(
+                      `
+                        flex
+                        items-center
+                        gap-3
+                        rounded-xl
+                        px-4
+                        py-3
+                        transition-all
+                      `,
+                      active
+                        ? "bg-[#6D4AFF] text-white shadow-md"
+                        : "text-gray-600 hover:bg-gray-100"
+                    )}
                   >
                     <Icon size={18} />
 
-                    <span>
+                    <span className="font-medium">
                       {item.label}
                     </span>
                   </Link>
