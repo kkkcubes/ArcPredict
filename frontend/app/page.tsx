@@ -15,6 +15,7 @@ import LeaderboardSection from "@/components/dashboard/LeaderboardSection";
 import RecentTradesSection from "@/components/dashboard/RecentTradesSection";
 import AnalyticsSection from "@/components/dashboard/AnalyticsSection";
 import { useTradesData } from "@/hooks/useTradesData";
+import { useSystemMetrics } from "@/hooks/useSystemMetrics";
 import EmptyState from "@/components/ui/EmptyState";
 import DashboardLayout
   from "@/components/layout/DashboardLayout";
@@ -36,6 +37,12 @@ export default function HomePage() {
   loading: tradesLoading,
   error: tradesError,
 } = useTradesData();
+
+const {
+  metrics,
+  loading: metricsLoading,
+  refresh: refreshMetrics,
+} = useSystemMetrics();
 
   const [search, setSearch] =
     useState("");
@@ -92,7 +99,11 @@ export default function HomePage() {
 </div>
 
 <div className="animate-fade-up">
-  <ProtocolHealth />
+  <ProtocolHealth
+    stats={metrics}
+    loading={metricsLoading}
+    refresh={refreshMetrics}
+  />
 </div>
 
       <section
