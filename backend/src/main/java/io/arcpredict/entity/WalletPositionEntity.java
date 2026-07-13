@@ -7,7 +7,35 @@ import lombok.*;
 import java.time.Instant;
 
 @Entity
-@Table(name = "wallet_positions")
+@Table(
+
+    name = "wallet_positions",
+
+    indexes = {
+
+        @Index(
+            name = "idx_wallet_address",
+            columnList = "walletAddress"
+        ),
+
+        @Index(
+            name = "idx_wallet_market",
+            columnList = "marketId"
+        ),
+
+        @Index(
+            name = "idx_wallet_claimed",
+            columnList = "claimed"
+        ),
+
+        @Index(
+            name = "idx_wallet_market_position",
+            columnList = "walletAddress,marketId,yesPosition"
+        )
+
+    }
+
+)
 @Getter
 @Setter
 @NoArgsConstructor

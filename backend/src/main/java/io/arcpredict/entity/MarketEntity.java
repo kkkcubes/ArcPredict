@@ -7,7 +7,30 @@ import lombok.*;
 import java.time.Instant;
 
 @Entity
-@Table(name = "markets")
+@Table(
+
+    name = "markets",
+
+    indexes = {
+
+        @Index(
+            name = "idx_market_resolved",
+            columnList = "resolved"
+        ),
+
+        @Index(
+            name = "idx_market_category",
+            columnList = "category"
+        ),
+
+        @Index(
+            name = "idx_market_block_number",
+            columnList = "blockNumber"
+        )
+
+    }
+
+)
 @Getter
 @Setter
 @NoArgsConstructor

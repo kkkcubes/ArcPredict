@@ -7,7 +7,35 @@ import lombok.*;
 import java.time.Instant;
 
 @Entity
-@Table(name = "events")
+@Table(
+
+    name = "events",
+
+    indexes = {
+
+        @Index(
+            name = "idx_event_market_id",
+            columnList = "marketId"
+        ),
+
+        @Index(
+            name = "idx_event_event_type",
+            columnList = "eventType"
+        ),
+
+        @Index(
+            name = "idx_event_tx_hash",
+            columnList = "txHash"
+        ),
+
+        @Index(
+            name = "idx_event_timestamp",
+            columnList = "timestamp"
+        )
+
+    }
+
+)
 
 @Getter
 @Setter

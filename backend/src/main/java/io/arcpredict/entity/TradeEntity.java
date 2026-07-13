@@ -2,12 +2,34 @@ package io.arcpredict.entity;
 
 import jakarta.persistence.*;
 
+import jakarta.persistence.Index;
+import jakarta.persistence.Table;
+
 import lombok.*;
 
 import java.time.Instant;
 
 @Entity
-@Table(name = "trades")
+@Table(
+    indexes = {
+
+        @Index(
+            name = "idx_trade_tx_hash",
+            columnList = "txHash"
+        ),
+
+        @Index(
+            name = "idx_trade_market_id",
+            columnList = "marketId"
+        ),
+
+        @Index(
+            name = "idx_trade_trader",
+            columnList = "trader"
+        )
+
+    }
+)
 
 @Getter
 @Setter
