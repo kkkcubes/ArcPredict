@@ -5,6 +5,7 @@ import {
   useContext,
   useEffect,
   useState,
+  useCallback,
 } from "react";
 
 import {
@@ -15,13 +16,19 @@ import {
   stompClient,
 } from "@/lib/stomp";
 
+import {
+  portfolioService,
+} from "@/services/portfolioService";
+
 interface PortfolioContextType {
 
-  portfolio: any;
+    portfolio: any;
 
-  loading: boolean;
+    analytics: any;
 
-  refresh: () => Promise<void>;
+    loading: boolean;
+
+    refresh: () => Promise<void>;
 
 }
 
@@ -46,16 +53,23 @@ export function PortfolioProvider({
   ] = useState<any>(null);
 
   const [
+    analytics,
+    setAnalytics,
+  ] = useState<any>(null);
+
+  const [
     loading,
     setLoading,
   ] = useState(true);
 
-  const loadPortfolio =
-    async () => {
+  const refresh = useCallback(
+  async () => {
 
       if (!address) {
 
         setPortfolio(null);
+
+        setAnalytics(null);
 
         setLoading(false);
 
@@ -65,15 +79,29 @@ export function PortfolioProvider({
 
       try {
 
+        setLoading(true);
+
         const response =
-  await fetch(
-    `${process.env.NEXT_PUBLIC_API_URL}/api/portfolio/${address}`
-  );
+          await fetch(
+            `${process.env.NEXT_PUBLIC_API_URL}/api/portfolio/${address}`
+          );
 
         const data =
           await response.json();
 
-        setPortfolio(data);
+        setPortfolio(
+          data
+        );
+
+        const analyticsData =
+          await portfolioService
+            .getPortfolioAnalytics(
+              address
+            );
+
+        setAnalytics(
+          analyticsData
+        );
 
       } catch (error) {
 
@@ -88,13 +116,15 @@ export function PortfolioProvider({
 
       }
 
-    };
+      },
+  [address]
+);
 
   useEffect(() => {
 
-    loadPortfolio();
+  refresh();
 
-  }, [address]);
+}, [refresh]);
 
   useEffect(() => {
 
@@ -119,16 +149,12 @@ export function PortfolioProvider({
               );
 
             if (
-
               updated.wallet?.toLowerCase()
-
               ===
-
               address.toLowerCase()
-
             ) {
 
-              setPortfolio(updated);
+refresh();
 
             }
 
@@ -166,21 +192,22 @@ export function PortfolioProvider({
 
     };
 
-  }, [address]);
+  },  [address, refresh]);
 
   return (
 
     <PortfolioContext.Provider
       value={{
 
-        portfolio,
+    portfolio,
 
-        loading,
+    analytics,
 
-        refresh:
-          loadPortfolio,
+    loading,
 
-      }}
+    refresh,
+
+}}
     >
 
       {children}

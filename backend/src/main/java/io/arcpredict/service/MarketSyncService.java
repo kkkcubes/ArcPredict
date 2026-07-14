@@ -87,6 +87,14 @@ private long settlementFeePercentage;
         Long blockNumber
     ) {
 
+        log.info(
+    "saveTrade() called: trader={}, marketId={}, side={}, amount={}",
+    trader,
+    marketId,
+    side,
+    amount
+);
+
         TradeEntity trade =
             TradeEntity.builder()
                 .marketId(
@@ -183,8 +191,17 @@ position.setCurrentValue(
     position.getInvestedAmount()
 );
 
+log.info(
+    "Saving wallet position for {}",
+    position.getWalletAddress()
+);
+
 walletRepository.save(
     position
+);
+
+log.info(
+    "Wallet position saved successfully"
 );
 
         MarketEntity market =

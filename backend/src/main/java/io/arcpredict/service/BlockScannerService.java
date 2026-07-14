@@ -27,7 +27,7 @@ public class BlockScannerService {
     private final ReceiptScannerService
         receiptScannerService;
 
-    @Value("${contracts.prediction-market.address}")
+    @Value("${contracts.prediction-market-address}")
     private String predictionMarketAddress;
 
     public void scanBlock(
@@ -35,9 +35,14 @@ public class BlockScannerService {
     ) {
 
         log.debug(
-    "Scanning block {}",
-    block.getNumber()
-);
+            "Scanning block {}",
+            block.getNumber()
+        );
+
+        log.info(
+            "Configured PredictionMarket: {}",
+            predictionMarketAddress
+        );
 
         try {
 
@@ -52,12 +57,12 @@ public class BlockScannerService {
                     .send();
 
             log.debug(
-    "Block transaction count: {}",
-    fullBlock
-        .getBlock()
-        .getTransactions()
-        .size()
-);
+                "Block transaction count: {}",
+                fullBlock
+                    .getBlock()
+                    .getTransactions()
+                    .size()
+            );
 
             fullBlock
                 .getBlock()
@@ -67,24 +72,13 @@ public class BlockScannerService {
                     try {
 
                         Transaction tx =
-                            (Transaction)
-                                txResult.get();
+                            (Transaction) txResult.get();
 
-                        if (
-                            tx.getHash().equalsIgnoreCase(
-                                "0x14e6e3c736fee849d288d7d80abeb9646a447a5d62d7766663e0864003b1054d"
-                            )
-                        ) {
-
-                            log.debug(
-    "Found test transaction"
-);
-
-                            log.debug(
-    "Transaction recipient: {}",
+                        log.info(
+    "Scanning transaction: {} -> {}",
+    tx.getHash(),
     tx.getTo()
 );
-                        }
 
                         if (
                             tx.getTo() == null
@@ -92,27 +86,40 @@ public class BlockScannerService {
                             return;
                         }
 
+                        log.info(
+                            "Transaction TO: {}",
+                            tx.getTo()
+                        );
+
                         if (
-                            !tx.getTo()
-                                .equalsIgnoreCase(
-                                    predictionMarketAddress
-                                )
-                        )
-                        {
+                            !tx.getTo().equalsIgnoreCase(
+                                predictionMarketAddress
+                            )
+                        ) {
+
+                            log.info(
+                                "Skipping transaction"
+                            );
+
                             return;
+
                         }
 
                         log.info(
-    "Prediction market transaction: {}",
-    tx.getHash()
-);
+                            "PredictionMarket transaction detected"
+                        );
 
                         receiptScannerService
                             .scanReceipt(
                                 tx.getHash()
                             );
 
-                                        } catch (Exception e) {
+                        log.info(
+                            "PredictionMarket transaction: {}",
+                            tx.getHash()
+                        );
+
+                    } catch (Exception e) {
 
                         log.error(
                             "Failed to process transaction",
@@ -132,5 +139,7 @@ public class BlockScannerService {
             );
 
         }
+
     }
+
 }

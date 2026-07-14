@@ -8,16 +8,9 @@ import {
 } from "lucide-react";
 
 import {
-  useAccount,
-} from "wagmi";
-
-import {
   usePortfolioContext,
 } from "@/providers/PortfolioProvider";
 
-import {
-  usePortfolioAnalytics,
-} from "@/hooks/usePortfolioAnalytics";
 
 import {
   formatCurrency,
@@ -30,25 +23,15 @@ import LoadingSkeleton
 
 export default function PortfolioSummary() {
 
-  const {
-    address,
-  } = useAccount();
+ const {
 
-  const {
     portfolio,
-    loading: portfolioLoading,
-  } = usePortfolioContext();
 
-  const {
     analytics,
-    loading: analyticsLoading,
-  } = usePortfolioAnalytics(
-    address
-  );
 
-  const loading =
-    portfolioLoading ||
-    analyticsLoading;
+    loading,
+
+} = usePortfolioContext();
 
   if (loading) {
 
@@ -87,7 +70,29 @@ export default function PortfolioSummary() {
 
   }
 
-  const cards = [
+ console.log("CARDS =", [
+  {
+    title: "Total Invested",
+    value:
+      analytics?.totalInvested ??
+      portfolio?.totalInvested ??
+      0,
+  },
+  {
+    title: "Current Value",
+    value:
+      analytics?.currentValue ??
+      0,
+  },
+  {
+    title: "ROI",
+    value:
+      analytics?.roi ??
+      0,
+  },
+]);
+
+const cards = [
 
     {
       title: "Total Invested",
@@ -172,6 +177,7 @@ export default function PortfolioSummary() {
 
   ];
 
+
   return (
 
     <div
@@ -184,12 +190,12 @@ export default function PortfolioSummary() {
       "
     >
 
-      {cards.map((card) => {
+     {cards.map((card) => {
 
-        const Icon =
-          card.icon;
+  const Icon =
+    card.icon;
 
-        return (
+  return (
 
           <div
             key={card.title}

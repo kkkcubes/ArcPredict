@@ -69,12 +69,23 @@ public class ReceiptScannerService {
     txHash
 );
 
+log.info(
+    "Receipt contains {} logs",
+    receipt.getLogs().size()
+);
+
             for (
     Log receiptLog :
     receipt.getLogs()
 ) {
 
-                log.debug(
+    log.info(
+    "Processing log {} of {}",
+    receipt.getLogs().indexOf(receiptLog) + 1,
+    receipt.getLogs().size()
+);
+
+                log.info(
     "Log address: {}",
     receiptLog.getAddress()
 );
@@ -93,8 +104,8 @@ public class ReceiptScannerService {
                     blockchainDecoderService
     .eventType(receiptLog);
 
-                log.debug(
-    "Event type: {}",
+                log.info(
+    "Detected event type: {}",
     eventType
 );
 

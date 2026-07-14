@@ -42,14 +42,39 @@ public class WebSocketBroadcastService {
     }
 
     public void broadcastPortfolio(
-        Object payload
-    ) {
+    Object payload
+) {
 
-        messagingTemplate.convertAndSend(
-            "/topic/portfolio",
-            payload
-        );
-    }
+    System.out.println(
+        "===================================="
+    );
+
+    System.out.println(
+        "Broadcasting portfolio..."
+    );
+
+    System.out.println(
+        payload
+    );
+
+    System.out.println(
+        "Destination: /topic/portfolio"
+    );
+
+    System.out.println(
+        "===================================="
+    );
+
+    messagingTemplate.convertAndSend(
+        "/topic/portfolio",
+        payload
+    );
+
+    System.out.println(
+        "Portfolio broadcast finished"
+    );
+
+}
 
     public void broadcastAnalytics(
         Object payload

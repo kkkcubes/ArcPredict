@@ -23,48 +23,59 @@ public class BlockchainDecoderService {
     );
 
     public String eventType(
-        Log log
-    ) {
-
-        if (
-            log.getTopics().isEmpty()
-        ) {
-            return "UNKNOWN";
-        }
-
-        String topic0 =
-            log.getTopics().get(0);
-
-        if (
-            ContractEvents.MARKET_CREATED
-                .equalsIgnoreCase(topic0)
-        ) {
-            return "MARKET_CREATED";
-        }
-
-        if (
-            ContractEvents.SHARES_PURCHASED
-                .equalsIgnoreCase(topic0)
-        ) {
-            return "SHARES_PURCHASED";
-        }
-
-        if (
-            ContractEvents.MARKET_RESOLVED
-                .equalsIgnoreCase(topic0)
-        ) {
-            return "MARKET_RESOLVED";
-        }
-
-        if (
-    ContractEvents.REWARD_CLAIMED
-        .equalsIgnoreCase(topic0)
+    Log receiptLog
 ) {
-    return "REWARD_CLAIMED";
-}
 
+    if (
+        receiptLog.getTopics().isEmpty()
+    ) {
         return "UNKNOWN";
     }
+
+    String topic0 =
+        receiptLog.getTopics().get(0);
+
+    log.info(
+        "Receipt topic0: {}",
+        topic0
+    );
+
+    log.info(
+        "Expected SHARES_PURCHASED: {}",
+        ContractEvents.SHARES_PURCHASED
+    );
+
+    if (
+        ContractEvents.MARKET_CREATED
+            .equalsIgnoreCase(topic0)
+    ) {
+        return "MARKET_CREATED";
+    }
+
+    if (
+        ContractEvents.SHARES_PURCHASED
+            .equalsIgnoreCase(topic0)
+    ) {
+        return "SHARES_PURCHASED";
+    }
+
+    if (
+        ContractEvents.MARKET_RESOLVED
+            .equalsIgnoreCase(topic0)
+    ) {
+        return "MARKET_RESOLVED";
+    }
+
+    if (
+        ContractEvents.REWARD_CLAIMED
+            .equalsIgnoreCase(topic0)
+    ) {
+        return "REWARD_CLAIMED";
+    }
+
+    return "UNKNOWN";
+
+}
 
     public MarketCreatedEvent
 decodeMarketCreated(

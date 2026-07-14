@@ -35,23 +35,28 @@ public class ArcEventListenerService {
     private final BlockScannerService
         blockScannerService;
 
-    @Value("${contracts.prediction-market.address}")
-    private String predictionMarketAddress;
+    @Value("${contracts.prediction-market-address}")
+private String predictionMarketAddress;
 
     @PostConstruct
-    public void start() {
+public void start() {
 
-        log.info(
-            "Prediction contract: {}",
-            predictionMarketAddress
-        );
+    log.info(
+        "========================================"
+    );
 
-        log.info(
-            "Arc event listener started"
-        );
+    log.info(
+        "Prediction contract from Spring: {}",
+        predictionMarketAddress
+    );
 
-        subscribeToLogs();
-    }
+    log.info(
+        "========================================"
+    );
+
+    subscribeToLogs();
+
+}
 
     private void subscribeToLogs() {
 

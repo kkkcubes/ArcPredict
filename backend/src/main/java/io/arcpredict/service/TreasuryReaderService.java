@@ -26,7 +26,7 @@ public class TreasuryReaderService {
 
     private final Web3j web3j;
 
-    @Value("${contracts.treasury.address}")
+    @Value("${contracts.treasury-address}")
     private String treasuryAddress;
 
     public Long getVaultBalance()

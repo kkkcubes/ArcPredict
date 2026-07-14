@@ -25,7 +25,7 @@ public class MarketReaderService {
 
     private final Web3j web3j;
 
-    @Value("${contracts.prediction-market.address}")
+    @Value("${contracts.prediction-market-address}")
     private String predictionMarketAddress;
 
     public MarketData getMarket(

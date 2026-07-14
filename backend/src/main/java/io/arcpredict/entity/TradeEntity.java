@@ -11,6 +11,7 @@ import java.time.Instant;
 
 @Entity
 @Table(
+    name = "trades",
     indexes = {
 
         @Index(

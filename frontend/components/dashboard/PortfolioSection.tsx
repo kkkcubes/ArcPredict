@@ -12,6 +12,14 @@ import RewardsPanel from "@/components/portfolio/RewardsPanel";
 
 export default function PortfolioSection() {
 
+  console.log(
+    "PortfolioSection rendered"
+  );
+
+  console.log(
+  "Rendering PortfolioSummary component..."
+);
+
   return (
 
     <section

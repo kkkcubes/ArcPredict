@@ -5,6 +5,7 @@ import io.arcpredict.dto.PortfolioResponse;
 import io.arcpredict.entity.TradeEntity;
 import io.arcpredict.repository.TradeRepository;
 import io.arcpredict.service.PortfolioService;
+import io.arcpredict.dto.WalletPositionResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -114,5 +115,23 @@ public class PortfolioController {
             );
 
     }
+
+    @Operation(
+    summary = "Get wallet positions",
+    description = "Returns all positions for a wallet."
+)
+@GetMapping("/positions/{wallet}")
+public List<WalletPositionResponse>
+walletPositions(
+    @PathVariable
+    String wallet
+) {
+
+    return portfolioService
+        .getWalletPositions(
+            wallet
+        );
+
+}
 
 }

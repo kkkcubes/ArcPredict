@@ -36,6 +36,11 @@ export function useTrade() {
 
     try {
 
+      console.log(
+  "PredictionMarket address:",
+  CONTRACTS.predictionMarket
+);
+
 const tx =
   await writeContractAsync({
     address:
@@ -103,6 +108,11 @@ const tx =
       BigInt(amount),
     ],
   });
+
+  console.log(
+  "Transaction hash:",
+  tx
+);
 
 toast.loading(
   "Waiting for blockchain confirmation...",
