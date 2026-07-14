@@ -10,7 +10,7 @@ spring:
     hibernate:
       ddl-auto: update
 
-    show-sql: true
+    show-sql: false
 
 server:
   port: ${PORT:8080}
@@ -37,12 +37,6 @@ logging:
   level:
 
     root: INFO
-
-    org.hibernate.SQL: DEBUG
-
-    org.hibernate.orm.jdbc.bind: TRACE
-
-    org.hibernate.tool.schema: DEBUG
 
 management:
 
