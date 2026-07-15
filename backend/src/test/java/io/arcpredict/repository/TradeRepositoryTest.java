@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.time.Instant;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -165,6 +166,179 @@ void shouldFindTradesByMarketId() {
         tradeRepository
             .findByMarketId(20L)
             .size()
+    );
+
+}
+
+@Test
+void shouldFindTradesByTxHashIn() {
+
+    TradeEntity trade1 =
+        TradeEntity.builder()
+            .marketId(1L)
+            .trader("0xwallet1")
+            .yesPosition(true)
+            .amount(100L)
+            .txHash("0x111")
+            .blockNumber(100L)
+            .timestamp(
+                Instant.now()
+            )
+            .build();
+
+    TradeEntity trade2 =
+        TradeEntity.builder()
+            .marketId(2L)
+            .trader("0xwallet2")
+            .yesPosition(false)
+            .amount(200L)
+            .txHash("0x222")
+            .blockNumber(200L)
+            .timestamp(
+                Instant.now()
+            )
+            .build();
+
+    TradeEntity trade3 =
+        TradeEntity.builder()
+            .marketId(3L)
+            .trader("0xwallet3")
+            .yesPosition(true)
+            .amount(300L)
+            .txHash("0x333")
+            .blockNumber(300L)
+            .timestamp(
+                Instant.now()
+            )
+            .build();
+
+    tradeRepository.save(trade1);
+    tradeRepository.save(trade2);
+    tradeRepository.save(trade3);
+
+    assertEquals(
+        2,
+        tradeRepository
+            .findByTxHashIn(
+                List.of(
+                    "0x111",
+                    "0x333"
+                )
+            )
+            .size()
+    );
+
+}
+
+@Test
+void shouldCountTradesByMarketId() {
+
+    TradeEntity trade1 =
+        TradeEntity.builder()
+            .marketId(100L)
+            .trader("0xwallet1")
+            .yesPosition(true)
+            .amount(100L)
+            .txHash("0xa1")
+            .blockNumber(1L)
+            .timestamp(
+                Instant.now()
+            )
+            .build();
+
+    TradeEntity trade2 =
+        TradeEntity.builder()
+            .marketId(100L)
+            .trader("0xwallet2")
+            .yesPosition(false)
+            .amount(200L)
+            .txHash("0xa2")
+            .blockNumber(2L)
+            .timestamp(
+                Instant.now()
+            )
+            .build();
+
+    TradeEntity trade3 =
+        TradeEntity.builder()
+            .marketId(200L)
+            .trader("0xwallet3")
+            .yesPosition(true)
+            .amount(300L)
+            .txHash("0xa3")
+            .blockNumber(3L)
+            .timestamp(
+                Instant.now()
+            )
+            .build();
+
+    tradeRepository.save(trade1);
+    tradeRepository.save(trade2);
+    tradeRepository.save(trade3);
+
+    assertEquals(
+        2L,
+        tradeRepository.countByMarketId(100L)
+    );
+
+    assertEquals(
+        1L,
+        tradeRepository.countByMarketId(200L)
+    );
+
+}
+
+@Test
+void shouldCountDistinctTraderByMarketId() {
+
+    TradeEntity trade1 =
+        TradeEntity.builder()
+            .marketId(500L)
+            .trader("0xwallet1")
+            .yesPosition(true)
+            .amount(100L)
+            .txHash("0xb1")
+            .blockNumber(1L)
+            .timestamp(
+                Instant.now()
+            )
+            .build();
+
+    TradeEntity trade2 =
+        TradeEntity.builder()
+            .marketId(500L)
+            .trader("0xwallet1")
+            .yesPosition(false)
+            .amount(200L)
+            .txHash("0xb2")
+            .blockNumber(2L)
+            .timestamp(
+                Instant.now()
+            )
+            .build();
+
+    TradeEntity trade3 =
+        TradeEntity.builder()
+            .marketId(500L)
+            .trader("0xwallet2")
+            .yesPosition(true)
+            .amount(300L)
+            .txHash("0xb3")
+            .blockNumber(3L)
+            .timestamp(
+                Instant.now()
+            )
+            .build();
+
+    tradeRepository.save(trade1);
+    tradeRepository.save(trade2);
+    tradeRepository.save(trade3);
+
+    assertEquals(
+        2L,
+        tradeRepository.countDistinctTraderByMarketId(
+            500L
+        )
     );
 
 }
