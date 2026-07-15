@@ -253,4 +253,31 @@ class MarketSyncServiceTest {
 
     }
 
+    @Test
+    void shouldReturnWhenMarketDoesNotExist() {
+
+        when(
+            walletRepository.findByMarketId(1L)
+        ).thenReturn(
+            Collections.emptyList()
+        );
+
+        when(
+            marketRepository.findById(1L)
+        ).thenReturn(
+            Optional.empty()
+        );
+
+        marketSyncService.resolveMarket(
+            1L,
+            true
+        );
+
+        verify(
+            walletRepository,
+            never()
+        ).save(any());
+
+    }
+
 }
