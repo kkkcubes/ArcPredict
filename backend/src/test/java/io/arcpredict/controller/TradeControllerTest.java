@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.util.List;
@@ -81,6 +82,48 @@ class TradeControllerTest {
             .andExpect(
                 content().contentTypeCompatibleWith(
                     MediaType.APPLICATION_JSON
+                )
+            )
+            .andExpect(
+                jsonPath(
+                    "$[0].marketId"
+                ).value(
+                    1
+                )
+            )
+            .andExpect(
+                jsonPath(
+                    "$[0].trader"
+                ).value(
+                    "0xabc"
+                )
+            )
+            .andExpect(
+                jsonPath(
+                    "$[0].amount"
+                ).value(
+                    100
+                )
+            )
+            .andExpect(
+                jsonPath(
+                    "$[1].marketId"
+                ).value(
+                    2
+                )
+            )
+            .andExpect(
+                jsonPath(
+                    "$[1].trader"
+                ).value(
+                    "0xdef"
+                )
+            )
+            .andExpect(
+                jsonPath(
+                    "$[1].amount"
+                ).value(
+                    200
                 )
             );
 
