@@ -12,6 +12,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Instant;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -72,6 +75,59 @@ class EventServiceTest {
         assertEquals(
             "0xtx",
             saved.getTxHash()
+        );
+
+    }
+
+    @Test
+    void shouldReturnLatestEvents() {
+
+        EventEntity event1 =
+            EventEntity.builder()
+                .id(1L)
+                .eventType("MARKET_CREATED")
+                .marketId(1L)
+                .timestamp(
+                    Instant.now()
+                )
+                .build();
+
+        EventEntity event2 =
+            EventEntity.builder()
+                .id(2L)
+                .eventType("TRADE_EXECUTED")
+                .marketId(2L)
+                .timestamp(
+                    Instant.now()
+                )
+                .build();
+
+        when(
+            eventRepository
+                .findTop50ByOrderByTimestampDesc()
+        ).thenReturn(
+            List.of(
+                event1,
+                event2
+            )
+        );
+
+        List<EventEntity> events =
+            eventService.latestEvents();
+
+        assertEquals(
+            2,
+            events.size()
+        );
+
+        assertEquals(
+            "MARKET_CREATED",
+            events.get(0).getEventType()
+        );
+
+        assertEquals(
+            "TRADE_EXECUTED",
+            events.get(1).getEventType()
         );
 
     }
