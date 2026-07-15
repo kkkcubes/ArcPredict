@@ -80,4 +80,33 @@ class PortfolioServiceTest {
 
     }
 
+    @Test
+void shouldSavePosition() {
+
+    WalletPositionEntity position =
+        WalletPositionEntity.builder()
+            .walletAddress("0xwallet")
+            .marketId(1L)
+            .shares(100L)
+            .investedAmount(500L)
+            .build();
+
+    when(
+        walletRepository.save(position)
+    ).thenReturn(
+        position
+    );
+
+    WalletPositionEntity saved =
+        portfolioService.savePosition(
+            position
+        );
+
+    assertEquals(
+        position,
+        saved
+    );
+
+}
+
 }
