@@ -170,4 +170,51 @@ class SystemServiceTest {
 
     }
 
+@Test
+void shouldReturnDownStatusWhenRpcDisconnected() {
+
+    RpcHealthResponse rpc =
+
+        RpcHealthResponse.builder()
+            .connected(false)
+            .latestBlock(12345L)
+            .latency(250L)
+            .build();
+
+    when(
+        rpcHealthService.getRpcHealth()
+    ).thenReturn(
+        rpc
+    );
+
+    SystemHealthResponse health =
+
+        systemService.getHealth();
+
+    assertEquals(
+        "DOWN",
+        health.getStatus()
+    );
+
+    assertEquals(
+        true,
+        health.getDatabaseConnected()
+    );
+
+    assertEquals(
+        false,
+        health.getRpcConnected()
+    );
+
+    assertEquals(
+        12345L,
+        health.getLatestBlock()
+    );
+
+    assertNotNull(
+        health.getTimestamp()
+    );
+
+}
+
 }
