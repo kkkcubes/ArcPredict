@@ -146,10 +146,80 @@ class PortfolioControllerTest {
                 status().isOk()
             )
             .andExpect(
-                content().contentTypeCompatibleWith(
-                    MediaType.APPLICATION_JSON
-                )
-            );
+    content().contentTypeCompatibleWith(
+        MediaType.APPLICATION_JSON
+    )
+)
+.andExpect(
+    jsonPath(
+        "$.wallet"
+    ).value(
+        "0xabc"
+    )
+)
+.andExpect(
+    jsonPath(
+        "$.totalInvested"
+    ).value(
+        300
+    )
+)
+.andExpect(
+    jsonPath(
+        "$.currentValue"
+    ).value(
+        360
+    )
+)
+.andExpect(
+    jsonPath(
+        "$.unrealizedPnL"
+    ).value(
+        60
+    )
+)
+.andExpect(
+    jsonPath(
+        "$.realizedPnL"
+    ).value(
+        25
+    )
+)
+.andExpect(
+    jsonPath(
+        "$.roi"
+    ).value(
+        20.0
+    )
+)
+.andExpect(
+    jsonPath(
+        "$.totalTrades"
+    ).value(
+        2
+    )
+)
+.andExpect(
+    jsonPath(
+        "$.yesPositions"
+    ).value(
+        1
+    )
+)
+.andExpect(
+    jsonPath(
+        "$.noPositions"
+    ).value(
+        1
+    )
+)
+.andExpect(
+    jsonPath(
+        "$.averageEntryPrice"
+    ).value(
+        150.0
+    )
+);
 
     }
 
