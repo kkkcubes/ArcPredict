@@ -1,6 +1,9 @@
 package io.arcpredict.service;
 
+import io.arcpredict.dto.ActivityResponse;
+
 import io.arcpredict.entity.EventEntity;
+import io.arcpredict.entity.TradeEntity;
 
 import io.arcpredict.repository.EventRepository;
 import io.arcpredict.repository.TradeRepository;
@@ -128,6 +131,98 @@ class EventServiceTest {
         assertEquals(
             "TRADE_EXECUTED",
             events.get(1).getEventType()
+        );
+
+    }
+
+    @Test
+    void shouldBuildActivityFeed() {
+
+        Instant now =
+            Instant.now();
+
+        EventEntity event =
+            EventEntity.builder()
+                .id(1L)
+                .eventType("TRADE_EXECUTED")
+                .marketId(1L)
+                .txHash("0xtx")
+                .blockNumber(123L)
+                .timestamp(now)
+                .build();
+
+        TradeEntity trade =
+            TradeEntity.builder()
+                .txHash("0xtx")
+                .trader("0xwallet")
+                .amount(250L)
+                .yesPosition(true)
+                .build();
+
+        when(
+            eventRepository
+                .findTop50ByOrderByTimestampDesc()
+        ).thenReturn(
+            List.of(event)
+        );
+
+        when(
+            tradeRepository.findByTxHashIn(
+                List.of("0xtx")
+            )
+        ).thenReturn(
+            List.of(trade)
+        );
+
+        List<ActivityResponse> feed =
+            eventService.getActivityFeed();
+
+        assertEquals(
+            1,
+            feed.size()
+        );
+
+        ActivityResponse activity =
+            feed.get(0);
+
+        assertEquals(
+            "TRADE_EXECUTED",
+            activity.getEventType()
+        );
+
+        assertEquals(
+            1L,
+            activity.getMarketId()
+        );
+
+        assertEquals(
+            "0xwallet",
+            activity.getWallet()
+        );
+
+        assertEquals(
+            250L,
+            activity.getAmount()
+        );
+
+        assertEquals(
+            "YES",
+            activity.getPosition()
+        );
+
+        assertEquals(
+            "0xtx",
+            activity.getTxHash()
+        );
+
+        assertEquals(
+            123L,
+            activity.getBlockNumber()
+        );
+
+        assertEquals(
+            "TRADE_EXECUTED on Market #1",
+            activity.getSummary()
         );
 
     }
