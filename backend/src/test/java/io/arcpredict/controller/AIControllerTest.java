@@ -3,6 +3,7 @@ package io.arcpredict.controller;
 import io.arcpredict.config.SecurityConfig;
 import io.arcpredict.dto.AIRequest;
 import io.arcpredict.entity.AnalyticsEntity;
+import io.arcpredict.entity.MarketEntity;
 import io.arcpredict.service.AnalyticsService;
 import io.arcpredict.service.MarketService;
 
@@ -15,6 +16,8 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -77,7 +80,7 @@ class AIControllerTest {
                 post("/api/ai/ask")
 
                     .contentType(
-                        "application/json"
+                        MediaType.APPLICATION_JSON
                     )
 
                     .content(
@@ -100,6 +103,69 @@ class AIControllerTest {
                     "$.answer"
                 ).value(
                     "Current volume: 50000"
+                )
+            );
+
+    }
+
+    @Test
+    void shouldReturnMarketAnswer() throws Exception {
+
+        List<MarketEntity> markets = List.of(
+
+            MarketEntity.builder()
+                .marketId(1L)
+                .question("BTC > $150k?")
+                .build(),
+
+            MarketEntity.builder()
+                .marketId(2L)
+                .question("ETH > $10k?")
+                .build()
+
+        );
+
+        when(
+            marketService.getMarkets()
+        ).thenReturn(
+            markets
+        );
+
+        AIRequest request =
+            new AIRequest();
+
+        request.setQuestion(
+            "How many markets are there?"
+        );
+
+        mockMvc.perform(
+
+                post("/api/ai/ask")
+
+                    .contentType(
+                        MediaType.APPLICATION_JSON
+                    )
+
+                    .content(
+                        objectMapper.writeValueAsString(
+                            request
+                        )
+                    )
+
+            )
+            .andExpect(
+                status().isOk()
+            )
+            .andExpect(
+                content().contentTypeCompatibleWith(
+                    MediaType.APPLICATION_JSON
+                )
+            )
+            .andExpect(
+                jsonPath(
+                    "$.answer"
+                ).value(
+                    "Total markets: 2"
                 )
             );
 
