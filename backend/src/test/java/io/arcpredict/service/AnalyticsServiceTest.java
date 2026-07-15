@@ -248,4 +248,79 @@ void shouldBuildDailyTradeHistory() {
 
 }
 
+@Test
+void shouldBuildDailyMarketHistory() {
+
+    MarketEntity market1 =
+        MarketEntity.builder()
+            .marketId(1L)
+            .createdAt(
+                Instant.parse(
+                    "2026-07-15T10:00:00Z"
+                )
+            )
+            .build();
+
+    MarketEntity market2 =
+        MarketEntity.builder()
+            .marketId(2L)
+            .createdAt(
+                Instant.parse(
+                    "2026-07-15T14:00:00Z"
+                )
+            )
+            .build();
+
+    MarketEntity market3 =
+        MarketEntity.builder()
+            .marketId(3L)
+            .createdAt(
+                Instant.parse(
+                    "2026-07-16T09:00:00Z"
+                )
+            )
+            .build();
+
+    when(
+        tradeRepository.findAll()
+    ).thenReturn(
+        List.of()
+    );
+
+    when(
+        marketRepository.findAll()
+    ).thenReturn(
+        List.of(
+            market1,
+            market2,
+            market3
+        )
+    );
+
+    AnalyticsHistoryResponse response =
+        analyticsService.getAnalyticsHistory();
+
+    assertEquals(
+        2,
+        response.getDailyMarkets().size()
+    );
+
+    assertEquals(
+        2L,
+        response
+            .getDailyMarkets()
+            .get(0)
+            .getValue()
+    );
+
+    assertEquals(
+        1L,
+        response
+            .getDailyMarkets()
+            .get(1)
+            .getValue()
+    );
+
+}
+
 }
