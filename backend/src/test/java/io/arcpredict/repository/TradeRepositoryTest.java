@@ -107,5 +107,66 @@ void shouldFindTradesByTrader() {
 
 }
 
+@Test
+void shouldFindTradesByMarketId() {
+
+    TradeEntity trade1 =
+        TradeEntity.builder()
+            .marketId(10L)
+            .trader("0xwallet1")
+            .yesPosition(true)
+            .amount(100L)
+            .txHash("0xaaa")
+            .blockNumber(100L)
+            .timestamp(
+                Instant.now()
+            )
+            .build();
+
+    TradeEntity trade2 =
+        TradeEntity.builder()
+            .marketId(10L)
+            .trader("0xwallet2")
+            .yesPosition(false)
+            .amount(200L)
+            .txHash("0xbbb")
+            .blockNumber(101L)
+            .timestamp(
+                Instant.now()
+            )
+            .build();
+
+    TradeEntity trade3 =
+        TradeEntity.builder()
+            .marketId(20L)
+            .trader("0xwallet3")
+            .yesPosition(true)
+            .amount(300L)
+            .txHash("0xccc")
+            .blockNumber(102L)
+            .timestamp(
+                Instant.now()
+            )
+            .build();
+
+    tradeRepository.save(trade1);
+    tradeRepository.save(trade2);
+    tradeRepository.save(trade3);
+
+    assertEquals(
+        2,
+        tradeRepository
+            .findByMarketId(10L)
+            .size()
+    );
+
+    assertEquals(
+        1,
+        tradeRepository
+            .findByMarketId(20L)
+            .size()
+    );
+
+}
 
 }
