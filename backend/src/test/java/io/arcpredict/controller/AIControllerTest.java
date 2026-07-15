@@ -171,4 +171,47 @@ class AIControllerTest {
 
     }
 
+    @Test
+void shouldReturnDefaultAnswer() throws Exception {
+
+    AIRequest request =
+        new AIRequest();
+
+    request.setQuestion(
+        "Hello AI"
+    );
+
+    mockMvc.perform(
+
+            post("/api/ai/ask")
+
+                .contentType(
+                    MediaType.APPLICATION_JSON
+                )
+
+                .content(
+                    objectMapper.writeValueAsString(
+                        request
+                    )
+                )
+
+        )
+        .andExpect(
+            status().isOk()
+        )
+        .andExpect(
+            content().contentTypeCompatibleWith(
+                MediaType.APPLICATION_JSON
+            )
+        )
+        .andExpect(
+            jsonPath(
+                "$.answer"
+            ).value(
+                "ArcPredict AI is connected."
+            )
+        );
+
+}
+
 }
