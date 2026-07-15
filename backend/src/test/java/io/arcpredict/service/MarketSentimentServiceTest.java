@@ -89,4 +89,61 @@ class MarketSentimentServiceTest {
 
     }
 
+    @Test
+void shouldHandleEmptyPools() {
+
+    MarketEntity market =
+        MarketEntity.builder()
+            .marketId(2L)
+            .yesPool(null)
+            .noPool(null)
+            .build();
+
+    when(
+        marketRepository.findAll()
+    ).thenReturn(
+        List.of(market)
+    );
+
+    List<MarketSentimentResponse> response =
+        marketSentimentService
+            .getMarketSentiment();
+
+    assertEquals(
+        1,
+        response.size()
+    );
+
+    MarketSentimentResponse sentiment =
+        response.get(0);
+
+    assertEquals(
+        0L,
+        sentiment.getYesPool()
+    );
+
+    assertEquals(
+        0L,
+        sentiment.getNoPool()
+    );
+
+    assertEquals(
+        0L,
+        sentiment.getTotalPool()
+    );
+
+    assertEquals(
+        0.0,
+        sentiment.getYesPercentage(),
+        0.001
+    );
+
+    assertEquals(
+        0.0,
+        sentiment.getNoPercentage(),
+        0.001
+    );
+
+}
+
 }
