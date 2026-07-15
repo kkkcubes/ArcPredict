@@ -4,6 +4,7 @@ import io.arcpredict.config.SecurityConfig;
 import io.arcpredict.entity.TradeEntity;
 import io.arcpredict.repository.TradeRepository;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -22,6 +23,10 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 import org.springframework.context.annotation.Import;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 
 import org.springframework.http.MediaType;
 
@@ -125,6 +130,58 @@ class TradeControllerTest {
                 ).value(
                     200
                 )
+            );
+
+    }
+
+    @Test
+    void shouldReturnTradesPage() throws Exception {
+
+        List<TradeEntity> trades = List.of(
+
+            TradeEntity.builder()
+                .marketId(1L)
+                .trader("0xabc")
+                .yesPosition(true)
+                .amount(100L)
+                .txHash("0x111")
+                .blockNumber(1L)
+                .build(),
+
+            TradeEntity.builder()
+                .marketId(2L)
+                .trader("0xdef")
+                .yesPosition(false)
+                .amount(200L)
+                .txHash("0x222")
+                .blockNumber(2L)
+                .build()
+
+        );
+
+        Page<TradeEntity> page =
+
+            new PageImpl<>(
+                trades,
+                PageRequest.of(0, 20),
+                trades.size()
+            );
+
+        when(
+            tradeRepository.findAll(
+                any(org.springframework.data.domain.Pageable.class)
+            )
+        ).thenReturn(
+            page
+        );
+
+        mockMvc.perform(
+                get("/api/trades/page")
+                    .param("page", "0")
+                    .param("size", "20")
+            )
+            .andExpect(
+                status().isOk()
             );
 
     }
