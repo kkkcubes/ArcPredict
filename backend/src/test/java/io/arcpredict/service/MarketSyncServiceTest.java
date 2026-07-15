@@ -371,4 +371,34 @@ void shouldResolveLosingWallet() {
 
 }
 
+@Test
+void shouldReturnWhenWalletPositionDoesNotExist() {
+
+    when(
+        walletRepository.findByWalletAddressAndMarketId(
+            "0xwallet",
+            1L
+        )
+    ).thenReturn(
+        Optional.empty()
+    );
+
+    marketSyncService.markRewardClaimed(
+        1L,
+        "0xWallet",
+        100L
+    );
+
+    verify(
+        walletRepository,
+        never()
+    ).save(any());
+
+    verify(
+        webSocketBroadcastService,
+        never()
+    ).broadcastPortfolio(any());
+
+}
+
 }
