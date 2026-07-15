@@ -219,4 +219,79 @@ class TradeControllerTest {
 
     }
 
+    @Test
+void shouldReturnTradesByMarket() throws Exception {
+
+    List<TradeEntity> trades = List.of(
+
+        TradeEntity.builder()
+            .marketId(1L)
+            .trader("0xabc")
+            .yesPosition(true)
+            .amount(100L)
+            .txHash("0x111")
+            .blockNumber(1L)
+            .build(),
+
+        TradeEntity.builder()
+            .marketId(1L)
+            .trader("0xdef")
+            .yesPosition(false)
+            .amount(200L)
+            .txHash("0x222")
+            .blockNumber(2L)
+            .build()
+
+    );
+
+    when(
+        tradeRepository.findByMarketId(
+            1L
+        )
+    ).thenReturn(
+        trades
+    );
+
+    mockMvc.perform(
+            get("/api/trades/market/1")
+        )
+        .andExpect(
+            status().isOk()
+        )
+        .andExpect(
+            content().contentTypeCompatibleWith(
+                MediaType.APPLICATION_JSON
+            )
+        )
+        .andExpect(
+            jsonPath(
+                "$[0].marketId"
+            ).value(
+                1
+            )
+        )
+        .andExpect(
+            jsonPath(
+                "$[0].trader"
+            ).value(
+                "0xabc"
+            )
+        )
+        .andExpect(
+            jsonPath(
+                "$[1].marketId"
+            ).value(
+                1
+            )
+        )
+        .andExpect(
+            jsonPath(
+                "$[1].trader"
+            ).value(
+                "0xdef"
+            )
+        );
+
+}
+
 }
