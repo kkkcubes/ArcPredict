@@ -401,4 +401,42 @@ void shouldReturnWhenWalletPositionDoesNotExist() {
 
 }
 
+@Test
+void shouldReturnWhenWalletNotSettled() {
+
+    WalletPositionEntity position =
+        WalletPositionEntity.builder()
+            .walletAddress("0xwallet")
+            .marketId(1L)
+            .settled(false)
+            .claimed(false)
+            .build();
+
+    when(
+        walletRepository.findByWalletAddressAndMarketId(
+            "0xwallet",
+            1L
+        )
+    ).thenReturn(
+        Optional.of(position)
+    );
+
+    marketSyncService.markRewardClaimed(
+        1L,
+        "0xWallet",
+        100L
+    );
+
+    verify(
+        walletRepository,
+        never()
+    ).save(any());
+
+    verify(
+        webSocketBroadcastService,
+        never()
+    ).broadcastPortfolio(any());
+
+}
+
 }
