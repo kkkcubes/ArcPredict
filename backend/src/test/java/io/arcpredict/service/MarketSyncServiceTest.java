@@ -479,4 +479,49 @@ void shouldReturnWhenRewardAlreadyClaimed() {
 
 }
 
+@Test
+void shouldMarkRewardClaimedSuccessfully() {
+
+    WalletPositionEntity position =
+
+        WalletPositionEntity.builder()
+            .walletAddress("0xwallet")
+            .marketId(1L)
+            .settled(true)
+            .claimed(false)
+            .claimableRewards(500L)
+            .investedAmount(100L)
+            .build();
+
+    when(
+        walletRepository.findByWalletAddressAndMarketId(
+            "0xwallet",
+            1L
+        )
+    ).thenReturn(
+        Optional.of(position)
+    );
+
+    when(
+        tradeRepository.findByTrader(
+            "0xwallet"
+        )
+    ).thenReturn(
+        Collections.emptyList()
+    );
+
+    marketSyncService.markRewardClaimed(
+        1L,
+        "0xWallet",
+        500L
+    );
+
+    verify(walletRepository)
+        .save(any(WalletPositionEntity.class));
+
+    verify(webSocketBroadcastService)
+        .broadcastPortfolio(any());
+
+}
+
 }
