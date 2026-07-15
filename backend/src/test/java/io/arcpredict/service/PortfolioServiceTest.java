@@ -1,6 +1,7 @@
 package io.arcpredict.service;
 
 import io.arcpredict.dto.PortfolioAnalyticsResponse;
+import io.arcpredict.dto.WalletPositionResponse;
 
 import io.arcpredict.entity.TradeEntity;
 import io.arcpredict.entity.WalletPositionEntity;
@@ -215,6 +216,94 @@ class PortfolioServiceTest {
             33.33,
             analytics.getRoi(),
             0.01
+        );
+
+    }
+
+    @Test
+    void shouldReturnWalletPositions() {
+
+        WalletPositionEntity position =
+
+            WalletPositionEntity.builder()
+                .walletAddress("0xwallet")
+                .marketId(1L)
+                .yesPosition(true)
+                .shares(100L)
+                .investedAmount(500L)
+                .currentValue(650L)
+                .claimableRewards(75L)
+                .claimed(false)
+                .winner(true)
+                .settled(true)
+                .claimedAmount(0L)
+                .build();
+
+        when(
+            walletRepository.findByWalletAddress(
+                "0xwallet"
+            )
+        ).thenReturn(
+            List.of(position)
+        );
+
+        List<WalletPositionResponse> response =
+
+            portfolioService.getWalletPositions(
+                "0xWallet"
+            );
+
+        assertEquals(
+            1,
+            response.size()
+        );
+
+        WalletPositionResponse wallet =
+            response.get(0);
+
+        assertEquals(
+            1L,
+            wallet.getMarketId()
+        );
+
+        assertEquals(
+            true,
+            wallet.getYesPosition()
+        );
+
+        assertEquals(
+            100L,
+            wallet.getShares()
+        );
+
+        assertEquals(
+            500L,
+            wallet.getInvestedAmount()
+        );
+
+        assertEquals(
+            650L,
+            wallet.getCurrentValue()
+        );
+
+        assertEquals(
+            75L,
+            wallet.getClaimableRewards()
+        );
+
+        assertEquals(
+            false,
+            wallet.getClaimed()
+        );
+
+        assertEquals(
+            true,
+            wallet.getWinner()
+        );
+
+        assertEquals(
+            true,
+            wallet.getSettled()
         );
 
     }
