@@ -254,4 +254,93 @@ void shouldReturnCriticalTreasuryHealth() throws Exception {
 
 }
 
+@Test
+void shouldHandleZeroLiquidity() throws Exception {
+
+    when(
+        marketRepository.findLatestBlock()
+    ).thenReturn(
+        0L
+    );
+
+    when(
+        marketRepository.count()
+    ).thenReturn(
+        0L
+    );
+
+    when(
+        tradeRepository.count()
+    ).thenReturn(
+        0L
+    );
+
+    when(
+        marketRepository.findTotalVolume()
+    ).thenReturn(
+        0L
+    );
+
+    when(
+        marketRepository.findTotalProtocolFees()
+    ).thenReturn(
+        0L
+    );
+
+    when(
+        treasuryReaderService.getVaultBalance()
+    ).thenReturn(
+        0L
+    );
+
+    when(
+        treasuryReaderService.getTotalLiquidity()
+    ).thenReturn(
+        0L
+    );
+
+    when(
+        treasuryReaderService.getTotalLockedLiquidity()
+    ).thenReturn(
+        0L
+    );
+
+    when(
+        treasuryReaderService.getTotalReleasedLiquidity()
+    ).thenReturn(
+        0L
+    );
+
+    when(
+        marketRepository.countByResolved(false)
+    ).thenReturn(
+        0L
+    );
+
+    when(
+        marketRepository.countByResolved(true)
+    ).thenReturn(
+        0L
+    );
+
+    DashboardResponse response =
+        dashboardService.getDashboard();
+
+    assertEquals(
+        0.0,
+        response.getTreasuryUtilization()
+    );
+
+    assertEquals(
+        "Healthy",
+        response.getTreasuryHealth()
+    );
+
+    assertEquals(
+        0L,
+        response.getAvailableLiquidity()
+    );
+
+}
+
 }
