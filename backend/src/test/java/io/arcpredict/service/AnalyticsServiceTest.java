@@ -1,7 +1,10 @@
 package io.arcpredict.service;
 
+import io.arcpredict.dto.AnalyticsHistoryResponse;
+
 import io.arcpredict.entity.AnalyticsEntity;
 import io.arcpredict.entity.MarketEntity;
+import io.arcpredict.entity.TradeEntity;
 
 import io.arcpredict.repository.MarketRepository;
 import io.arcpredict.repository.TradeRepository;
@@ -13,6 +16,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import java.time.Instant;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -109,6 +113,62 @@ class AnalyticsServiceTest {
             20.0,
             analytics.getBearishPercentage(),
             0.01
+        );
+
+    }
+
+    @Test
+    void shouldBuildDailyVolumeHistory() {
+
+        TradeEntity trade1 =
+            TradeEntity.builder()
+                .amount(100L)
+                .timestamp(
+                    Instant.parse(
+                        "2026-07-15T10:00:00Z"
+                    )
+                )
+                .build();
+
+        TradeEntity trade2 =
+            TradeEntity.builder()
+                .amount(200L)
+                .timestamp(
+                    Instant.parse(
+                        "2026-07-15T15:00:00Z"
+                    )
+                )
+                .build();
+
+        when(
+            tradeRepository.findAll()
+        ).thenReturn(
+            List.of(
+                trade1,
+                trade2
+            )
+        );
+
+        when(
+            marketRepository.findAll()
+        ).thenReturn(
+            List.of()
+        );
+
+        AnalyticsHistoryResponse response =
+            analyticsService.getAnalyticsHistory();
+
+        assertEquals(
+            1,
+            response.getDailyVolume().size()
+        );
+
+        assertEquals(
+            300L,
+            response
+                .getDailyVolume()
+                .get(0)
+                .getValue()
         );
 
     }
