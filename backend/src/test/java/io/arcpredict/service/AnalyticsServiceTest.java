@@ -173,4 +173,79 @@ class AnalyticsServiceTest {
 
     }
 
+    @Test
+void shouldBuildDailyTradeHistory() {
+
+    TradeEntity trade1 =
+        TradeEntity.builder()
+            .amount(100L)
+            .timestamp(
+                Instant.parse(
+                    "2026-07-15T10:00:00Z"
+                )
+            )
+            .build();
+
+    TradeEntity trade2 =
+        TradeEntity.builder()
+            .amount(200L)
+            .timestamp(
+                Instant.parse(
+                    "2026-07-15T15:00:00Z"
+                )
+            )
+            .build();
+
+    TradeEntity trade3 =
+        TradeEntity.builder()
+            .amount(300L)
+            .timestamp(
+                Instant.parse(
+                    "2026-07-16T09:00:00Z"
+                )
+            )
+            .build();
+
+    when(
+        tradeRepository.findAll()
+    ).thenReturn(
+        List.of(
+            trade1,
+            trade2,
+            trade3
+        )
+    );
+
+    when(
+        marketRepository.findAll()
+    ).thenReturn(
+        List.of()
+    );
+
+    AnalyticsHistoryResponse response =
+        analyticsService.getAnalyticsHistory();
+
+    assertEquals(
+        2,
+        response.getDailyTrades().size()
+    );
+
+    assertEquals(
+        2L,
+        response
+            .getDailyTrades()
+            .get(0)
+            .getValue()
+    );
+
+    assertEquals(
+        1L,
+        response
+            .getDailyTrades()
+            .get(1)
+            .getValue()
+    );
+
+}
+
 }
