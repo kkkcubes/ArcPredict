@@ -8,6 +8,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.lang.IllegalArgumentException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -154,7 +155,49 @@ public class GlobalExceptionHandler {
 
     }
 
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler(
+        IllegalArgumentException.class
+    )
+    public ResponseEntity<ApiError>
+    handleIllegalArgument(
+
+        IllegalArgumentException exception
+
+    ) {
+
+        ApiError error =
+
+            ApiError.builder()
+
+                .error(
+                    "Bad Request"
+                )
+
+                .message(
+                    exception.getMessage()
+                )
+
+                .timestamp(
+                    System.currentTimeMillis()
+                )
+
+                .build();
+
+        return ResponseEntity
+
+            .status(
+                HttpStatus.BAD_REQUEST
+            )
+
+            .body(
+                error
+            );
+
+    }
+
+    @ExceptionHandler(
+        Exception.class
+    )
     public ResponseEntity<ApiError>
     handleException(
 
