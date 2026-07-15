@@ -227,4 +227,88 @@ class EventServiceTest {
 
     }
 
+    @Test
+void shouldBuildActivityFeedWithoutMatchingTrade() {
+
+    Instant now =
+        Instant.now();
+
+    EventEntity event =
+        EventEntity.builder()
+            .id(1L)
+            .eventType("MARKET_CREATED")
+            .marketId(5L)
+            .txHash("0xmissing")
+            .blockNumber(999L)
+            .timestamp(now)
+            .build();
+
+    when(
+        eventRepository
+            .findTop50ByOrderByTimestampDesc()
+    ).thenReturn(
+        List.of(event)
+    );
+
+    when(
+        tradeRepository.findByTxHashIn(
+            List.of("0xmissing")
+        )
+    ).thenReturn(
+        List.of()
+    );
+
+    List<ActivityResponse> feed =
+        eventService.getActivityFeed();
+
+    assertEquals(
+        1,
+        feed.size()
+    );
+
+    ActivityResponse activity =
+        feed.get(0);
+
+    assertEquals(
+        "MARKET_CREATED",
+        activity.getEventType()
+    );
+
+    assertEquals(
+        5L,
+        activity.getMarketId()
+    );
+
+    assertEquals(
+        null,
+        activity.getWallet()
+    );
+
+    assertEquals(
+        null,
+        activity.getAmount()
+    );
+
+    assertEquals(
+        null,
+        activity.getPosition()
+    );
+
+    assertEquals(
+        "0xmissing",
+        activity.getTxHash()
+    );
+
+    assertEquals(
+        999L,
+        activity.getBlockNumber()
+    );
+
+    assertEquals(
+        "MARKET_CREATED on Market #5",
+        activity.getSummary()
+    );
+
+}
+
 }
