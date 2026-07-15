@@ -176,13 +176,46 @@ class TradeControllerTest {
         );
 
         mockMvc.perform(
-                get("/api/trades/page")
-                    .param("page", "0")
-                    .param("size", "20")
-            )
-            .andExpect(
-                status().isOk()
-            );
+        get("/api/trades/page")
+            .param("page", "0")
+            .param("size", "20")
+    )
+    .andExpect(
+        status().isOk()
+    )
+    .andExpect(
+        content().contentTypeCompatibleWith(
+            MediaType.APPLICATION_JSON
+        )
+    )
+    .andExpect(
+        jsonPath(
+            "$.content[0].marketId"
+        ).value(
+            1
+        )
+    )
+    .andExpect(
+        jsonPath(
+            "$.content[1].marketId"
+        ).value(
+            2
+        )
+    )
+    .andExpect(
+        jsonPath(
+            "$.totalElements"
+        ).value(
+            2
+        )
+    )
+    .andExpect(
+        jsonPath(
+            "$.size"
+        ).value(
+            20
+        )
+    );
 
     }
 
