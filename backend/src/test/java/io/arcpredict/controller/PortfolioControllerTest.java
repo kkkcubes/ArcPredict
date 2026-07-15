@@ -2,6 +2,7 @@ package io.arcpredict.controller;
 
 import io.arcpredict.config.SecurityConfig;
 import io.arcpredict.dto.PortfolioAnalyticsResponse;
+import io.arcpredict.dto.WalletPositionResponse;
 import io.arcpredict.entity.TradeEntity;
 import io.arcpredict.repository.TradeRepository;
 import io.arcpredict.service.PortfolioService;
@@ -146,80 +147,112 @@ class PortfolioControllerTest {
                 status().isOk()
             )
             .andExpect(
-    content().contentTypeCompatibleWith(
-        MediaType.APPLICATION_JSON
-    )
-)
-.andExpect(
-    jsonPath(
-        "$.wallet"
-    ).value(
-        "0xabc"
-    )
-)
-.andExpect(
-    jsonPath(
-        "$.totalInvested"
-    ).value(
-        300
-    )
-)
-.andExpect(
-    jsonPath(
-        "$.currentValue"
-    ).value(
-        360
-    )
-)
-.andExpect(
-    jsonPath(
-        "$.unrealizedPnL"
-    ).value(
-        60
-    )
-)
-.andExpect(
-    jsonPath(
-        "$.realizedPnL"
-    ).value(
-        25
-    )
-)
-.andExpect(
-    jsonPath(
-        "$.roi"
-    ).value(
-        20.0
-    )
-)
-.andExpect(
-    jsonPath(
-        "$.totalTrades"
-    ).value(
-        2
-    )
-)
-.andExpect(
-    jsonPath(
-        "$.yesPositions"
-    ).value(
-        1
-    )
-)
-.andExpect(
-    jsonPath(
-        "$.noPositions"
-    ).value(
-        1
-    )
-)
-.andExpect(
-    jsonPath(
-        "$.averageEntryPrice"
-    ).value(
-        150.0
-    )
-);
+                content().contentTypeCompatibleWith(
+                    MediaType.APPLICATION_JSON
+                )
+            )
+            .andExpect(
+                jsonPath("$.wallet").value("0xabc")
+            )
+            .andExpect(
+                jsonPath("$.totalInvested").value(300)
+            )
+            .andExpect(
+                jsonPath("$.currentValue").value(360)
+            )
+            .andExpect(
+                jsonPath("$.unrealizedPnL").value(60)
+            )
+            .andExpect(
+                jsonPath("$.realizedPnL").value(25)
+            )
+            .andExpect(
+                jsonPath("$.roi").value(20.0)
+            )
+            .andExpect(
+                jsonPath("$.totalTrades").value(2)
+            )
+            .andExpect(
+                jsonPath("$.yesPositions").value(1)
+            )
+            .andExpect(
+                jsonPath("$.noPositions").value(1)
+            )
+            .andExpect(
+                jsonPath("$.averageEntryPrice").value(150.0)
+            );
+
+    }
+
+    @Test
+    void shouldReturnWalletPositions() throws Exception {
+
+        List<WalletPositionResponse> positions = List.of(
+
+            WalletPositionResponse.builder()
+                .marketId(1L)
+                .yesPosition(true)
+                .shares(100L)
+                .investedAmount(300L)
+                .currentValue(360L)
+                .claimableRewards(25L)
+                .claimed(false)
+                .winner(true)
+                .settled(true)
+                .claimedAmount(0L)
+                .build()
+
+        );
+
+        when(
+            portfolioService.getWalletPositions(
+                "0xabc"
+            )
+        ).thenReturn(
+            positions
+        );
+
+        mockMvc.perform(
+                get("/api/portfolio/positions/0xabc")
+            )
+            .andExpect(
+                status().isOk()
+            )
+            .andExpect(
+                content().contentTypeCompatibleWith(
+                    MediaType.APPLICATION_JSON
+                )
+            )
+            .andExpect(
+                jsonPath("$[0].marketId").value(1)
+            )
+            .andExpect(
+                jsonPath("$[0].yesPosition").value(true)
+            )
+            .andExpect(
+                jsonPath("$[0].shares").value(100)
+            )
+            .andExpect(
+                jsonPath("$[0].investedAmount").value(300)
+            )
+            .andExpect(
+                jsonPath("$[0].currentValue").value(360)
+            )
+            .andExpect(
+                jsonPath("$[0].claimableRewards").value(25)
+            )
+            .andExpect(
+                jsonPath("$[0].claimed").value(false)
+            )
+            .andExpect(
+                jsonPath("$[0].winner").value(true)
+            )
+            .andExpect(
+                jsonPath("$[0].settled").value(true)
+            )
+            .andExpect(
+                jsonPath("$[0].claimedAmount").value(0)
+            );
 
     }
 
