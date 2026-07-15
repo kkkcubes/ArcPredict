@@ -211,4 +211,47 @@ void shouldReturnWarningTreasuryHealth() throws Exception {
 
 }
 
+@Test
+void shouldReturnCriticalTreasuryHealth() throws Exception {
+
+    when(marketRepository.findLatestBlock()).thenReturn(1L);
+    when(marketRepository.count()).thenReturn(1L);
+    when(tradeRepository.count()).thenReturn(1L);
+
+    when(marketRepository.findTotalVolume()).thenReturn(100L);
+    when(marketRepository.findTotalProtocolFees()).thenReturn(10L);
+
+    when(treasuryReaderService.getVaultBalance())
+        .thenReturn(1000L);
+
+    when(treasuryReaderService.getTotalLiquidity())
+        .thenReturn(1000L);
+
+    when(treasuryReaderService.getTotalLockedLiquidity())
+        .thenReturn(900L);
+
+    when(treasuryReaderService.getTotalReleasedLiquidity())
+        .thenReturn(100L);
+
+    when(marketRepository.countByResolved(false))
+        .thenReturn(1L);
+
+    when(marketRepository.countByResolved(true))
+        .thenReturn(0L);
+
+    DashboardResponse response =
+        dashboardService.getDashboard();
+
+    assertEquals(
+        90.0,
+        response.getTreasuryUtilization()
+    );
+
+    assertEquals(
+        "Critical",
+        response.getTreasuryHealth()
+    );
+
+}
+
 }
