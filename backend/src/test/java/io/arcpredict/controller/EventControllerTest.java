@@ -1,7 +1,17 @@
 package io.arcpredict.controller;
 
 import io.arcpredict.config.SecurityConfig;
+import io.arcpredict.dto.ActivityResponse;
 import io.arcpredict.service.EventService;
+
+import static org.mockito.Mockito.when;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import java.time.Instant;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
@@ -30,7 +40,43 @@ class EventControllerTest {
     private EventService eventService;
 
     @Test
-    void contextLoads() {
+    void shouldReturnActivityFeed() throws Exception {
+
+        List<ActivityResponse> activities = List.of(
+
+            ActivityResponse.builder()
+                .id(1L)
+                .eventType("TRADE")
+                .marketId(1L)
+                .wallet("0xabc")
+                .amount(100L)
+                .position("YES")
+                .txHash("0x111")
+                .blockNumber(12345L)
+                .timestamp(
+                    Instant.parse(
+                        "2026-07-15T09:00:00Z"
+                    )
+                )
+                .summary(
+                    "0xabc bought YES shares"
+                )
+                .build()
+
+        );
+
+        when(
+            eventService.getActivityFeed()
+        ).thenReturn(
+            activities
+        );
+
+        mockMvc.perform(
+                get("/api/events")
+            )
+            .andExpect(
+                status().isOk()
+            );
 
     }
 
