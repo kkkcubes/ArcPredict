@@ -4,6 +4,9 @@ import io.arcpredict.dto.RpcHealthResponse;
 
 import lombok.RequiredArgsConstructor;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.stereotype.Service;
 
 import org.web3j.protocol.Web3j;
@@ -11,6 +14,11 @@ import org.web3j.protocol.Web3j;
 @Service
 @RequiredArgsConstructor
 public class RpcHealthService {
+
+    private static final Logger log =
+        LoggerFactory.getLogger(
+            RpcHealthService.class
+        );
 
     private final Web3j web3j;
 
@@ -47,6 +55,11 @@ public class RpcHealthService {
 
         } catch (Exception e) {
 
+            log.warn(
+                "RPC health check failed",
+                e
+            );
+
             return RpcHealthResponse
                 .builder()
                 .connected(false)
@@ -56,5 +69,7 @@ public class RpcHealthService {
                 .build();
 
         }
+
     }
+
 }
