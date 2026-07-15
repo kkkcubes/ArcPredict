@@ -52,4 +52,60 @@ class TradeRepositoryTest {
 
     }
 
+    @Test
+void shouldFindTradesByTrader() {
+
+    TradeEntity trade1 =
+        TradeEntity.builder()
+            .marketId(1L)
+            .trader("0xwallet")
+            .yesPosition(true)
+            .amount(100L)
+            .txHash("0x111")
+            .blockNumber(100L)
+            .timestamp(
+                Instant.now()
+            )
+            .build();
+
+    TradeEntity trade2 =
+        TradeEntity.builder()
+            .marketId(2L)
+            .trader("0xwallet")
+            .yesPosition(false)
+            .amount(200L)
+            .txHash("0x222")
+            .blockNumber(200L)
+            .timestamp(
+                Instant.now()
+            )
+            .build();
+
+    TradeEntity trade3 =
+        TradeEntity.builder()
+            .marketId(3L)
+            .trader("0xother")
+            .yesPosition(true)
+            .amount(300L)
+            .txHash("0x333")
+            .blockNumber(300L)
+            .timestamp(
+                Instant.now()
+            )
+            .build();
+
+    tradeRepository.save(trade1);
+    tradeRepository.save(trade2);
+    tradeRepository.save(trade3);
+
+    assertEquals(
+        2,
+        tradeRepository
+            .findByTrader("0xwallet")
+            .size()
+    );
+
+}
+
+
 }
