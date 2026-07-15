@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import org.web3j.protocol.Web3j;
-import org.web3j.protocol.core.DefaultBlockParameterName;
 
 @Service
 @RequiredArgsConstructor
@@ -29,7 +28,9 @@ public class BlockchainService {
                 "Failed to fetch block",
                 e
             );
+
         }
+
     }
 
     public String getClientVersion() {
@@ -44,9 +45,12 @@ public class BlockchainService {
         } catch (Exception e) {
 
             throw new RuntimeException(
+                "Failed to fetch client version",
                 e
             );
+
         }
+
     }
 
     public Long getChainId() {
@@ -62,9 +66,12 @@ public class BlockchainService {
         } catch (Exception e) {
 
             throw new RuntimeException(
+                "Failed to fetch chain ID",
                 e
             );
+
         }
+
     }
 
     public boolean isHealthy() {
@@ -80,6 +87,9 @@ public class BlockchainService {
         } catch (Exception e) {
 
             return false;
+
         }
+
     }
+
 }
