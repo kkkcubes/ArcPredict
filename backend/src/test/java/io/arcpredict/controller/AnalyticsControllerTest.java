@@ -44,9 +44,15 @@ class AnalyticsControllerTest {
     void shouldReturnAnalytics() throws Exception {
 
         AnalyticsEntity analytics =
-            AnalyticsEntity.builder()
-                .totalVolume(50000L)
-                .build();
+    AnalyticsEntity.builder()
+        .totalMarkets(10L)
+        .totalVolume(50000L)
+        .totalTraders(120L)
+        .resolvedMarkets(8L)
+        .openInterest(25000L)
+        .bullishPercentage(65.5)
+        .bearishPercentage(34.5)
+        .build();
 
         when(
             analyticsService.getAnalytics()
@@ -65,13 +71,28 @@ class AnalyticsControllerTest {
                     MediaType.APPLICATION_JSON
                 )
             )
+
             .andExpect(
-                jsonPath(
-                    "$.totalVolume"
-                ).value(
-                    50000
-                )
-            );
+    jsonPath("$.totalVolume").value(50000)
+)
+            .andExpect(
+    jsonPath("$.totalMarkets").value(10)
+)
+.andExpect(
+    jsonPath("$.totalTraders").value(120)
+)
+.andExpect(
+    jsonPath("$.resolvedMarkets").value(8)
+)
+.andExpect(
+    jsonPath("$.openInterest").value(25000)
+)
+.andExpect(
+    jsonPath("$.bullishPercentage").value(65.5)
+)
+.andExpect(
+    jsonPath("$.bearishPercentage").value(34.5)
+);
 
     }
 
