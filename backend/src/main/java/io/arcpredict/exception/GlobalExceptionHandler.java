@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
@@ -105,6 +106,46 @@ public class GlobalExceptionHandler {
 
             .status(
                 HttpStatus.METHOD_NOT_ALLOWED
+            )
+
+            .body(
+                error
+            );
+
+    }
+
+    @ExceptionHandler(
+        NoSuchElementException.class
+    )
+    public ResponseEntity<ApiError>
+    handleNotFound(
+
+        NoSuchElementException exception
+
+    ) {
+
+        ApiError error =
+
+            ApiError.builder()
+
+                .error(
+                    "Resource Not Found"
+                )
+
+                .message(
+                    exception.getMessage()
+                )
+
+                .timestamp(
+                    System.currentTimeMillis()
+                )
+
+                .build();
+
+        return ResponseEntity
+
+            .status(
+                HttpStatus.NOT_FOUND
             )
 
             .body(
