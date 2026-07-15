@@ -1,5 +1,8 @@
 package io.arcpredict.service;
 
+import io.arcpredict.dto.PortfolioAnalyticsResponse;
+
+import io.arcpredict.entity.TradeEntity;
 import io.arcpredict.entity.WalletPositionEntity;
 
 import io.arcpredict.repository.TradeRepository;
@@ -81,32 +84,139 @@ class PortfolioServiceTest {
     }
 
     @Test
-void shouldSavePosition() {
+    void shouldSavePosition() {
 
-    WalletPositionEntity position =
-        WalletPositionEntity.builder()
-            .walletAddress("0xwallet")
-            .marketId(1L)
-            .shares(100L)
-            .investedAmount(500L)
-            .build();
+        WalletPositionEntity position =
+            WalletPositionEntity.builder()
+                .walletAddress("0xwallet")
+                .marketId(1L)
+                .shares(100L)
+                .investedAmount(500L)
+                .build();
 
-    when(
-        walletRepository.save(position)
-    ).thenReturn(
-        position
-    );
-
-    WalletPositionEntity saved =
-        portfolioService.savePosition(
+        when(
+            walletRepository.save(position)
+        ).thenReturn(
             position
         );
 
-    assertEquals(
-        position,
-        saved
-    );
+        WalletPositionEntity saved =
+            portfolioService.savePosition(
+                position
+            );
 
-}
+        assertEquals(
+            position,
+            saved
+        );
+
+    }
+
+    @Test
+    void shouldCalculatePortfolioAnalytics() {
+
+        TradeEntity trade1 =
+            TradeEntity.builder()
+                .amount(100L)
+                .yesPosition(true)
+                .build();
+
+        TradeEntity trade2 =
+            TradeEntity.builder()
+                .amount(200L)
+                .yesPosition(false)
+                .build();
+
+        WalletPositionEntity position1 =
+            WalletPositionEntity.builder()
+                .walletAddress("0xwallet")
+                .marketId(1L)
+                .currentValue(180L)
+                .claimableRewards(50L)
+                .build();
+
+        WalletPositionEntity position2 =
+            WalletPositionEntity.builder()
+                .walletAddress("0xwallet")
+                .marketId(2L)
+                .currentValue(220L)
+                .claimableRewards(30L)
+                .build();
+
+        when(
+            tradeRepository.findByTrader(
+                "0xwallet"
+            )
+        ).thenReturn(
+            List.of(
+                trade1,
+                trade2
+            )
+        );
+
+        when(
+            walletRepository.findByWalletAddress(
+                "0xwallet"
+            )
+        ).thenReturn(
+            List.of(
+                position1,
+                position2
+            )
+        );
+
+        PortfolioAnalyticsResponse analytics =
+            portfolioService.getPortfolioAnalytics(
+                "0xWallet"
+            );
+
+        assertEquals(
+            300L,
+            analytics.getTotalInvested()
+        );
+
+        assertEquals(
+            400L,
+            analytics.getCurrentValue()
+        );
+
+        assertEquals(
+            100L,
+            analytics.getUnrealizedPnL()
+        );
+
+        assertEquals(
+            80L,
+            analytics.getRealizedPnL()
+        );
+
+        assertEquals(
+            2L,
+            analytics.getTotalTrades()
+        );
+
+        assertEquals(
+            1L,
+            analytics.getYesPositions()
+        );
+
+        assertEquals(
+            1L,
+            analytics.getNoPositions()
+        );
+
+        assertEquals(
+            150.0,
+            analytics.getAverageEntryPrice(),
+            0.01
+        );
+
+        assertEquals(
+            33.33,
+            analytics.getRoi(),
+            0.01
+        );
+
+    }
 
 }
