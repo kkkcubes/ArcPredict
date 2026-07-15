@@ -102,4 +102,46 @@ class RpcHealthServiceTest {
 
     }
 
+    @Test
+void shouldReturnDisconnectedWhenRpcFails() throws Exception {
+
+    doReturn(
+        blockRequest
+    ).when(
+        web3j
+    ).ethBlockNumber();
+
+    when(
+        blockRequest.send()
+    ).thenThrow(
+        new RuntimeException(
+            "RPC unavailable"
+        )
+    );
+
+    RpcHealthResponse response =
+        rpcHealthService.getRpcHealth();
+
+    assertEquals(
+        false,
+        response.getConnected()
+    );
+
+    assertEquals(
+        0L,
+        response.getLatestBlock()
+    );
+
+    assertEquals(
+        0L,
+        response.getChainId()
+    );
+
+    assertEquals(
+        0L,
+        response.getLatency()
+    );
+
+}
+
 }
