@@ -323,4 +323,81 @@ void shouldBuildDailyMarketHistory() {
 
 }
 
+@Test
+void shouldBuildCategoryBreakdown() {
+
+    MarketEntity cryptoMarket =
+        MarketEntity.builder()
+            .marketId(1L)
+            .category("Crypto")
+            .createdAt(
+                Instant.parse(
+                    "2026-07-15T10:00:00Z"
+                )
+            )
+            .build();
+
+    MarketEntity sportsMarket =
+        MarketEntity.builder()
+            .marketId(2L)
+            .category("Sports")
+            .createdAt(
+                Instant.parse(
+                    "2026-07-15T11:00:00Z"
+                )
+            )
+            .build();
+
+    MarketEntity unknownMarket =
+        MarketEntity.builder()
+            .marketId(3L)
+            .category(null)
+            .createdAt(
+                Instant.parse(
+                    "2026-07-15T12:00:00Z"
+                )
+            )
+            .build();
+
+    when(
+        tradeRepository.findAll()
+    ).thenReturn(
+        List.of()
+    );
+
+    when(
+        marketRepository.findAll()
+    ).thenReturn(
+        List.of(
+            cryptoMarket,
+            sportsMarket,
+            unknownMarket
+        )
+    );
+
+    AnalyticsHistoryResponse response =
+        analyticsService.getAnalyticsHistory();
+
+    assertEquals(
+        3,
+        response.getCategoryBreakdown().size()
+    );
+
+    assertEquals(
+        "Crypto",
+        response.getCategoryBreakdown().get(0).getDate()
+    );
+
+    assertEquals(
+        "Sports",
+        response.getCategoryBreakdown().get(1).getDate()
+    );
+
+    assertEquals(
+        "Unknown",
+        response.getCategoryBreakdown().get(2).getDate()
+    );
+
+}
+
 }
