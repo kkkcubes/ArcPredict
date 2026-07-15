@@ -9,6 +9,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import org.junit.jupiter.api.Test;
@@ -44,6 +45,7 @@ class AnalyticsControllerTest {
 
         AnalyticsEntity analytics =
             AnalyticsEntity.builder()
+                .totalVolume(50000L)
                 .build();
 
         when(
@@ -61,6 +63,13 @@ class AnalyticsControllerTest {
             .andExpect(
                 content().contentTypeCompatibleWith(
                     MediaType.APPLICATION_JSON
+                )
+            )
+            .andExpect(
+                jsonPath(
+                    "$.totalVolume"
+                ).value(
+                    50000
                 )
             );
 
