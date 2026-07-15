@@ -4,6 +4,7 @@ import io.arcpredict.dto.AnalyticsHistoryResponse;
 import io.arcpredict.dto.ChartPoint;
 import io.arcpredict.entity.AnalyticsEntity;
 import io.arcpredict.entity.MarketEntity;
+import io.arcpredict.entity.TradeEntity;
 
 import io.arcpredict.repository.MarketRepository;
 import io.arcpredict.repository.TradeRepository;
@@ -34,7 +35,7 @@ public class AnalyticsService {
 
         List<MarketEntity>
             markets =
-            marketRepository.findAll();
+                marketRepository.findAll();
 
         long totalVolume =
             markets.stream()
@@ -79,10 +80,9 @@ public class AnalyticsService {
                 tradeRepository.count()
             )
             .resolvedMarkets(
-                marketRepository
-                    .findByResolved(true)
-                    .stream()
-                    .count()
+                marketRepository.countByResolved(
+                    true
+                )
             )
             .openInterest(
                 yesPool + noPool
@@ -103,11 +103,18 @@ public class AnalyticsService {
     public AnalyticsHistoryResponse
     getAnalyticsHistory() {
 
+        List<TradeEntity>
+            trades =
+                tradeRepository.findAll();
+
+        List<MarketEntity>
+            markets =
+                marketRepository.findAll();
+
         Map<LocalDate, Long>
             volumeByDay =
 
-            tradeRepository
-                .findAll()
+            trades
                 .stream()
                 .collect(
 
@@ -123,8 +130,7 @@ public class AnalyticsService {
                                 .toLocalDate(),
 
                         Collectors.summingLong(
-                            trade ->
-                                trade.getAmount()
+                            TradeEntity::getAmount
                         )
 
                     )
@@ -134,8 +140,7 @@ public class AnalyticsService {
         Map<LocalDate, Long>
             tradesByDay =
 
-            tradeRepository
-                .findAll()
+            trades
                 .stream()
                 .collect(
 
@@ -159,8 +164,7 @@ public class AnalyticsService {
         Map<LocalDate, Long>
             marketsByDay =
 
-            marketRepository
-                .findAll()
+            markets
                 .stream()
                 .collect(
 
@@ -184,10 +188,8 @@ public class AnalyticsService {
         Map<String, Long>
             categories =
 
-            marketRepository
-                .findAll()
+            markets
                 .stream()
-
                 .collect(
 
                     Collectors.groupingBy(
@@ -299,30 +301,24 @@ public class AnalyticsService {
                 categories
                     .entrySet()
                     .stream()
-
                     .sorted(
                         Map.Entry.comparingByKey()
                     )
-
                     .map(
 
                         entry ->
 
                             ChartPoint
                                 .builder()
-
                                 .date(
                                     entry.getKey()
                                 )
-
                                 .value(
                                     entry.getValue()
                                 )
-
                                 .build()
 
                     )
-
                     .toList()
 
             )

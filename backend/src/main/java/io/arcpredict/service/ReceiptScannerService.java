@@ -6,10 +6,10 @@ import io.arcpredict.repository.MarketRepository;
 
 import lombok.RequiredArgsConstructor;
 
-import org.springframework.stereotype.Service;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import org.springframework.stereotype.Service;
 
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.methods.response.Log;
@@ -22,9 +22,9 @@ import java.time.Instant;
 public class ReceiptScannerService {
 
     private static final Logger log =
-    LoggerFactory.getLogger(
-        ReceiptScannerService.class
-    );
+        LoggerFactory.getLogger(
+            ReceiptScannerService.class
+        );
 
     private final Web3j web3j;
 
@@ -38,10 +38,10 @@ public class ReceiptScannerService {
         marketRepository;
 
     private final MarketReaderService
-    marketReaderService;    
+        marketReaderService;
 
     private final WebSocketBroadcastService
-    webSocketBroadcastService;
+        webSocketBroadcastService;
 
     public void scanReceipt(
         String txHash
@@ -65,49 +65,61 @@ public class ReceiptScannerService {
             }
 
             log.debug(
-    "Receipt received: {}",
-    txHash
-);
+                "Receipt received: {}",
+                txHash
+            );
 
-log.info(
-    "Receipt contains {} logs",
-    receipt.getLogs().size()
-);
+            log.info(
+                "Receipt contains {} logs",
+                receipt.getLogs().size()
+            );
 
             for (
-    Log receiptLog :
-    receipt.getLogs()
-) {
+                int i = 0;
+                i < receipt.getLogs().size();
+                i++
+            ) {
 
-    log.info(
-    "Processing log {} of {}",
-    receipt.getLogs().indexOf(receiptLog) + 1,
-    receipt.getLogs().size()
-);
+                Log receiptLog =
+                    receipt.getLogs().get(i);
 
                 log.info(
-    "Log address: {}",
-    receiptLog.getAddress()
-);
+                    "Processing log {} of {}",
+                    i + 1,
+                    receipt.getLogs().size()
+                );
+
+                log.info(
+                    "Log address: {}",
+                    receiptLog.getAddress()
+                );
+
+                if (
+                    !receiptLog.getTopics().isEmpty()
+                ) {
+
+                    log.debug(
+                        "Topic0: {}",
+                        receiptLog.getTopics().get(0)
+                    );
+
+                }
 
                 log.debug(
-    "Topic0: {}",
-    receiptLog.getTopics().get(0)
-);
-
-                log.debug(
-    "Expected MarketCreated topic: {}",
-    io.arcpredict.util.ContractEvents.MARKET_CREATED
-);
+                    "Expected MarketCreated topic: {}",
+                    io.arcpredict.util.ContractEvents.MARKET_CREATED
+                );
 
                 String eventType =
                     blockchainDecoderService
-    .eventType(receiptLog);
+                        .eventType(
+                            receiptLog
+                        );
 
                 log.info(
-    "Detected event type: {}",
-    eventType
-);
+                    "Detected event type: {}",
+                    eventType
+                );
 
                 if (
                     "MARKET_CREATED"
@@ -117,150 +129,149 @@ log.info(
                     var event =
                         blockchainDecoderService
                             .decodeMarketCreated(
-    receiptLog
+                                receiptLog
                             );
 
                     log.debug(
-    "Market created tx: {}",
-    event.getTxHash()
-);
-
-                   log.debug(
-    "Market created block: {}",
-    event.getBlockNumber()
-);
-                        
+                        "Market created tx: {}",
+                        event.getTxHash()
+                    );
 
                     log.debug(
-    "Market id: {}",
-    event.getMarketId()
-);
+                        "Market created block: {}",
+                        event.getBlockNumber()
+                    );
 
                     log.debug(
-    "Creator: {}",
-    event.getCreator()
-);
+                        "Market id: {}",
+                        event.getMarketId()
+                    );
 
                     log.debug(
-    "Question: {}",
-    event.getQuestion()
-);
+                        "Creator: {}",
+                        event.getCreator()
+                    );
 
                     log.debug(
-    "Question length: {}",
-    event.getQuestion().length()
-);
+                        "Question: {}",
+                        event.getQuestion()
+                    );
+
+                    log.debug(
+                        "Question length: {}",
+                        event.getQuestion().length()
+                    );
 
                     var marketData =
-    marketReaderService.getMarket(
-        event.getMarketId()
-    );
+                        marketReaderService.getMarket(
+                            event.getMarketId()
+                        );
 
-MarketEntity market =
-    MarketEntity.builder()
-        .marketId(
-            event.getMarketId()
-        )
-        .question(
-            event.getQuestion()
-        )
-        .creator(
-            event.getCreator()
-        )
-        .category(
-            marketData.category()
-        )
-        .endTime(
-            marketData.endTime()
-        )
-        .yesPool(
-            0L
-        )
-        .noPool(
-            0L
-        )
-        .resolved(
-            false
-        )
-        .totalVolume(
-            0L
-        )
-        .protocolFees(
-    0L
-)
-        .participants(
-            0L
-        )
-        .blockNumber(
-            event.getBlockNumber()
-        )
-        .createdAt(
-            Instant.now()
-        )
-        .updatedAt(
-            Instant.now()
-        )
-        .build();
+                    MarketEntity market =
+                        MarketEntity.builder()
+                            .marketId(
+                                event.getMarketId()
+                            )
+                            .question(
+                                event.getQuestion()
+                            )
+                            .creator(
+                                event.getCreator()
+                            )
+                            .category(
+                                marketData.category()
+                            )
+                            .endTime(
+                                marketData.endTime()
+                            )
+                            .yesPool(
+                                0L
+                            )
+                            .noPool(
+                                0L
+                            )
+                            .resolved(
+                                false
+                            )
+                            .totalVolume(
+                                0L
+                            )
+                            .protocolFees(
+                                0L
+                            )
+                            .participants(
+                                0L
+                            )
+                            .blockNumber(
+                                event.getBlockNumber()
+                            )
+                            .createdAt(
+                                Instant.now()
+                            )
+                            .updatedAt(
+                                Instant.now()
+                            )
+                            .build();
 
                     marketSyncService.saveMarket(
                         market
                     );
 
                     log.debug(
-    "Market exists: {}",
-    marketRepository.existsById(
-        event.getMarketId()
-    )
-);
+                        "Market exists: {}",
+                        marketRepository.existsById(
+                            event.getMarketId()
+                        )
+                    );
 
                     log.info(
-    "Market saved"
-);
+                        "Market saved"
+                    );
 
                     marketSyncService.saveEvent(
-    "MARKET_CREATED",
-    0L,
-    event.getTxHash(),
-    event.getBlockNumber(),
-    receiptLog.toString()
-);
+                        "MARKET_CREATED",
+                        0L,
+                        event.getTxHash(),
+                        event.getBlockNumber(),
+                        receiptLog.toString()
+                    );
 
                     log.info(
-    "Market creation event saved"
-);
+                        "Market creation event saved"
+                    );
+
                 }
 
                 if (
                     "SHARES_PURCHASED"
                         .equals(eventType)
-                )
-                {
+                ) {
 
                     var trade =
                         blockchainDecoderService
                             .decodeSharesPurchased(
-    receiptLog
-);
+                                receiptLog
+                            );
 
                     log.debug(
-    "Trade market id: {}",
-    trade.getMarketId()
-);
+                        "Trade market id: {}",
+                        trade.getMarketId()
+                    );
 
-log.debug(
-    "Trader: {}",
-    trade.getTrader()
-);
+                    log.debug(
+                        "Trader: {}",
+                        trade.getTrader()
+                    );
 
-log.debug(
-    "Side: {}",
-    trade.getSide()
-);
+                    log.debug(
+                        "Side: {}",
+                        trade.getSide()
+                    );
 
-log.debug(
-    "Amount: {}",
-    trade.getAmount()
-);
+                    log.debug(
+                        "Amount: {}",
+                        trade.getAmount()
+                    );
 
                     marketSyncService.saveTrade(
                         trade.getMarketId(),
@@ -272,58 +283,58 @@ log.debug(
                     );
 
                     marketSyncService.saveEvent(
-    "SHARES_PURCHASED",
-    trade.getMarketId(),
-    trade.getTxHash(),
-    trade.getBlockNumber(),
-    receiptLog.toString()
-);
+                        "SHARES_PURCHASED",
+                        trade.getMarketId(),
+                        trade.getTxHash(),
+                        trade.getBlockNumber(),
+                        receiptLog.toString()
+                    );
 
                     TransactionConfirmedMessage message =
-    TransactionConfirmedMessage
-        .builder()
-        .type(
-            "TRANSACTION_CONFIRMED"
-        )
-        .txHash(
-            trade.getTxHash()
-        )
-        .marketId(
-            trade.getMarketId()
-        )
-        .build();
+                        TransactionConfirmedMessage
+                            .builder()
+                            .type(
+                                "TRANSACTION_CONFIRMED"
+                            )
+                            .txHash(
+                                trade.getTxHash()
+                            )
+                            .marketId(
+                                trade.getMarketId()
+                            )
+                            .build();
 
-webSocketBroadcastService
-    .broadcastTransactionConfirmed(
-        message
-    );
+                    webSocketBroadcastService
+                        .broadcastTransactionConfirmed(
+                            message
+                        );
 
                     log.info(
-    "Trade saved"
-);
+                        "Trade saved"
+                    );
+
                 }
 
                 if (
                     "MARKET_RESOLVED"
                         .equals(eventType)
-                )
-                {
+                ) {
 
                     var event =
                         blockchainDecoderService
                             .decodeMarketResolved(
-    receiptLog
-);
+                                receiptLog
+                            );
 
                     log.debug(
-    "Resolved market id: {}",
-    event.getMarketId()
-);
+                        "Resolved market id: {}",
+                        event.getMarketId()
+                    );
 
                     log.debug(
-    "Outcome: {}",
-    event.getOutcome()
-);
+                        "Outcome: {}",
+                        event.getOutcome()
+                    );
 
                     var market =
                         marketRepository
@@ -333,14 +344,13 @@ webSocketBroadcastService
                             .orElse(null);
 
                     log.debug(
-    "Market found: {}",
-    market != null
-);
+                        "Market found: {}",
+                        market != null
+                    );
 
                     if (
                         market != null
-                    )
-                    {
+                    ) {
 
                         market.setResolved(
                             true
@@ -350,41 +360,39 @@ webSocketBroadcastService
                             event.getOutcome()
                         );
 
-                        marketSyncService
-                            .saveMarket(
-                                market
-                            );
+                        marketSyncService.saveMarket(
+                            market
+                        );
 
-                            marketSyncService
-    .resolveMarket(
-        event.getMarketId(),
-        event.getOutcome()
-    );
+                        marketSyncService.resolveMarket(
+                            event.getMarketId(),
+                            event.getOutcome()
+                        );
 
                         log.info(
-    "Market updated"
-);
+                            "Market updated"
+                        );
+
                     }
 
                     marketSyncService.saveEvent(
-    "MARKET_RESOLVED",
-    event.getMarketId(),
-    event.getTxHash(),
-    event.getBlockNumber(),
-    receiptLog.toString()
-);
+                        "MARKET_RESOLVED",
+                        event.getMarketId(),
+                        event.getTxHash(),
+                        event.getBlockNumber(),
+                        receiptLog.toString()
+                    );
 
                     log.info(
-    "Resolution event saved"
-);
+                        "Resolution event saved"
+                    );
 
                 }
 
                 if (
                     "REWARD_CLAIMED"
                         .equals(eventType)
-                )
-                {
+                ) {
 
                     var event =
                         blockchainDecoderService
@@ -417,12 +425,14 @@ webSocketBroadcastService
 
         } catch (Exception e) {
 
-    log.error(
-        "Failed to scan receipt {}",
-        txHash,
-        e
-    );
+            log.error(
+                "Failed to scan receipt {}",
+                txHash,
+                e
+            );
 
-}
+        }
+
     }
+
 }

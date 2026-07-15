@@ -21,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 import java.util.List;
@@ -78,14 +79,15 @@ private long settlementFeePercentage;
             );
     }
 
-    public void saveTrade(
-        Long marketId,
-        String trader,
-        Boolean side,
-        Long amount,
-        String txHash,
-        Long blockNumber
-    ) {
+    @Transactional
+public void saveTrade(
+    Long marketId,
+    String trader,
+    Boolean side,
+    Long amount,
+    String txHash,
+    Long blockNumber
+) {
 
         log.info(
     "saveTrade() called: trader={}, marketId={}, side={}, amount={}",
@@ -94,6 +96,23 @@ private long settlementFeePercentage;
     side,
     amount
 );
+
+if (
+    tradeRepository
+        .findByTxHash(
+            txHash
+        )
+        .isPresent()
+) {
+
+    log.info(
+        "Trade already processed: {}",
+        txHash
+    );
+
+    return;
+
+}
 
         TradeEntity trade =
             TradeEntity.builder()
@@ -434,7 +453,8 @@ log.info(
 
     }
 
-       public void resolveMarket(
+       @Transactional
+public void resolveMarket(
     Long marketId,
     Boolean outcome
 ) {
@@ -693,6 +713,7 @@ marketRepository.save(
 
 }
 
+@Transactional
 public void markRewardClaimed(
     Long marketId,
     String trader,

@@ -2,6 +2,9 @@ package io.arcpredict.service;
 
 import lombok.RequiredArgsConstructor;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +18,11 @@ import java.math.BigInteger;
 @RequiredArgsConstructor
 public class BlockPollingService {
 
+    private static final Logger log =
+        LoggerFactory.getLogger(
+            BlockPollingService.class
+        );
+
     private final Web3j web3j;
 
     private final BlockScannerService
@@ -25,8 +33,8 @@ public class BlockPollingService {
     @Scheduled(fixedDelay = 5000)
     public void poll() {
 
-        System.out.println(
-            "POLLER RUNNING"
+        log.info(
+            "Blockchain poller running"
         );
 
         try {
@@ -37,9 +45,9 @@ public class BlockPollingService {
                     .send()
                     .getBlockNumber();
 
-            System.out.println(
-                "LATEST BLOCK => "
-                + latest
+            log.info(
+                "Latest block: {}",
+                latest
             );
 
             if (
@@ -81,7 +89,13 @@ public class BlockPollingService {
 
         } catch (Exception e) {
 
-            e.printStackTrace();
+            log.error(
+                "Error while polling blockchain",
+                e
+            );
+
         }
+
     }
+
 }

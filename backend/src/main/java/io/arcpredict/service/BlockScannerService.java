@@ -39,10 +39,10 @@ public class BlockScannerService {
             block.getNumber()
         );
 
-        log.info(
-            "Configured PredictionMarket: {}",
-            predictionMarketAddress
-        );
+        log.debug(
+    "Configured PredictionMarket: {}",
+    predictionMarketAddress
+);
 
         try {
 

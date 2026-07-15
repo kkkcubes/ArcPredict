@@ -2,12 +2,21 @@ package io.arcpredict.service;
 
 import lombok.RequiredArgsConstructor;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+
 
 @Service
 @RequiredArgsConstructor
 public class WebSocketBroadcastService {
+
+    private static final Logger log =
+    LoggerFactory.getLogger(
+        WebSocketBroadcastService.class
+    );
 
     private final SimpMessagingTemplate messagingTemplate;
 
@@ -45,24 +54,13 @@ public class WebSocketBroadcastService {
     Object payload
 ) {
 
-    System.out.println(
-        "===================================="
+    log.info(
+        "Broadcasting portfolio to /topic/portfolio"
     );
 
-    System.out.println(
-        "Broadcasting portfolio..."
-    );
-
-    System.out.println(
+    log.debug(
+        "Portfolio payload: {}",
         payload
-    );
-
-    System.out.println(
-        "Destination: /topic/portfolio"
-    );
-
-    System.out.println(
-        "===================================="
     );
 
     messagingTemplate.convertAndSend(
@@ -70,8 +68,8 @@ public class WebSocketBroadcastService {
         payload
     );
 
-    System.out.println(
-        "Portfolio broadcast finished"
+    log.info(
+        "Portfolio broadcast completed"
     );
 
 }

@@ -10,9 +10,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import org.web3j.protocol.Web3j;
 
 @Service
@@ -26,37 +23,31 @@ public class ArcEventListenerService {
 
     private final Web3j web3j;
 
-    private final BlockchainDecoderService
-        blockchainDecoderService;
-
-    private final MarketSyncService
-        marketSyncService;
-
     private final BlockScannerService
         blockScannerService;
 
     @Value("${contracts.prediction-market-address}")
-private String predictionMarketAddress;
+    private String predictionMarketAddress;
 
     @PostConstruct
-public void start() {
+    public void start() {
 
-    log.info(
-        "========================================"
-    );
+        log.info(
+            "========================================"
+        );
 
-    log.info(
-        "Prediction contract from Spring: {}",
-        predictionMarketAddress
-    );
+        log.info(
+            "Prediction contract from Spring: {}",
+            predictionMarketAddress
+        );
 
-    log.info(
-        "========================================"
-    );
+        log.info(
+            "========================================"
+        );
 
-    subscribeToLogs();
+        subscribeToLogs();
 
-}
+    }
 
     private void subscribeToLogs() {
 
@@ -91,5 +82,7 @@ public void start() {
 
                 }
             );
+
     }
+
 }
