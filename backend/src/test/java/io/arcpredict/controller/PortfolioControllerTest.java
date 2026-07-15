@@ -1,6 +1,7 @@
 package io.arcpredict.controller;
 
 import io.arcpredict.config.SecurityConfig;
+import io.arcpredict.dto.PortfolioAnalyticsResponse;
 import io.arcpredict.entity.TradeEntity;
 import io.arcpredict.repository.TradeRepository;
 import io.arcpredict.service.PortfolioService;
@@ -94,38 +95,59 @@ class PortfolioControllerTest {
                 )
             )
             .andExpect(
-                jsonPath(
-                    "$.wallet"
-                ).value(
-                    "0xabc"
-                )
+                jsonPath("$.wallet").value("0xabc")
             )
             .andExpect(
-                jsonPath(
-                    "$.totalInvested"
-                ).value(
-                    300
-                )
+                jsonPath("$.totalInvested").value(300)
             )
             .andExpect(
-                jsonPath(
-                    "$.yesPositions"
-                ).value(
-                    1
-                )
+                jsonPath("$.yesPositions").value(1)
             )
             .andExpect(
-                jsonPath(
-                    "$.noPositions"
-                ).value(
-                    1
-                )
+                jsonPath("$.noPositions").value(1)
             )
             .andExpect(
-                jsonPath(
-                    "$.totalTrades"
-                ).value(
-                    2
+                jsonPath("$.totalTrades").value(2)
+            );
+
+    }
+
+    @Test
+    void shouldReturnPortfolioAnalytics() throws Exception {
+
+        PortfolioAnalyticsResponse response =
+
+            PortfolioAnalyticsResponse
+                .builder()
+                .wallet("0xabc")
+                .totalInvested(300L)
+                .currentValue(360L)
+                .unrealizedPnL(60L)
+                .realizedPnL(25L)
+                .roi(20.0)
+                .totalTrades(2L)
+                .yesPositions(1L)
+                .noPositions(1L)
+                .averageEntryPrice(150.0)
+                .build();
+
+        when(
+            portfolioService.getPortfolioAnalytics(
+                "0xabc"
+            )
+        ).thenReturn(
+            response
+        );
+
+        mockMvc.perform(
+                get("/api/portfolio/analytics/0xabc")
+            )
+            .andExpect(
+                status().isOk()
+            )
+            .andExpect(
+                content().contentTypeCompatibleWith(
+                    MediaType.APPLICATION_JSON
                 )
             );
 
