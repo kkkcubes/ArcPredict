@@ -2,6 +2,7 @@ package io.arcpredict.service;
 
 import io.arcpredict.dto.InfrastructureMetricsResponse;
 import io.arcpredict.dto.RpcHealthResponse;
+import io.arcpredict.dto.SystemHealthResponse;
 
 import io.arcpredict.repository.EventRepository;
 import io.arcpredict.repository.MarketRepository;
@@ -15,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import static org.mockito.Mockito.when;
@@ -117,6 +119,53 @@ class SystemServiceTest {
 
         assertTrue(
             metrics.getUsedMemoryMb() >= 0
+        );
+
+    }
+
+    @Test
+    void shouldReturnHealthyStatus() {
+
+        RpcHealthResponse rpc =
+
+            RpcHealthResponse.builder()
+                .connected(true)
+                .latestBlock(12345L)
+                .latency(100L)
+                .build();
+
+        when(
+            rpcHealthService.getRpcHealth()
+        ).thenReturn(
+            rpc
+        );
+
+        SystemHealthResponse health =
+
+            systemService.getHealth();
+
+        assertEquals(
+            "UP",
+            health.getStatus()
+        );
+
+        assertEquals(
+            true,
+            health.getDatabaseConnected()
+        );
+
+        assertEquals(
+            true,
+            health.getRpcConnected()
+        );
+
+        assertEquals(
+            12345L,
+            health.getLatestBlock()
+        );
+
+        assertNotNull(
+            health.getTimestamp()
         );
 
     }
