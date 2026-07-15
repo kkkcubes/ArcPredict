@@ -98,4 +98,23 @@ class LeaderboardServiceTest {
 
     }
 
+    @Test
+void shouldReturnEmptyLeaderboardWhenNoTradesExist() {
+
+    when(
+        tradeRepository.findAll()
+    ).thenReturn(
+        List.of()
+    );
+
+    List<LeaderboardEntry> leaderboard =
+        leaderboardService.getLeaderboard();
+
+    assertEquals(
+        0,
+        leaderboard.size()
+    );
+
+}
+
 }
