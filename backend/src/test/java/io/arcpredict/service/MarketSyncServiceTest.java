@@ -280,4 +280,49 @@ class MarketSyncServiceTest {
 
     }
 
+    @Test
+void shouldResolveWinningWallet() {
+
+    MarketEntity market =
+        MarketEntity.builder()
+            .marketId(1L)
+            .yesPool(1000L)
+            .noPool(500L)
+            .protocolFees(0L)
+            .build();
+
+    WalletPositionEntity winner =
+        WalletPositionEntity.builder()
+            .walletAddress("0xwallet")
+            .marketId(1L)
+            .yesPosition(true)
+            .shares(100L)
+            .investedAmount(100L)
+            .build();
+
+    when(
+        walletRepository.findByMarketId(1L)
+    ).thenReturn(
+        List.of(winner)
+    );
+
+    when(
+        marketRepository.findById(1L)
+    ).thenReturn(
+        Optional.of(market)
+    );
+
+    marketSyncService.resolveMarket(
+        1L,
+        true
+    );
+
+    verify(walletRepository)
+        .save(any(WalletPositionEntity.class));
+
+    verify(marketRepository)
+        .save(any(MarketEntity.class));
+
+}
+
 }
