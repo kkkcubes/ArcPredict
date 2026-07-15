@@ -169,4 +169,46 @@ class DashboardServiceTest {
 
     }
 
+    @Test
+void shouldReturnWarningTreasuryHealth() throws Exception {
+
+    when(marketRepository.findLatestBlock()).thenReturn(1L);
+    when(marketRepository.count()).thenReturn(1L);
+    when(tradeRepository.count()).thenReturn(1L);
+
+    when(marketRepository.findTotalVolume()).thenReturn(100L);
+    when(marketRepository.findTotalProtocolFees()).thenReturn(10L);
+
+    when(treasuryReaderService.getVaultBalance()).thenReturn(1000L);
+
+    when(treasuryReaderService.getTotalLiquidity())
+        .thenReturn(1000L);
+
+    when(treasuryReaderService.getTotalLockedLiquidity())
+        .thenReturn(700L);
+
+    when(treasuryReaderService.getTotalReleasedLiquidity())
+        .thenReturn(300L);
+
+    when(marketRepository.countByResolved(false))
+        .thenReturn(1L);
+
+    when(marketRepository.countByResolved(true))
+        .thenReturn(0L);
+
+    DashboardResponse response =
+        dashboardService.getDashboard();
+
+    assertEquals(
+        70.0,
+        response.getTreasuryUtilization()
+    );
+
+    assertEquals(
+        "Warning",
+        response.getTreasuryHealth()
+    );
+
+}
+
 }
