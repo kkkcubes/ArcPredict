@@ -10,6 +10,7 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import java.time.Instant;
@@ -90,6 +91,41 @@ class PortfolioControllerTest {
             .andExpect(
                 content().contentTypeCompatibleWith(
                     MediaType.APPLICATION_JSON
+                )
+            )
+            .andExpect(
+                jsonPath(
+                    "$.wallet"
+                ).value(
+                    "0xabc"
+                )
+            )
+            .andExpect(
+                jsonPath(
+                    "$.totalInvested"
+                ).value(
+                    300
+                )
+            )
+            .andExpect(
+                jsonPath(
+                    "$.yesPositions"
+                ).value(
+                    1
+                )
+            )
+            .andExpect(
+                jsonPath(
+                    "$.noPositions"
+                ).value(
+                    1
+                )
+            )
+            .andExpect(
+                jsonPath(
+                    "$.totalTrades"
+                ).value(
+                    2
                 )
             );
 
