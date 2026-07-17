@@ -145,15 +145,15 @@ class PortfolioServiceTest {
                 .build();
 
         when(
-            tradeRepository.findByTrader(
-                "0xwallet"
-            )
-        ).thenReturn(
-            List.of(
-                trade1,
-                trade2
-            )
-        );
+    tradeRepository.findByTraderOrderByTimestampDesc(
+        "0xwallet"
+    )
+).thenReturn(
+    List.of(
+        trade1,
+        trade2
+    )
+);
 
         when(
             walletRepository.findByWalletAddress(
@@ -167,9 +167,9 @@ class PortfolioServiceTest {
         );
 
         PortfolioAnalyticsResponse analytics =
-            portfolioService.getPortfolioAnalytics(
-                "0xWallet"
-            );
+    portfolioService.getPortfolioAnalytics(
+        "0xwallet"
+    );
 
         assertEquals(
             300L,
@@ -240,18 +240,18 @@ class PortfolioServiceTest {
                 .build();
 
         when(
-            walletRepository.findByWalletAddress(
-                "0xwallet"
-            )
-        ).thenReturn(
-            List.of(position)
-        );
+    walletRepository.findByWalletAddress(
+        "0xwallet"
+    )
+).thenReturn(
+    List.of(position)
+);
 
         List<WalletPositionResponse> response =
 
             portfolioService.getWalletPositions(
-                "0xWallet"
-            );
+    "0xwallet"
+);
 
         assertEquals(
             1,

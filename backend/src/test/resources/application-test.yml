@@ -1,0 +1,18 @@
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    database-platform: org.hibernate.dialect.H2Dialect
+
+contracts:
+  vault-address: "0x1111111111111111111111111111111111111111"
+  treasury-address: "0x2222222222222222222222222222222222222222"
+  reward-distributor-address: "0x3333333333333333333333333333333333333333"
+  market-factory-address: "0x4444444444444444444444444444444444444444"
+  prediction-market-address: "0x5555555555555555555555555555555555555555"

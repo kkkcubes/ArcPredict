@@ -76,13 +76,13 @@ class PortfolioControllerTest {
 
         );
 
-        when(
-            tradeRepository.findByTrader(
-                "0xabc"
-            )
-        ).thenReturn(
-            trades
-        );
+      when(
+    tradeRepository.findByTraderOrderByTimestampDesc(
+        "0xabc"
+    )
+).thenReturn(
+    trades
+);
 
         mockMvc.perform(
                 get("/api/portfolio/0xabc")

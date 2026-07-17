@@ -319,13 +319,13 @@ void shouldReturnTradesByTrader() throws Exception {
 
     );
 
-    when(
-        tradeRepository.findByTrader(
-            "0xabc"
-        )
-    ).thenReturn(
-        trades
-    );
+   when(
+    tradeRepository.findByTraderOrderByTimestampDesc(
+        "0xabc"
+    )
+).thenReturn(
+    trades
+);
 
     mockMvc.perform(
             get("/api/trades/trader/0xabc")
