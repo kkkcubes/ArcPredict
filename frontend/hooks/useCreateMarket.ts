@@ -21,22 +21,48 @@ export function useCreateMarket() {
     endTime: number
   ) => {
 
-    return writeContractAsync({
-      address:
-        CONTRACTS.predictionMarket as `0x${string}`,
+    console.log(
+      "createMarket() called"
+    );
 
-      abi:
-        PredictionMarketABI.abi,
+    try {
 
-      functionName:
-        "createMarket",
+      const hash =
+        await writeContractAsync({
 
-      args: [
-        question,
-        category,
-        BigInt(endTime),
-      ],
-    });
+          address:
+            CONTRACTS.predictionMarket as `0x${string}`,
+
+          abi:
+            PredictionMarketABI.abi,
+
+          functionName:
+            "createMarket",
+
+          args: [
+            question,
+            category,
+            BigInt(endTime),
+          ],
+        });
+
+      console.log(
+        "Create Market TX:",
+        hash
+      );
+
+      return hash;
+
+    } catch (error) {
+
+      console.error(
+        "Create Market Error:",
+        error
+      );
+
+      throw error;
+
+    }
 
   };
 
@@ -44,4 +70,5 @@ export function useCreateMarket() {
     createMarket,
     isPending,
   };
+
 }

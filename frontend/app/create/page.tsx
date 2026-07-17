@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { toast } from "react-hot-toast";
+import { useAccount } from "wagmi";
 
 import BackButton from "@/components/ui/BackButton";
 
@@ -25,8 +26,23 @@ export default function CreateMarketPage() {
     isPending,
   } = useCreateMarket();
 
+  const {
+    address,
+    isConnected,
+  } = useAccount();
+
   const handleCreateMarket =
     async () => {
+
+      if (!isConnected) {
+
+        toast.error(
+          "Please connect your wallet first."
+        );
+
+        return;
+
+      }
 
       try {
 
@@ -68,6 +84,28 @@ export default function CreateMarketPage() {
 
       <BackButton />
 
+      <div className="mb-4">
+
+        <p className="font-medium">
+          Connected:{" "}
+          <span
+            className={
+              isConnected
+                ? "text-green-600"
+                : "text-red-600"
+            }
+          >
+            {isConnected ? "YES" : "NO"}
+          </span>
+        </p>
+
+        <p className="text-sm break-all">
+          Address:{" "}
+          {address ?? "Not Connected"}
+        </p>
+
+      </div>
+
       <div className="mb-8">
 
         <h1 className="text-4xl font-bold">
@@ -82,17 +120,40 @@ export default function CreateMarketPage() {
 
       <div className="mb-10">
 
-        <p className="text-sm text-violet-600 font-semibold uppercase tracking-wider">
+        <p
+          className="
+            text-sm
+            text-violet-600
+            font-semibold
+            uppercase
+            tracking-wider
+          "
+        >
           Prediction Market
         </p>
 
-        <h2 className="text-5xl font-bold text-gray-900 mt-2">
+        <h2
+          className="
+            text-5xl
+            font-bold
+            text-gray-900
+            mt-2
+          "
+        >
           Create a New Market
         </h2>
 
-        <p className="text-lg text-gray-500 mt-4 max-w-2xl">
+        <p
+          className="
+            text-lg
+            text-gray-500
+            mt-4
+            max-w-2xl
+          "
+        >
           Launch a new prediction market on ArcPredict.
-          Define a clear question, choose a category,
+          Define a clear question,
+          choose a category,
           and set the resolution date.
         </p>
 
@@ -113,7 +174,14 @@ export default function CreateMarketPage() {
 
         <div className="mb-5">
 
-          <label className="block mb-2 font-semibold text-gray-700">
+          <label
+            className="
+              block
+              mb-2
+              font-semibold
+              text-gray-700
+            "
+          >
             Market Question
           </label>
 

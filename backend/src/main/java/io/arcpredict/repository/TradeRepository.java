@@ -23,14 +23,28 @@ public interface TradeRepository
         > {
 
     List<TradeEntity>
-    findByMarketId(
-        Long marketId
-    );
+findByMarketId(
+    Long marketId
+);
 
-    List<TradeEntity>
-    findByTrader(
-        String trader
-    );
+List<TradeEntity>
+findByTrader(
+    String trader
+);
+
+List<TradeEntity>
+findByTraderOrderByTimestampDesc(
+    String trader
+);
+
+Page<TradeEntity>
+findByTraderOrderByTimestampDesc(
+
+    String trader,
+
+    Pageable pageable
+
+);
 
     Optional<TradeEntity>
     findByTxHash(

@@ -44,3 +44,5 @@ mcp/dist/
 mcp/.env
 mcp/.env*
 
+backend.log
+

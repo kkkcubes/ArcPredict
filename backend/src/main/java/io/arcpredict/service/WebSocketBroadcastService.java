@@ -21,14 +21,27 @@ public class WebSocketBroadcastService {
     private final SimpMessagingTemplate messagingTemplate;
 
     public void broadcastMarket(
-        Object payload
-    ) {
+    Object payload
+) {
 
-        messagingTemplate.convertAndSend(
-            "/topic/markets",
-            payload
-        );
-    }
+    log.info(
+        "Broadcasting market update to /topic/markets"
+    );
+
+    log.debug(
+        "Market payload: {}",
+        payload
+    );
+
+    messagingTemplate.convertAndSend(
+        "/topic/markets",
+        payload
+    );
+
+    log.info(
+        "Market broadcast completed"
+    );
+}
 
     public void broadcastTrade(
         Object payload

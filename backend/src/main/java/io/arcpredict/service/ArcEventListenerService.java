@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 import org.web3j.protocol.Web3j;
 
-@Service
+// @Service
 @RequiredArgsConstructor
 public class ArcEventListenerService {
 

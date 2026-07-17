@@ -16,7 +16,7 @@ import { CONTRACTS }
 
 import {
   registerTransactionToast,
-} from "@/lib/transactionToastStore";  
+} from "@/lib/transactionToastStore";
 
 export function useTrade() {
 
@@ -31,57 +31,68 @@ export function useTrade() {
   ) => {
 
     const toastId = toast.loading(
-  "Transaction submitted..."
-);
+      "Transaction submitted..."
+    );
 
     try {
 
-      console.log(
-  "PredictionMarket address:",
-  CONTRACTS.predictionMarket
-);
+      const tx =
+        await writeContractAsync({
 
-const tx =
-  await writeContractAsync({
-    address:
-      CONTRACTS.predictionMarket as `0x${string}`,
-    abi:
-      PredictionMarketABI.abi,
-    functionName:
-      "buyYes",
-    args: [
-      BigInt(marketId),
-      BigInt(amount),
-    ],
-  });
+          address:
+            CONTRACTS.predictionMarket as `0x${string}`,
 
-toast.loading(
-  "Waiting for blockchain confirmation...",
-  {
-    id: toastId,
-  }
-);
+          abi:
+            PredictionMarketABI.abi,
 
-registerTransactionToast(
-  tx,
-  toastId
-);
+          functionName:
+            "buyYes",
 
-return tx;
+          args: [
+
+            BigInt(
+              marketId
+            ),
+
+            BigInt(
+              amount
+            ),
+
+          ],
+
+        });
+
+      toast.loading(
+        "Waiting for blockchain confirmation...",
+        {
+          id: toastId,
+        }
+      );
+
+      registerTransactionToast(
+        tx,
+        toastId
+      );
+
+      return tx;
 
     } catch (error) {
 
-      console.error(error);
+      console.error(
+        error
+      );
 
       toast.error(
-  "Transaction failed",
-  {
-    id: toastId,
-  }
-);
+        "Transaction failed",
+        {
+          id: toastId,
+        }
+      );
 
-throw error;
+      throw error;
+
     }
+
   };
 
   const buyNo = async (
@@ -90,64 +101,76 @@ throw error;
   ) => {
 
     const toastId = toast.loading(
-  "Transaction submitted..."
-);
+      "Transaction submitted..."
+    );
 
     try {
 
-const tx =
-  await writeContractAsync({
-    address:
-      CONTRACTS.predictionMarket as `0x${string}`,
-    abi:
-      PredictionMarketABI.abi,
-    functionName:
-      "buyNo",
-    args: [
-      BigInt(marketId),
-      BigInt(amount),
-    ],
-  });
+      const tx =
+        await writeContractAsync({
 
-  console.log(
-  "Transaction hash:",
-  tx
-);
+          address:
+            CONTRACTS.predictionMarket as `0x${string}`,
 
-toast.loading(
-  "Waiting for blockchain confirmation...",
-  {
-    id: toastId,
-  }
-);
+          abi:
+            PredictionMarketABI.abi,
 
-registerTransactionToast(
-  tx,
-  toastId
-);
+          functionName:
+            "buyNo",
 
-return tx;
+          args: [
 
-return tx;
+            BigInt(
+              marketId
+            ),
+
+            BigInt(
+              amount
+            ),
+
+          ],
+
+        });
+
+      toast.loading(
+        "Waiting for blockchain confirmation...",
+        {
+          id: toastId,
+        }
+      );
+
+      registerTransactionToast(
+        tx,
+        toastId
+      );
+
+      return tx;
 
     } catch (error) {
 
-      console.error(error);
+      console.error(
+        error
+      );
 
       toast.error(
-  "Transaction failed",
-  {
-    id: toastId,
-  }
-);
+        "Transaction failed",
+        {
+          id: toastId,
+        }
+      );
 
-throw error;
+      throw error;
+
     }
+
   };
 
   return {
+
     buyYes,
     buyNo,
     isPending,
+
   };
+
 }

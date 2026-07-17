@@ -70,28 +70,6 @@ export default function PortfolioSummary() {
 
   }
 
- console.log("CARDS =", [
-  {
-    title: "Total Invested",
-    value:
-      analytics?.totalInvested ??
-      portfolio?.totalInvested ??
-      0,
-  },
-  {
-    title: "Current Value",
-    value:
-      analytics?.currentValue ??
-      0,
-  },
-  {
-    title: "ROI",
-    value:
-      analytics?.roi ??
-      0,
-  },
-]);
-
 const cards = [
 
     {
@@ -175,6 +153,16 @@ const cards = [
       icon: BarChart3,
     },
 
+    {
+  title: "Realized Rewards",
+  value:
+    analytics?.realizedPnL ??
+    0,
+  color: "text-emerald-600",
+  icon: CircleDollarSign,
+  suffix: "USDC",
+},
+
   ];
 
 
@@ -218,13 +206,26 @@ const cards = [
                 </p>
 
                 <h3
-                  className={`
-                    mt-3
-                    text-4xl
-                    font-black
-                    ${card.color}
-                  `}
-                >
+  className={`
+    mt-3
+    text-4xl
+    font-black
+
+    ${
+      card.title === "ROI"
+        ? card.value >= 0
+          ? "text-green-600"
+          : "text-red-600"
+
+      : card.title === "Unrealized P&L"
+        ? card.value >= 0
+          ? "text-green-600"
+          : "text-red-600"
+
+      : card.color
+    }
+  `}
+>
 
                   {
 

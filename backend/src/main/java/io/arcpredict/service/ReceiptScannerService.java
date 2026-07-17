@@ -167,6 +167,16 @@ public class ReceiptScannerService {
                             event.getMarketId()
                         );
 
+                        log.info(
+    "MarketData category: {}",
+    marketData.category()
+);
+
+log.info(
+    "MarketData endTime: {}",
+    marketData.endTime()
+);
+
                     MarketEntity market =
                         MarketEntity.builder()
                             .marketId(

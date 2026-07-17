@@ -6,6 +6,9 @@ import BackButton
 import PortfolioSummary
   from "@/components/portfolio/PortfolioSummary";
 
+import TransactionHistory
+  from "@/components/portfolio/TransactionHistory";
+
 export default function PortfolioPage() {
 
   return (
@@ -28,7 +31,13 @@ export default function PortfolioPage() {
 
       </div>
 
-      <PortfolioSummary />
+      <div className="space-y-8">
+
+        <PortfolioSummary />
+
+        <TransactionHistory />
+
+      </div>
 
     </main>
 

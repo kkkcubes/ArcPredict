@@ -43,11 +43,6 @@ export function useTransactionConfirmation() {
               message.body
             );
 
-          console.log(
-            "Transaction confirmed:",
-            payload
-          );
-
           const toastId =
             getTransactionToast(
               payload.txHash

@@ -27,35 +27,27 @@ import {
 } from "@/hooks/useTradesData";
 
 import RecentTradesSection
-  from "@/components/dashboard/RecentTradesSection";   
-  
+  from "@/components/dashboard/RecentTradesSection";
+
 import PortfolioSection
-  from "@/components/dashboard/PortfolioSection";  
+  from "@/components/dashboard/PortfolioSection";
 
 import ProtocolHealth
-  from "@/components/dashboard/ProtocolHealth";  
+  from "@/components/dashboard/ProtocolHealth";
 
 export default function DashboardPage() {
 
-  console.log(
-    "Dashboard mounted"
-  );
+  const {
+    stats,
+    loading,
+    refresh,
+    setStats,
+  } = useDashboardStats();
 
   const {
-  stats,
-  loading,
-  refresh,
-  setStats,
-} = useDashboardStats();
-
-  const {
-  trades,
-  loading: tradesLoading,
-} = useTradesData();
-
-  console.log(
-    "Calling useBackendRealtime"
-  );
+    trades,
+    loading: tradesLoading,
+  } = useTradesData();
 
   useBackendRealtime(
 
@@ -147,10 +139,10 @@ export default function DashboardPage() {
       <SystemMetrics />
 
       <ProtocolHealth
-  stats={stats}
-  loading={loading}
-  refresh={refresh}
-/>
+        stats={stats}
+        loading={loading}
+        refresh={refresh}
+      />
 
       <TreasuryOverview
         stats={stats}
@@ -161,11 +153,11 @@ export default function DashboardPage() {
       <LeaderboardSection />
 
       <RecentTradesSection
-  trades={trades}
-  loading={tradesLoading}
-/>
+        trades={trades}
+        loading={tradesLoading}
+      />
 
-<PortfolioSection />
+      <PortfolioSection />
 
     </main>
 

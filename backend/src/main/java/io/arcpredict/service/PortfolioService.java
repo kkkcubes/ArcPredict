@@ -52,11 +52,11 @@ public class PortfolioService {
     ) {
 
         List<TradeEntity>
-            trades =
-                tradeRepository
-                    .findByTrader(
-                        wallet.toLowerCase()
-                    );
+    trades =
+        tradeRepository
+            .findByTraderOrderByTimestampDesc(
+                wallet.toLowerCase()
+            );
 
                     List<WalletPositionEntity>
     positions =

@@ -113,6 +113,17 @@
             </artifactId>
         </dependency>
 
+        <!-- Spring Retry -->
+
+<dependency>
+    <groupId>
+        org.springframework.retry
+    </groupId>
+    <artifactId>
+        spring-retry
+    </artifactId>
+</dependency>
+
         <!-- Web3 -->
 
         <dependency>

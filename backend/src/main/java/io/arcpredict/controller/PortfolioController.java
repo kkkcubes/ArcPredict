@@ -2,15 +2,22 @@ package io.arcpredict.controller;
 
 import io.arcpredict.dto.PortfolioAnalyticsResponse;
 import io.arcpredict.dto.PortfolioResponse;
-import io.arcpredict.entity.TradeEntity;
-import io.arcpredict.repository.TradeRepository;
-import io.arcpredict.service.PortfolioService;
 import io.arcpredict.dto.WalletPositionResponse;
+
+import io.arcpredict.entity.TradeEntity;
+
+import io.arcpredict.repository.TradeRepository;
+
+import io.arcpredict.service.PortfolioService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import org.springframework.web.bind.annotation.*;
 
@@ -20,7 +27,6 @@ import java.util.List;
     name = "Portfolio",
     description = "Portfolio management APIs"
 )
-
 @RestController
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*")
@@ -32,11 +38,11 @@ public class PortfolioController {
 
     private final PortfolioService
         portfolioService;
-    
-        @Operation(
-    summary = "Get portfolio",
-    description = "Returns the portfolio summary for a wallet."
-)
+
+    @Operation(
+        summary = "Get portfolio",
+        description = "Returns the portfolio summary for a wallet."
+    )
     @GetMapping("/{wallet}")
     public PortfolioResponse portfolio(
         @PathVariable
@@ -44,9 +50,10 @@ public class PortfolioController {
     ) {
 
         List<TradeEntity> trades =
-            tradeRepository.findByTrader(
-                wallet.toLowerCase()
-            );
+            tradeRepository
+                .findByTraderOrderByTimestampDesc(
+                    wallet.toLowerCase()
+                );
 
         long invested = 0;
         long yes = 0;
@@ -98,10 +105,9 @@ public class PortfolioController {
     }
 
     @Operation(
-    summary = "Get portfolio analytics",
-    description = "Returns portfolio analytics for a wallet."
-)
-
+        summary = "Get portfolio analytics",
+        description = "Returns portfolio analytics for a wallet."
+    )
     @GetMapping("/analytics/{wallet}")
     public PortfolioAnalyticsResponse
     portfolioAnalytics(
@@ -117,21 +123,58 @@ public class PortfolioController {
     }
 
     @Operation(
-    summary = "Get wallet positions",
-    description = "Returns all positions for a wallet."
-)
-@GetMapping("/positions/{wallet}")
-public List<WalletPositionResponse>
-walletPositions(
-    @PathVariable
-    String wallet
-) {
+        summary = "Get wallet positions",
+        description = "Returns all positions for a wallet."
+    )
+    @GetMapping("/positions/{wallet}")
+    public List<WalletPositionResponse>
+    walletPositions(
+        @PathVariable
+        String wallet
+    ) {
 
-    return portfolioService
-        .getWalletPositions(
-            wallet
-        );
+        return portfolioService
+            .getWalletPositions(
+                wallet
+            );
 
-}
+    }
+
+    @Operation(
+        summary = "Get transaction history",
+        description = "Returns paginated transaction history for a wallet."
+    )
+    @GetMapping("/transactions/{wallet}")
+    public Page<TradeEntity>
+    transactionHistory(
+
+        @PathVariable
+        String wallet,
+
+        @RequestParam(
+            defaultValue = "0"
+        )
+        int page,
+
+        @RequestParam(
+            defaultValue = "20"
+        )
+        int size
+
+    ) {
+
+        Pageable pageable =
+            PageRequest.of(
+                page,
+                size
+            );
+
+        return tradeRepository
+            .findByTraderOrderByTimestampDesc(
+                wallet.toLowerCase(),
+                pageable
+            );
+
+    }
 
 }

@@ -12,7 +12,7 @@ import {
 } from "@/services/backendMarketService";
 
 import {
-  stompClient,
+  subscribe,
 } from "@/lib/stomp";
 
 interface MarketsContextType {
@@ -50,6 +50,16 @@ export function MarketsProvider({
         const data =
           await getMarkets();
 
+        console.log(
+          "[MarketsProvider] API returned:",
+          data
+        );
+
+        console.log(
+          "[MarketsProvider] Count:",
+          data?.length
+        );
+
         setMarkets(data);
 
       } catch (error) {
@@ -72,85 +82,69 @@ export function MarketsProvider({
 
   useEffect(() => {
 
-    let subscription: any;
+    console.log(
+      "[MarketsProvider] Current markets:",
+      markets.length,
+      markets
+    );
 
-    const subscribe = () => {
+  }, [markets]);
 
-      subscription =
-        stompClient.subscribe(
+  useEffect(() => {
 
-          "/topic/markets",
+    const unsubscribe = subscribe(
 
-          (message) => {
+      "/topic/markets",
 
-            const updatedMarket =
-              JSON.parse(
-                message.body
+      (message) => {
+
+        const updatedMarket =
+          JSON.parse(
+            message.body
+          );
+
+        console.log(
+          "[MarketsProvider] received",
+          updatedMarket
+        );
+
+        setMarkets(
+          previous => {
+
+            const index =
+              previous.findIndex(
+                m =>
+                  m.marketId ===
+                  updatedMarket.marketId
               );
 
-            setMarkets(
-              previous => {
+            if (index === -1) {
 
-                const index =
-                  previous.findIndex(
-                    m =>
-                      m.marketId ===
-                      updatedMarket.marketId
-                  );
+              return [
+                updatedMarket,
+                ...previous,
+              ];
 
-                if (
-                  index === -1
-                ) {
+            }
 
-                  return [
-                    updatedMarket,
-                    ...previous,
-                  ];
+            const copy = [...previous];
 
-                }
+            copy[index] =
+              updatedMarket;
 
-                const copy =
-                  [...previous];
-
-                copy[index] =
-                  updatedMarket;
-
-                return copy;
-
-              }
-            );
+            return copy;
 
           }
 
         );
 
-    };
+      }
 
-    if (
-      stompClient.connected
-    ) {
-
-      subscribe();
-
-    } else {
-
-      const previous =
-        stompClient.onConnect;
-
-      stompClient.onConnect =
-        frame => {
-
-          previous?.(frame);
-
-          subscribe();
-
-        };
-
-    }
+    );
 
     return () => {
 
-      subscription?.unsubscribe();
+      unsubscribe?.();
 
     };
 

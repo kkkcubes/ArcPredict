@@ -18,11 +18,6 @@ export function useArcBridge() {
 
         setLoading(true);
 
-        console.log(
-          "Bridge request:",
-          amount
-        );
-
         return true;
 
       } catch (error) {
@@ -36,11 +31,16 @@ export function useArcBridge() {
       } finally {
 
         setLoading(false);
+
       }
+
     };
 
   return {
+
     bridgeUSDC,
     loading,
+
   };
+
 }

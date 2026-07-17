@@ -108,9 +108,9 @@ public class TradeController {
     ) {
 
         return tradeRepository
-            .findByTrader(
-                wallet
-            );
+    .findByTraderOrderByTimestampDesc(
+        wallet.toLowerCase()
+    );
 
     }
 

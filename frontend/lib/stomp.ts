@@ -15,7 +15,9 @@ export const stompClient = new Client({
 
   reconnectDelay: 5000,
 
-  debug: () => {},
+  debug: (message) => {
+  console.log("[STOMP]", message);
+},
 
 });
 

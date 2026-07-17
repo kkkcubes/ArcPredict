@@ -4,6 +4,14 @@ import {
   useState,
 } from "react";
 
+import {
+  toast,
+} from "react-hot-toast";
+
+import {
+  useTrade,
+} from "@/hooks/useTrade";
+
 interface Props {
   marketId: number;
 }
@@ -15,27 +23,70 @@ export default function TradePanel({
   const [amount, setAmount] =
     useState("");
 
+ const {
+  buyYes: submitBuyYes,
+  buyNo: submitBuyNo,
+  isPending,
+} = useTrade();
+
   const buyYes =
     async () => {
 
-      console.log(
-        "Buy YES",
-        marketId,
-        amount
-      );
+      const value =
+        Number(amount);
+
+      if (
+        !Number.isFinite(value) ||
+        value <= 0
+      ) {
+
+        toast.error(
+          "Enter a valid amount"
+        );
+
+        return;
+
+      }
+
+      await submitBuyYes(
+  marketId,
+  value
+);
+
+setAmount("");
+
     };
 
   const buyNo =
     async () => {
 
-      console.log(
-        "Buy NO",
-        marketId,
-        amount
-      );
+      const value =
+        Number(amount);
+
+      if (
+        !Number.isFinite(value) ||
+        value <= 0
+      ) {
+
+        toast.error(
+          "Enter a valid amount"
+        );
+
+        return;
+
+      }
+
+     await submitBuyNo(
+  marketId,
+  value
+);
+
+setAmount("");
+
     };
 
   return (
+
     <div className="card p-6">
 
       <h2
@@ -49,6 +100,7 @@ export default function TradePanel({
       </h2>
 
       <input
+  disabled={isPending}
         value={amount}
         onChange={(e) =>
           setAmount(
@@ -75,31 +127,39 @@ export default function TradePanel({
       >
 
         <button
-          onClick={buyYes}
+  onClick={buyYes}
+  disabled={isPending}
           className="
-            bg-green-600
-            px-6
-            py-3
-            rounded-xl
-          "
+  bg-green-600
+  px-6
+  py-3
+  rounded-xl
+"
         >
-          Buy YES
+          {isPending
+  ? "Submitting..."
+  : "Buy YES"}
         </button>
 
         <button
-          onClick={buyNo}
+  onClick={buyNo}
+  disabled={isPending}
           className="
-            bg-red-600
-            px-6
-            py-3
-            rounded-xl
-          "
+  bg-green-600
+  px-6
+  py-3
+  rounded-xl
+"
         >
-          Buy NO
+          {isPending
+  ? "Submitting..."
+  : "Buy NO"}
         </button>
 
       </div>
 
     </div>
+
   );
+
 }

@@ -7,8 +7,8 @@ import LoadingSkeleton from "@/components/ui/LoadingSkeleton";
 
 export default function PositionTable() {
 
-  const {
-  portfolio,
+ const {
+  positions,
   loading,
 } = usePortfolioContext();
 
@@ -42,7 +42,7 @@ export default function PositionTable() {
           mb-6
         "
       >
-        Position Summary
+        Live Positions
       </h2>
 
       <div
@@ -60,110 +60,201 @@ export default function PositionTable() {
 
           <thead>
 
-            <tr
-              className="
-                border-b
-                border-gray-200
-              "
-            >
+<tr
+  className="
+    border-b
+    border-gray-200
+  "
+>
 
-              <th
-                className="
-                  text-left
-                  py-4
-                  px-2
-                  text-sm
-                  font-semibold
-                  text-gray-500
-                "
-              >
-                Metric
-              </th>
+  <th className="py-3 text-left">
+    Market
+  </th>
 
-              <th
-                className="
-                  text-left
-                  py-4
-                  px-2
-                  text-sm
-                  font-semibold
-                  text-gray-500
-                "
-              >
-                Value
-              </th>
+  <th className="py-3 text-left">
+    Position
+  </th>
 
-            </tr>
+  <th className="py-3 text-left">
+    Shares
+  </th>
 
-          </thead>
+  <th className="py-3 text-left">
+    Invested
+  </th>
+
+  <th className="py-3 text-left">
+    Current Value
+  </th>
+
+  <th className="py-3 text-left">
+    Rewards
+  </th>
+
+  <th className="py-3 text-left">
+    Status
+  </th>
+
+</tr>
+
+</thead>
 
           <tbody>
 
-            <tr
-              className="
-                border-b
-                border-gray-100
-              "
+  {positions.length === 0 ? (
+
+    <tr>
+
+      <td
+        colSpan={7}
+        className="
+          py-8
+          text-center
+          text-gray-500
+        "
+      >
+        No positions found.
+      </td>
+
+    </tr>
+
+  ) : (
+
+    positions.map(
+
+      (position) => (
+
+        <tr
+          key={`${position.marketId}-${position.yesPosition}`}
+          className="
+            border-b
+            border-gray-100
+          "
+        >
+
+          <td className="py-4">
+
+            #{position.marketId}
+
+          </td>
+
+          <td className="py-4">
+
+            <span
+              className={
+                position.yesPosition
+                  ? "text-green-600 font-semibold"
+                  : "text-red-600 font-semibold"
+              }
             >
 
-              <td className="py-4 px-2">
-                YES Positions
-              </td>
+              {position.yesPosition
+                ? "YES"
+                : "NO"}
 
-              <td
+            </span>
+
+          </td>
+
+          <td className="py-4">
+
+            {position.shares.toLocaleString()}
+
+          </td>
+
+          <td className="py-4">
+
+            {position.investedAmount.toLocaleString()}
+
+          </td>
+
+          <td
+  className="
+    py-4
+    font-semibold
+    text-blue-600
+  "
+>
+
+  {position.currentValue.toLocaleString()}
+
+</td>
+
+         <td
+  className="
+    py-4
+    font-semibold
+    text-emerald-600
+  "
+>
+
+  {position.claimableRewards.toLocaleString()}
+
+</td>
+
+          <td className="py-4">
+
+            {position.claimed ? (
+
+              <span
                 className="
-                  py-4
-                  px-2
+                  rounded-full
+                  bg-gray-200
+                  px-3
+                  py-1
+                  text-xs
                   font-semibold
+                  text-gray-700
                 "
               >
-                {portfolio?.yesPositions ?? 0}
-              </td>
+                Claimed
+              </span>
 
-            </tr>
+            ) : position.winner ? (
 
-            <tr
-              className="
-                border-b
-                border-gray-100
-              "
-            >
-
-              <td className="py-4 px-2">
-                NO Positions
-              </td>
-
-              <td
+              <span
                 className="
-                  py-4
-                  px-2
+                  rounded-full
+                  bg-green-100
+                  px-3
+                  py-1
+                  text-xs
                   font-semibold
+                  text-green-700
                 "
               >
-                {portfolio?.noPositions ?? 0}
-              </td>
+                Winner
+              </span>
 
-            </tr>
+            ) : (
 
-            <tr>
+  <span
+    className="
+      rounded-full
+      bg-yellow-100
+      px-3
+      py-1
+      text-xs
+      font-semibold
+      text-yellow-700
+    "
+  >
+    Open
+  </span>
 
-              <td className="py-4 px-2">
-                Total Trades
-              </td>
+)}
 
-              <td
-                className="
-                  py-4
-                  px-2
-                  font-semibold
-                "
-              >
-                {portfolio?.totalTrades ?? 0}
-              </td>
+          </td>
 
-            </tr>
+        </tr>
 
-          </tbody>
+      )
+
+    )
+
+  )}
+
+</tbody>
 
         </table>
 

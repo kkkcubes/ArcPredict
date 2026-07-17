@@ -26,6 +26,8 @@ interface PortfolioContextType {
 
     analytics: any;
 
+    positions: any[];
+
     loading: boolean;
 
     refresh: () => Promise<void>;
@@ -58,6 +60,11 @@ export function PortfolioProvider({
   ] = useState<any>(null);
 
   const [
+  positions,
+  setPositions,
+] = useState<any[]>([]);
+
+  const [
     loading,
     setLoading,
   ] = useState(true);
@@ -67,15 +74,17 @@ export function PortfolioProvider({
 
       if (!address) {
 
-        setPortfolio(null);
+    setPortfolio(null);
 
-        setAnalytics(null);
+    setAnalytics(null);
 
-        setLoading(false);
+    setPositions([]);
 
-        return;
+    setLoading(false);
 
-      }
+    return;
+
+}
 
       try {
 
@@ -102,6 +111,17 @@ export function PortfolioProvider({
         setAnalytics(
           analyticsData
         );
+
+        const positionsData =
+
+  await portfolioService
+    .getWalletPositions(
+      address
+    );
+
+setPositions(
+  positionsData
+);
 
       } catch (error) {
 
@@ -202,6 +222,8 @@ refresh();
     portfolio,
 
     analytics,
+
+    positions,
 
     loading,
 

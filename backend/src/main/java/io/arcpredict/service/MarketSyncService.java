@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import java.time.Instant;
 import java.util.List;
@@ -139,9 +140,24 @@ if (
                 )
                 .build();
 
-        tradeRepository.save(
-            trade
-        );
+        try {
+
+    tradeRepository.save(
+        trade
+    );
+
+} catch (
+    DataIntegrityViolationException e
+) {
+
+    log.info(
+        "Duplicate transaction ignored: {}",
+        txHash
+    );
+
+    return;
+
+}
 
         Optional<WalletPositionEntity>
     existingPosition =

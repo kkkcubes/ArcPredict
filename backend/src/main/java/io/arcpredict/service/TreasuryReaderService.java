@@ -2,6 +2,9 @@ package io.arcpredict.service;
 
 import lombok.RequiredArgsConstructor;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +27,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TreasuryReaderService {
 
+    private static final Logger log =
+        LoggerFactory.getLogger(
+            TreasuryReaderService.class
+        );
+
     private final Web3j web3j;
 
     @Value("${contracts.treasury-address}")
@@ -31,6 +39,10 @@ public class TreasuryReaderService {
 
     public Long getVaultBalance()
         throws Exception {
+
+        log.info(
+            "Calling getVaultBalance()"
+        );
 
         return callUint256Function(
             "getVaultBalance"
@@ -40,6 +52,10 @@ public class TreasuryReaderService {
     public Long getTotalLiquidity()
         throws Exception {
 
+        log.info(
+            "Calling totalLiquidity()"
+        );
+
         return callUint256Function(
             "totalLiquidity"
         );
@@ -48,6 +64,10 @@ public class TreasuryReaderService {
     public Long getTotalLockedLiquidity()
         throws Exception {
 
+        log.info(
+            "Calling totalLockedLiquidity()"
+        );
+
         return callUint256Function(
             "totalLockedLiquidity"
         );
@@ -55,6 +75,10 @@ public class TreasuryReaderService {
 
     public Long getTotalReleasedLiquidity()
         throws Exception {
+
+        log.info(
+            "Calling totalReleasedLiquidity()"
+        );
 
         return callUint256Function(
             "totalReleasedLiquidity"
@@ -65,41 +89,83 @@ public class TreasuryReaderService {
         String functionName
     ) throws Exception {
 
-        Function function =
-            new Function(
-                functionName,
-                Collections.emptyList(),
-                List.of(
-                    new TypeReference<Uint256>() {}
+        try {
+
+            Function function =
+                new Function(
+                    functionName,
+                    Collections.emptyList(),
+                    List.of(
+                        new TypeReference<Uint256>() {}
+                    )
+                );
+
+            var ethCallResponse =
+    web3j
+        .ethCall(
+            Transaction.createEthCallTransaction(
+                null,
+                treasuryAddress,
+                FunctionEncoder.encode(
+                    function
                 )
-            );
+            ),
+            DefaultBlockParameterName.LATEST
+        )
+        .send();
 
-        String response =
-            web3j
-                .ethCall(
-                    Transaction.createEthCallTransaction(
-                        null,
-                        treasuryAddress,
-                        FunctionEncoder.encode(
-                            function
-                        )
-                    ),
-                    DefaultBlockParameterName.LATEST
-                )
-                .send()
-                .getValue();
+if (ethCallResponse.hasError()) {
 
-        List<Type> output =
-            FunctionReturnDecoder.decode(
-                response,
-                function.getOutputParameters()
-            );
+    System.out.println(
+        "RPC Error Code: "
+        + ethCallResponse
+            .getError()
+            .getCode()
+    );
 
-        if (output.isEmpty()) {
-            return 0L;
-        }
+    System.out.println(
+        "RPC Error Message: "
+        + ethCallResponse
+            .getError()
+            .getMessage()
+    );
+}
 
-        return ((BigInteger) output.get(0).getValue())
-            .longValue();
+String response =
+    ethCallResponse.getValue();
+
+log.debug(
+    "Raw Response: {}",
+    response
+);
+
+            List<Type> output =
+                FunctionReturnDecoder.decode(
+                    response,
+                    function.getOutputParameters()
+                );
+
+            if (output.isEmpty()) {
+                return 0L;
+            }
+
+            return ((BigInteger) output.get(0).getValue())
+                .longValue();
+
+        } catch (Exception e) {
+
+    log.error(
+    "RPC failed for function: {}",
+    functionName,
+    e
+);
+
+    log.warn(
+    "Returning default value 0 for function: {}",
+    functionName
+);
+
+    return 0L;
+}
     }
 }

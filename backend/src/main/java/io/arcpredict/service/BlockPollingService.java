@@ -14,7 +14,7 @@ import org.web3j.protocol.core.methods.response.EthBlock;
 
 import java.math.BigInteger;
 
-//@Service
+@Service
 @RequiredArgsConstructor
 public class BlockPollingService {
 

@@ -64,7 +64,7 @@ export const portfolioService = {
 
   },
 
-  async getPortfolioAnalytics(
+   async getPortfolioAnalytics(
     wallet: string
   ) {
 
@@ -82,6 +82,68 @@ export const portfolioService = {
 
       throw new Error(
         "Failed to fetch portfolio analytics"
+      );
+
+    }
+
+    return response.json();
+
+  },
+
+  async getWalletPositions(
+  wallet: string
+) {
+
+  const response =
+    await fetch(
+
+      `${API_URL}/api/portfolio/positions/${wallet}`,
+
+      {
+        cache: "no-store",
+      }
+
+    );
+
+  if (!response.ok) {
+
+    throw new Error(
+      "Failed to fetch wallet positions"
+    );
+
+  }
+
+  return response.json();
+
+},
+
+  async getTransactionHistory(
+
+    wallet: string,
+
+    page = 0,
+
+    size = 20
+
+  ) {
+
+    const response =
+      await fetch(
+
+        `${API_URL}/api/portfolio/transactions/${wallet}?page=${page}&size=${size}`,
+
+        {
+          cache: "no-store",
+        }
+
+      );
+
+    if (
+      !response.ok
+    ) {
+
+      throw new Error(
+        "Failed to fetch transaction history"
       );
 
     }

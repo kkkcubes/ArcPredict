@@ -1,10 +1,6 @@
 package io.arcpredict.entity;
 
 import jakarta.persistence.*;
-
-import jakarta.persistence.Index;
-import jakarta.persistence.Table;
-
 import lombok.*;
 
 import java.time.Instant;
@@ -66,9 +62,10 @@ public class TradeEntity {
     private Long amount;
 
     @Column(
-        nullable = false
-    )
-    private String txHash;
+    nullable = false,
+    unique = true
+)
+private String txHash;
 
     @Column(
         nullable = false

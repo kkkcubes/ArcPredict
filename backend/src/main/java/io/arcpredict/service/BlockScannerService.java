@@ -34,6 +34,11 @@ public class BlockScannerService {
         EthBlock.Block block
     ) {
 
+        log.info(
+    "=== Scanning Block {} ===",
+    block.getNumber()
+);
+
         log.debug(
             "Scanning block {}",
             block.getNumber()
