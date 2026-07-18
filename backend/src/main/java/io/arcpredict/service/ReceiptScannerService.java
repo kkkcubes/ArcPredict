@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.stereotype.Service;
 
-import org.web3j.protocol.Web3j;
+
 import org.web3j.protocol.core.methods.response.Log;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
@@ -26,7 +26,7 @@ public class ReceiptScannerService {
             ReceiptScannerService.class
         );
 
-    private final Web3j web3j;
+    private final RpcClientService rpcClientService;
 
     private final BlockchainDecoderService
         blockchainDecoderService;
@@ -50,13 +50,9 @@ public class ReceiptScannerService {
         try {
 
             TransactionReceipt receipt =
-                web3j
-                    .ethGetTransactionReceipt(
-                        txHash
-                    )
-                    .send()
-                    .getTransactionReceipt()
-                    .orElse(null);
+    rpcClientService.getTransactionReceipt(
+        txHash
+    );
 
             if (
                 receipt == null
