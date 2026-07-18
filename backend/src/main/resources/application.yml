@@ -10,7 +10,8 @@ arc:
   chain-id: 5042002
 
   rpc:
-    url: https://rpc.testnet.arc.network
+      urls:
+      - https://rpc.testnet.arc.network
 
 contracts:
 

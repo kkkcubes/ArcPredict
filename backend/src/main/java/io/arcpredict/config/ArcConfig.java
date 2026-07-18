@@ -4,7 +4,8 @@ import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
 
-import org.springframework.beans.factory.annotation.Value;
+import lombok.RequiredArgsConstructor;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -12,10 +13,10 @@ import org.web3j.protocol.Web3j;
 import org.web3j.protocol.http.HttpService;
 
 @Configuration
+@RequiredArgsConstructor
 public class ArcConfig {
 
-    @Value("${arc.rpc.url}")
-    private String rpcUrl;
+    private final ArcRpcProperties arcRpcProperties;
 
     @Bean
     public OkHttpClient okHttpClient() {
@@ -49,6 +50,11 @@ public class ArcConfig {
     public Web3j web3j(
         OkHttpClient okHttpClient
     ) {
+
+        String rpcUrl =
+            arcRpcProperties
+                .getUrls()
+                .get(0);
 
         return Web3j.build(
             new HttpService(
