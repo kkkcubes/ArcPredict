@@ -1,5 +1,8 @@
 package io.arcpredict.service;
 
+import java.io.IOException;
+import java.math.BigInteger;
+
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.retry.annotation.Backoff;
@@ -8,10 +11,9 @@ import org.springframework.stereotype.Service;
 
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameter;
+import org.web3j.protocol.core.DefaultBlockParameterNumber;
 import org.web3j.protocol.core.methods.response.EthBlock;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
-
-import java.io.IOException;
 
 @Service
 @RequiredArgsConstructor
@@ -48,10 +50,47 @@ public class RpcClientService {
     ) throws IOException {
 
         return web3j
-            .ethGetTransactionReceipt(txHash)
+            .ethGetTransactionReceipt(
+                txHash
+            )
             .send()
             .getTransactionReceipt()
             .orElse(null);
+
+    }
+
+    @Retryable(
+        retryFor = IOException.class,
+        maxAttempts = 3,
+        backoff = @Backoff(delay = 1000)
+    )
+    public BigInteger getLatestBlockNumber()
+        throws IOException {
+
+        return web3j
+            .ethBlockNumber()
+            .send()
+            .getBlockNumber();
+
+    }
+
+    @Retryable(
+        retryFor = IOException.class,
+        maxAttempts = 3,
+        backoff = @Backoff(delay = 1000)
+    )
+    public EthBlock getBlock(
+        BigInteger blockNumber
+    ) throws IOException {
+
+        return web3j
+            .ethGetBlockByNumber(
+                new DefaultBlockParameterNumber(
+                    blockNumber
+                ),
+                true
+            )
+            .send();
 
     }
 

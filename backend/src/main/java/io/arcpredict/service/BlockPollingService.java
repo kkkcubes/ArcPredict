@@ -7,8 +7,6 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-
-import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameterNumber;
 import org.web3j.protocol.core.methods.response.EthBlock;
 
@@ -23,7 +21,7 @@ public class BlockPollingService {
             BlockPollingService.class
         );
 
-    private final Web3j web3j;
+    private final RpcClientService rpcClientService;
 
     private final BlockScannerService
         blockScannerService;
@@ -40,10 +38,8 @@ public class BlockPollingService {
         try {
 
             BigInteger latest =
-                web3j
-                    .ethBlockNumber()
-                    .send()
-                    .getBlockNumber();
+    rpcClientService
+        .getLatestBlockNumber();
 
             log.info(
                 "Latest block: {}",
@@ -70,14 +66,9 @@ public class BlockPollingService {
             ) {
 
                 EthBlock block =
-                    web3j
-                        .ethGetBlockByNumber(
-                            new DefaultBlockParameterNumber(
-                                i
-                            ),
-                            true
-                        )
-                        .send();
+    rpcClientService.getBlock(
+        i
+    );
 
                 blockScannerService
                     .scanBlock(
