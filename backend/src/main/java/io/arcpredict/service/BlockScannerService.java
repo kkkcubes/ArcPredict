@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import org.web3j.protocol.Web3j;
+
 import org.web3j.protocol.core.DefaultBlockParameter;
 import org.web3j.protocol.core.methods.response.EthBlock;
 import org.web3j.protocol.core.methods.response.Transaction;
@@ -22,7 +22,7 @@ public class BlockScannerService {
             BlockScannerService.class
         );
 
-    private final Web3j web3j;
+    private final RpcClientService rpcClientService;
 
     private final ReceiptScannerService
         receiptScannerService;
@@ -52,14 +52,12 @@ public class BlockScannerService {
         try {
 
             EthBlock fullBlock =
-                web3j
-                    .ethGetBlockByNumber(
-                        DefaultBlockParameter.valueOf(
-                            block.getNumber()
-                        ),
-                        true
-                    )
-                    .send();
+    rpcClientService.getBlock(
+        DefaultBlockParameter.valueOf(
+            block.getNumber()
+        ),
+        true
+    );
 
             log.debug(
                 "Block transaction count: {}",
