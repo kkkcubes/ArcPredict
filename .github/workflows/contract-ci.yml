@@ -5,21 +5,33 @@ on:
     branches:
       - main
 
-jobs:
+  pull_request:
+    branches:
+      - main
 
+jobs:
   contracts:
 
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: contracts
+
     steps:
 
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-node@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
+          cache-dependency-path: contracts/package-lock.json
 
-      - run: |
-          cd contracts
-          npm install
-          npx hardhat compile
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Compile Contracts
+        run: npx hardhat compile
