@@ -26,7 +26,9 @@ public class BlockPollingService {
     private final BlockScannerService
         blockScannerService;
 
-    private BigInteger lastBlock;
+        private final BlockCheckpointService
+    blockCheckpointService;
+
 
     @Scheduled(fixedDelay = 5000)
     public void poll() {
@@ -46,37 +48,48 @@ public class BlockPollingService {
                 latest
             );
 
-            if (
-                lastBlock == null
-            ) {
+            BigInteger lastBlock =
+    blockCheckpointService
+        .getLastProcessedBlock();
 
-                lastBlock = latest;
+if (
+    lastBlock == null
+) {
 
-                return;
-            }
+    blockCheckpointService
+        .updateLastProcessedBlock(
+            latest
+        );
+
+    return;
+}
 
             for (
-                BigInteger i = lastBlock.add(
-                    BigInteger.ONE
-                );
-                i.compareTo(latest) <= 0;
-                i = i.add(
-                    BigInteger.ONE
-                )
-            ) {
-
-                EthBlock block =
-    rpcClientService.getBlock(
-        i
+    BigInteger i = lastBlock.add(
+        BigInteger.ONE
     );
+    i.compareTo(latest) <= 0;
+    i = i.add(
+        BigInteger.ONE
+    )
+) {
 
-                blockScannerService
-                    .scanBlock(
-                        block.getBlock()
-                    );
-            }
+    EthBlock block =
+        rpcClientService.getBlock(
+            i
+        );
 
-            lastBlock = latest;
+    blockScannerService
+        .scanBlock(
+            block.getBlock()
+        );
+
+    blockCheckpointService
+        .updateLastProcessedBlock(
+            i
+        );
+
+}
 
         } catch (Exception e) {
 
