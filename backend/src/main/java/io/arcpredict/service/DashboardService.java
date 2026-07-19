@@ -18,8 +18,7 @@ public class DashboardService {
 
     private final TreasuryReaderService treasuryReaderService;
 
-    public DashboardResponse getDashboard()
-        throws Exception {
+    public DashboardResponse getDashboard() {
 
         Long totalLiquidity =
             treasuryReaderService
@@ -36,25 +35,24 @@ public class DashboardService {
         double treasuryUtilization =
             totalLiquidity == 0
                 ? 0.0
-                : (
-                    totalLockedLiquidity
-                        * 100.0
-                  ) / totalLiquidity;
+                : (totalLockedLiquidity * 100.0)
+                    / totalLiquidity;
 
-                  String treasuryHealth;
+        String treasuryHealth;
 
-if (treasuryUtilization < 50) {
+        if (treasuryUtilization < 50) {
 
-    treasuryHealth = "Healthy";
+            treasuryHealth = "Healthy";
 
-} else if (treasuryUtilization < 80) {
+        } else if (treasuryUtilization < 80) {
 
-    treasuryHealth = "Warning";
+            treasuryHealth = "Warning";
 
-} else {
+        } else {
 
-    treasuryHealth = "Critical";
-}
+            treasuryHealth = "Critical";
+
+        }
 
         return DashboardResponse.builder()
 
@@ -91,33 +89,36 @@ if (treasuryUtilization < 50) {
             )
 
             .totalReleasedLiquidity(
-                treasuryReaderService.getTotalReleasedLiquidity()
+                treasuryReaderService
+                    .getTotalReleasedLiquidity()
             )
 
             .availableLiquidity(
-    availableLiquidity
-)
+                availableLiquidity
+            )
 
-.treasuryUtilization(
-    treasuryUtilization
-)
+            .treasuryUtilization(
+                treasuryUtilization
+            )
 
-.treasuryHealth(
-    treasuryHealth
-)
+            .treasuryHealth(
+                treasuryHealth
+            )
 
             .activeMarkets(
-    marketRepository.countByResolved(
-        false
-    )
-)
+                marketRepository.countByResolved(
+                    false
+                )
+            )
 
             .resolvedMarkets(
-    marketRepository.countByResolved(
-        true
-    )
-)
+                marketRepository.countByResolved(
+                    true
+                )
+            )
 
             .build();
+
     }
+
 }

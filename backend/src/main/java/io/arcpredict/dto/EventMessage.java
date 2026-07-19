@@ -16,4 +16,16 @@ public class EventMessage {
     private String wallet;
 
     private String timestamp;
+
+    // Transaction details
+    private String txHash;
+
+    private Long blockNumber;
+
+    // Trade details
+    private String position;
+
+    // Human-readable description
+    private String summary;
+
 }

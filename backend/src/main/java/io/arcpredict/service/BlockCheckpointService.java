@@ -17,7 +17,10 @@ public class BlockCheckpointService {
     private static final Long CHECKPOINT_ID = 1L;
 
     private final BlockCheckpointRepository
-        blockCheckpointRepository;
+    blockCheckpointRepository;
+
+private final MetricsService
+    metricsService;
 
     public BigInteger getLastProcessedBlock() {
 
@@ -55,6 +58,10 @@ public class BlockCheckpointService {
         blockCheckpointRepository.save(
             checkpoint
         );
+
+        metricsService.setLastProcessedBlock(
+    blockNumber.longValue()
+);
 
     }
 

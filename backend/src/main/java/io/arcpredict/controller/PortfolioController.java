@@ -13,11 +13,17 @@ import io.arcpredict.service.PortfolioService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Pattern;
+
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+
+import org.springframework.validation.annotation.Validated;
 
 import org.springframework.web.bind.annotation.*;
 
@@ -29,6 +35,7 @@ import java.util.List;
 )
 @RestController
 @RequiredArgsConstructor
+@Validated
 @CrossOrigin(origins = "*")
 @RequestMapping("/api/portfolio")
 public class PortfolioController {
@@ -45,8 +52,14 @@ public class PortfolioController {
     )
     @GetMapping("/{wallet}")
     public PortfolioResponse portfolio(
+
+        @Pattern(
+            regexp = "^0x[a-fA-F0-9]{40}$",
+            message = "Invalid wallet address"
+        )
         @PathVariable
         String wallet
+
     ) {
 
         List<TradeEntity> trades =
@@ -111,8 +124,14 @@ public class PortfolioController {
     @GetMapping("/analytics/{wallet}")
     public PortfolioAnalyticsResponse
     portfolioAnalytics(
+
+        @Pattern(
+            regexp = "^0x[a-fA-F0-9]{40}$",
+            message = "Invalid wallet address"
+        )
         @PathVariable
         String wallet
+
     ) {
 
         return portfolioService
@@ -129,8 +148,14 @@ public class PortfolioController {
     @GetMapping("/positions/{wallet}")
     public List<WalletPositionResponse>
     walletPositions(
+
+        @Pattern(
+            regexp = "^0x[a-fA-F0-9]{40}$",
+            message = "Invalid wallet address"
+        )
         @PathVariable
         String wallet
+
     ) {
 
         return portfolioService
@@ -148,17 +173,24 @@ public class PortfolioController {
     public Page<TradeEntity>
     transactionHistory(
 
+        @Pattern(
+            regexp = "^0x[a-fA-F0-9]{40}$",
+            message = "Invalid wallet address"
+        )
         @PathVariable
         String wallet,
 
         @RequestParam(
             defaultValue = "0"
         )
+        @Min(0)
         int page,
 
         @RequestParam(
             defaultValue = "20"
         )
+        @Min(1)
+        @Max(100)
         int size
 
     ) {

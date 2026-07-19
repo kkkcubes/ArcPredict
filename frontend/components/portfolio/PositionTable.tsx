@@ -5,6 +5,11 @@ import {
 } from "@/providers/PortfolioProvider";
 import LoadingSkeleton from "@/components/ui/LoadingSkeleton";
 
+import {
+  formatCurrency,
+  formatNumber,
+} from "@/lib/format";
+
 export default function PositionTable() {
 
  const {
@@ -158,13 +163,13 @@ export default function PositionTable() {
 
           <td className="py-4">
 
-            {position.shares.toLocaleString()}
+            {formatNumber(position.shares)}
 
           </td>
 
           <td className="py-4">
 
-            {position.investedAmount.toLocaleString()}
+            {formatCurrency(position.investedAmount, "")}
 
           </td>
 
@@ -176,7 +181,7 @@ export default function PositionTable() {
   "
 >
 
-  {position.currentValue.toLocaleString()}
+  {formatCurrency(position.currentValue, "")}
 
 </td>
 
@@ -188,7 +193,7 @@ export default function PositionTable() {
   "
 >
 
-  {position.claimableRewards.toLocaleString()}
+  {formatCurrency(position.claimableRewards, "")}
 
 </td>
 

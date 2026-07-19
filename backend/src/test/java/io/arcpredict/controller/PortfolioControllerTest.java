@@ -40,6 +40,9 @@ import org.springframework.test.web.servlet.MockMvc;
 )
 class PortfolioControllerTest {
 
+    private static final String VALID_WALLET =
+    "0x1234567890123456789012345678901234567890";
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -56,7 +59,7 @@ class PortfolioControllerTest {
 
             TradeEntity.builder()
                 .marketId(1L)
-                .trader("0xabc")
+                .trader(VALID_WALLET)
                 .yesPosition(true)
                 .amount(100L)
                 .txHash("0x111")
@@ -66,7 +69,7 @@ class PortfolioControllerTest {
 
             TradeEntity.builder()
                 .marketId(2L)
-                .trader("0xabc")
+                .trader(VALID_WALLET)
                 .yesPosition(false)
                 .amount(200L)
                 .txHash("0x222")
@@ -78,14 +81,15 @@ class PortfolioControllerTest {
 
       when(
     tradeRepository.findByTraderOrderByTimestampDesc(
-        "0xabc"
+        VALID_WALLET
     )
+
 ).thenReturn(
     trades
 );
 
         mockMvc.perform(
-                get("/api/portfolio/0xabc")
+                get("/api/portfolio/" + VALID_WALLET)
             )
             .andExpect(
                 status().isOk()
@@ -96,7 +100,7 @@ class PortfolioControllerTest {
                 )
             )
             .andExpect(
-                jsonPath("$.wallet").value("0xabc")
+                jsonPath("$.wallet").value(VALID_WALLET)
             )
             .andExpect(
                 jsonPath("$.totalInvested").value(300)
@@ -120,7 +124,7 @@ class PortfolioControllerTest {
 
             PortfolioAnalyticsResponse
                 .builder()
-                .wallet("0xabc")
+                .wallet(VALID_WALLET)
                 .totalInvested(300L)
                 .currentValue(360L)
                 .unrealizedPnL(60L)
@@ -134,14 +138,14 @@ class PortfolioControllerTest {
 
         when(
             portfolioService.getPortfolioAnalytics(
-                "0xabc"
-            )
+    VALID_WALLET
+)
         ).thenReturn(
             response
         );
 
         mockMvc.perform(
-                get("/api/portfolio/analytics/0xabc")
+                get("/api/portfolio/analytics/" + VALID_WALLET)
             )
             .andExpect(
                 status().isOk()
@@ -152,7 +156,7 @@ class PortfolioControllerTest {
                 )
             )
             .andExpect(
-                jsonPath("$.wallet").value("0xabc")
+               jsonPath("$.wallet").value(VALID_WALLET)
             )
             .andExpect(
                 jsonPath("$.totalInvested").value(300)
@@ -206,14 +210,14 @@ class PortfolioControllerTest {
 
         when(
             portfolioService.getWalletPositions(
-                "0xabc"
-            )
+    VALID_WALLET
+)
         ).thenReturn(
             positions
         );
 
         mockMvc.perform(
-                get("/api/portfolio/positions/0xabc")
+                get("/api/portfolio/positions/" + VALID_WALLET)
             )
             .andExpect(
                 status().isOk()

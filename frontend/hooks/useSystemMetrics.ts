@@ -39,9 +39,21 @@ export function useSystemMetrics() {
 
     useEffect(() => {
 
+    loadMetrics();
+
+    const interval = setInterval(() => {
+
         loadMetrics();
 
-    }, []);
+    }, 30000);
+
+    return () => {
+
+        clearInterval(interval);
+
+    };
+
+}, []);
 
     return {
 

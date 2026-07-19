@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: dev
+    active: ${SPRING_PROFILES_ACTIVE:dev}
 
 server:
   port: 8080
@@ -10,20 +10,15 @@ arc:
   chain-id: 5042002
 
   rpc:
-      urls:
-      - https://rpc.testnet.arc.network
+    urls:
+      - ${ARC_RPC_URL:https://rpc.testnet.arc.network}
 
 contracts:
-
-  vault-address: "0xD8ab29273E6BAFd3C659f8A1E94D1731D2b7C528"
-
-  treasury-address: "0x5231d42D846d1309A2bbFBE51d4bC7350096b3bf"
-
-  reward-distributor-address: "0xF9484893Ab34474a10166716609B22Cd6Cad488C"
-
-  market-factory-address: "0xbd92524ba4501f442A6cb76cFe6b2B7F8EBaF3B4"
-
-  prediction-market-address: "0xDaaC34E8C1167b15417b13c19DA52C2555FE06Fd"
+  vault-address: ${VAULT_ADDRESS:0xD8ab29273E6BAFd3C659f8A1E94D1731D2b7C528}
+  treasury-address: ${TREASURY_ADDRESS:0x5231d42D846d1309A2bbFBE51d4bC7350096b3bf}
+  reward-distributor-address: ${REWARD_DISTRIBUTOR_ADDRESS:0xF9484893Ab34474a10166716609B22Cd6Cad488C}
+  market-factory-address: ${MARKET_FACTORY_ADDRESS:0xbd92524ba4501f442A6cb76cFe6b2B7F8EBaF3B4}
+  prediction-market-address: ${PREDICTION_MARKET_ADDRESS:0xDaaC34E8C1167b15417b13c19DA52C2555FE06Fd}
 
 protocol:
   settlement:
@@ -32,3 +27,17 @@ protocol:
 logging:
   level:
     root: INFO
+    io.arcpredict: INFO
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - info
+          - metrics
+
+  endpoint:
+    health:
+      show-details: when-authorized

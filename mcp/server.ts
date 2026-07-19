@@ -1,4 +1,5 @@
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 
 const server = new Server(
   {
@@ -12,4 +13,15 @@ const server = new Server(
   }
 );
 
-console.log("ArcPredict MCP Server Started");
+async function main() {
+  const transport = new StdioServerTransport();
+
+  await server.connect(transport);
+
+  console.error("ArcPredict MCP Server Started");
+}
+
+main().catch((error) => {
+  console.error("Failed to start MCP server:", error);
+  process.exit(1);
+});

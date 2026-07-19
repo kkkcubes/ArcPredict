@@ -1,16 +1,18 @@
 package io.arcpredict.service;
 
+import java.math.BigInteger;
+
 import lombok.RequiredArgsConstructor;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-import org.web3j.protocol.core.DefaultBlockParameterNumber;
-import org.web3j.protocol.core.methods.response.EthBlock;
 
-import java.math.BigInteger;
+import org.web3j.protocol.core.methods.response.EthLog;
+import org.web3j.protocol.core.methods.response.Log;
 
 @Service
 @RequiredArgsConstructor
@@ -21,14 +23,21 @@ public class BlockPollingService {
             BlockPollingService.class
         );
 
-    private final RpcClientService rpcClientService;
+    private static final int MAX_BLOCKS_PER_POLL = 100;
 
-    private final BlockScannerService
-        blockScannerService;
+    private final BlockchainService blockchainService;
 
-        private final BlockCheckpointService
-    blockCheckpointService;
+    private final LogScannerService
+        logScannerService;
 
+    private final ReceiptScannerService
+        receiptScannerService;
+
+    private final BlockCheckpointService
+        blockCheckpointService;
+
+    @Value("${contracts.prediction-market-address}")
+    private String predictionMarketAddress;
 
     @Scheduled(fixedDelay = 5000)
     public void poll() {
@@ -40,8 +49,10 @@ public class BlockPollingService {
         try {
 
             BigInteger latest =
-    rpcClientService
-        .getLatestBlockNumber();
+                BigInteger.valueOf(
+                    blockchainService
+                        .getLatestBlock()
+                );
 
             log.info(
                 "Latest block: {}",
@@ -49,47 +60,62 @@ public class BlockPollingService {
             );
 
             BigInteger lastBlock =
-    blockCheckpointService
-        .getLastProcessedBlock();
+                blockCheckpointService
+                    .getLastProcessedBlock();
 
-if (
-    lastBlock == null
+            if (
+                lastBlock == null
+            ) {
+
+                blockCheckpointService
+                    .updateLastProcessedBlock(
+                        latest
+                    );
+
+                return;
+            }
+
+            BigInteger endBlock =
+                lastBlock.add(
+                    BigInteger.valueOf(
+                        MAX_BLOCKS_PER_POLL
+                    )
+                );
+
+            if (
+    endBlock.compareTo(
+        latest
+    ) > 0
 ) {
-
-    blockCheckpointService
-        .updateLastProcessedBlock(
-            latest
-        );
-
-    return;
+    endBlock = latest;
 }
 
-            for (
-    BigInteger i = lastBlock.add(
-        BigInteger.ONE
+EthLog ethLog =
+    logScannerService.getLogs(
+        lastBlock.add(
+            BigInteger.ONE
+        ),
+        endBlock,
+        predictionMarketAddress
     );
-    i.compareTo(latest) <= 0;
-    i = i.add(
-        BigInteger.ONE
-    )
+
+for (
+    EthLog.LogResult<?> logResult :
+    ethLog.getLogs()
 ) {
 
-    EthBlock block =
-        rpcClientService.getBlock(
-            i
-        );
+    Log eventLog =
+        (Log) logResult.get();
 
-    blockScannerService
-        .scanBlock(
-            block.getBlock()
-        );
-
-    blockCheckpointService
-        .updateLastProcessedBlock(
-            i
-        );
-
+    receiptScannerService.scanReceipt(
+        eventLog.getTransactionHash()
+    );
 }
+
+blockCheckpointService
+    .updateLastProcessedBlock(
+        endBlock
+    );
 
         } catch (Exception e) {
 

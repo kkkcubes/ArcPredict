@@ -61,6 +61,9 @@ public class MarketSyncService {
     private final AnalyticsService
         analyticsService;
 
+        private final MetricsService
+    metricsService;
+
         @Value(
     "${protocol.settlement.fee-percentage}"
 )
@@ -144,6 +147,13 @@ if (
 
     tradeRepository.save(
         trade
+    );
+
+    metricsService.incrementTradesProcessed();
+
+    log.info(
+        "Trade counter incremented for txHash={}",
+        txHash
     );
 
 } catch (
@@ -389,23 +399,37 @@ log.info(
         }
 
         EventMessage message =
-            EventMessage.builder()
-                .eventType(
-                    "TRADE_EXECUTED"
-                )
-                .marketId(
-                    marketId
-                )
-                .amount(
-                    amount
-                )
-                .wallet(
-                    trader
-                )
-                .timestamp(
-                    Instant.now().toString()
-                )
-                .build();
+    EventMessage.builder()
+        .eventType(
+            "TRADE_EXECUTED"
+        )
+        .marketId(
+            marketId
+        )
+        .amount(
+            amount
+        )
+        .wallet(
+            trader
+        )
+        .timestamp(
+            Instant.now().toString()
+        )
+        .txHash(
+            txHash
+        )
+        .blockNumber(
+            blockNumber
+        )
+        .position(
+            Boolean.TRUE.equals(side)
+                ? "YES"
+                : "NO"
+        )
+        .summary(
+            "Trade executed on Market #" + marketId
+        )
+        .build();
 
         webSocketBroadcastService
             .broadcastTrade(

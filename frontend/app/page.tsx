@@ -318,9 +318,12 @@ export default function HomePage() {
         </section>
 
         <div className="animate-fade-up">
-          <RecentTradesSection
-            trades={trades}
-          />
+
+            <RecentTradesSection
+    trades={trades}
+    loading={tradesLoading}
+/>
+          
         </div>
 
       </main>

@@ -8,28 +8,52 @@ import {
 import {
   usePortfolioContext,
 } from "@/providers/PortfolioProvider";
-import LoadingSkeleton from "@/components/ui/LoadingSkeleton";
+
+import LoadingSkeleton
+  from "@/components/ui/LoadingSkeleton";
 
 export default function RewardsPanel() {
 
   const {
-  portfolio,
-  loading,
-} = usePortfolioContext();
+    portfolio,
+    loading,
+  } = usePortfolioContext();
+
+  const totalTrades =
+    portfolio?.totalTrades ?? 0;
+
+  const activityLevel =
+    totalTrades === 0
+      ? "Inactive"
+      : totalTrades < 10
+        ? "Beginner"
+        : totalTrades < 50
+          ? "Active"
+          : "Power Trader";
+
+  const activityProgress =
+    Math.min(
+      (totalTrades / 50) * 100,
+      100
+    );
 
   if (loading) {
-  return (
-    <LoadingSkeleton
-      className="
-        h-[420px]
-        rounded-3xl
-        bg-white
-        border
-        border-gray-200
-      "
-    />
-  );
-}
+
+    return (
+
+      <LoadingSkeleton
+        className="
+          h-[420px]
+          rounded-3xl
+          bg-white
+          border
+          border-gray-200
+        "
+      />
+
+    );
+
+  }
 
   return (
 
@@ -60,10 +84,12 @@ export default function RewardsPanel() {
             justify-center
           "
         >
+
           <Award
             size={28}
             className="text-amber-600"
           />
+
         </div>
 
       </div>
@@ -96,7 +122,7 @@ export default function RewardsPanel() {
                 text-amber-600
               "
             >
-              {portfolio?.totalTrades ?? 0}
+              {totalTrades}
             </h3>
 
           </div>
@@ -117,7 +143,7 @@ export default function RewardsPanel() {
             </span>
 
             <span>
-              Active
+              {activityLevel}
             </span>
 
           </div>
@@ -134,10 +160,14 @@ export default function RewardsPanel() {
             <div
               className="
                 h-full
-                w-3/4
                 rounded-full
                 bg-amber-500
+                transition-all
+                duration-500
               "
+              style={{
+                width: `${activityProgress}%`,
+              }}
             />
 
           </div>
@@ -149,4 +179,5 @@ export default function RewardsPanel() {
     </div>
 
   );
+
 }

@@ -1,5 +1,10 @@
 package io.arcpredict.exception;
 
+import jakarta.validation.ConstraintViolationException;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -15,6 +20,11 @@ import java.util.NoSuchElementException;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Logger log =
+        LoggerFactory.getLogger(
+            GlobalExceptionHandler.class
+        );
 
     @ExceptionHandler(
         MethodArgumentNotValidException.class
@@ -196,6 +206,44 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(
+        ConstraintViolationException.class
+    )
+    public ResponseEntity<ApiError>
+    handleConstraintViolation(
+
+        ConstraintViolationException exception
+
+    ) {
+
+        ApiError error =
+
+            ApiError.builder()
+
+                .error(
+                    "Validation Failed"
+                )
+
+                .message(
+                    exception.getMessage()
+                )
+
+                .timestamp(
+                    System.currentTimeMillis()
+                )
+
+                .build();
+
+        return ResponseEntity
+
+            .badRequest()
+
+            .body(
+                error
+            );
+
+    }
+
+    @ExceptionHandler(
         Exception.class
     )
     public ResponseEntity<ApiError>
@@ -204,6 +252,11 @@ public class GlobalExceptionHandler {
         Exception exception
 
     ) {
+
+        log.error(
+            "Unhandled exception",
+            exception
+        );
 
         ApiError error =
 
@@ -214,7 +267,7 @@ public class GlobalExceptionHandler {
                 )
 
                 .message(
-                    exception.getMessage()
+                    "An unexpected error occurred."
                 )
 
                 .timestamp(

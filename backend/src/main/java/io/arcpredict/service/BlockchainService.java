@@ -1,9 +1,7 @@
 package io.arcpredict.service;
 
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.stereotype.Service;
-
 import org.web3j.protocol.Web3j;
 
 @Service
@@ -11,22 +9,34 @@ import org.web3j.protocol.Web3j;
 public class BlockchainService {
 
     private final Web3j web3j;
+    private final MetricsService metricsService;
 
     public Long getLatestBlock() {
 
+        System.out.println("BlockchainService.getLatestBlock() called");
+
         try {
 
-            return web3j
-                .ethBlockNumber()
-                .send()
-                .getBlockNumber()
-                .longValue();
+            long start = System.currentTimeMillis();
+
+            Long latestBlock = web3j
+                    .ethBlockNumber()
+                    .send()
+                    .getBlockNumber()
+                    .longValue();
+
+            long latency = System.currentTimeMillis() - start;
+
+            metricsService.setRpcLatency(latency);
+            metricsService.setLatestBlockchainBlock(latestBlock);
+
+            return latestBlock;
 
         } catch (Exception e) {
 
             throw new RuntimeException(
-                "Failed to fetch block",
-                e
+                    "Failed to fetch block",
+                    e
             );
 
         }
@@ -38,15 +48,15 @@ public class BlockchainService {
         try {
 
             return web3j
-                .web3ClientVersion()
-                .send()
-                .getWeb3ClientVersion();
+                    .web3ClientVersion()
+                    .send()
+                    .getWeb3ClientVersion();
 
         } catch (Exception e) {
 
             throw new RuntimeException(
-                "Failed to fetch client version",
-                e
+                    "Failed to fetch client version",
+                    e
             );
 
         }
@@ -58,16 +68,16 @@ public class BlockchainService {
         try {
 
             return web3j
-                .ethChainId()
-                .send()
-                .getChainId()
-                .longValue();
+                    .ethChainId()
+                    .send()
+                    .getChainId()
+                    .longValue();
 
         } catch (Exception e) {
 
             throw new RuntimeException(
-                "Failed to fetch chain ID",
-                e
+                    "Failed to fetch chain ID",
+                    e
             );
 
         }
@@ -79,8 +89,8 @@ public class BlockchainService {
         try {
 
             web3j
-                .ethBlockNumber()
-                .send();
+                    .ethBlockNumber()
+                    .send();
 
             return true;
 

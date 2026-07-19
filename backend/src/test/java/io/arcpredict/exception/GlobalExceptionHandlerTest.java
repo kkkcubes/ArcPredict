@@ -146,46 +146,46 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
-    void shouldHandleGenericException() {
+void shouldHandleGenericException() {
 
-        Exception exception =
+    Exception exception =
 
-            new Exception(
-                "Unexpected failure"
-            );
-
-        ResponseEntity<ApiError> response =
-
-            handler.handleException(
-                exception
-            );
-
-        assertEquals(
-            HttpStatus.INTERNAL_SERVER_ERROR,
-            response.getStatusCode()
+        new Exception(
+            "Unexpected failure"
         );
 
-        assertNotNull(
-            response.getBody()
+    ResponseEntity<ApiError> response =
+
+        handler.handleException(
+            exception
         );
 
-        assertEquals(
-            "Internal Server Error",
-            response.getBody().getError()
-        );
+    assertEquals(
+        HttpStatus.INTERNAL_SERVER_ERROR,
+        response.getStatusCode()
+    );
 
-        assertEquals(
-            "Unexpected failure",
-            response.getBody().getMessage()
-        );
+    assertNotNull(
+        response.getBody()
+    );
 
-        assertTrue(
+    assertEquals(
+        "Internal Server Error",
+        response.getBody().getError()
+    );
 
-            response.getBody()
-                .getTimestamp() > 0
+    assertEquals(
+        "An unexpected error occurred.",
+        response.getBody().getMessage()
+    );
 
-        );
+    assertTrue(
 
-    }
+        response.getBody()
+            .getTimestamp() > 0
+
+    );
+
+}
 
 }

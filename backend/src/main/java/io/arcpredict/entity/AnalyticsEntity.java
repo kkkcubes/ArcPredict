@@ -30,6 +30,10 @@ public class AnalyticsEntity {
 
     private Long openInterest;
 
+    private Long yesPool;
+
+private Long noPool;
+
     private Double bullishPercentage;
 
     private Double bearishPercentage;

@@ -24,22 +24,22 @@ import org.springframework.web.bind.annotation.RestController;
 public class SystemController {
 
     private final SystemService systemService;
-    
+
     @Operation(
-    summary = "Get infrastructure metrics",
-    description = "Returns RPC, database and infrastructure metrics."
-)
+        summary = "Get infrastructure metrics",
+        description = "Returns RPC, database and infrastructure metrics."
+    )
     @GetMapping("/metrics")
     public InfrastructureMetricsResponse getMetrics() {
 
         return systemService.getMetrics();
 
     }
-    
+
     @Operation(
-    summary = "Get system health",
-    description = "Returns the current health status of the backend."
-)
+        summary = "Get system health",
+        description = "Returns the current health status of the backend."
+    )
     @GetMapping("/health")
     public SystemHealthResponse getHealth() {
 

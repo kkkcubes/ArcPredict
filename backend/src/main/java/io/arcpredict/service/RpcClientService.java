@@ -12,7 +12,9 @@ import org.springframework.stereotype.Service;
 import org.web3j.protocol.Web3j;
 import org.web3j.protocol.core.DefaultBlockParameter;
 import org.web3j.protocol.core.DefaultBlockParameterNumber;
+import org.web3j.protocol.core.methods.request.EthFilter;
 import org.web3j.protocol.core.methods.response.EthBlock;
+import org.web3j.protocol.core.methods.response.EthLog;
 import org.web3j.protocol.core.methods.response.TransactionReceipt;
 
 @Service
@@ -89,6 +91,23 @@ public class RpcClientService {
                     blockNumber
                 ),
                 true
+            )
+            .send();
+
+    }
+
+    @Retryable(
+        retryFor = IOException.class,
+        maxAttempts = 3,
+        backoff = @Backoff(delay = 1000)
+    )
+    public EthLog getLogs(
+        EthFilter filter
+    ) throws IOException {
+
+        return web3j
+            .ethGetLogs(
+                filter
             )
             .send();
 

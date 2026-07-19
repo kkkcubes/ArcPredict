@@ -46,3 +46,14 @@ mcp/.env*
 
 backend.log
 
+
+# Logs
+logs.txt
+*.log
+
+# JaCoCo
+backend/target/site/
+
+# OS
+*.swp
+*.swo

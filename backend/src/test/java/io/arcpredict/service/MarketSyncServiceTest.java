@@ -55,6 +55,9 @@ class MarketSyncServiceTest {
     @Mock
     private AnalyticsService analyticsService;
 
+    @Mock
+private MetricsService metricsService;
+
     @InjectMocks
     private MarketSyncService marketSyncService;
 

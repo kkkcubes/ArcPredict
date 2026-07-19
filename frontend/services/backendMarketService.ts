@@ -1,8 +1,17 @@
 const API_URL =
-  process.env
-    .NEXT_PUBLIC_API_URL!;
+  process.env.NEXT_PUBLIC_API_URL;
+
+console.log(
+  "NEXT_PUBLIC_API_URL =",
+  API_URL
+);
 
 export async function getMarkets() {
+
+  console.log(
+    "Fetching:",
+    `${API_URL}/api/markets`
+  );
 
   const response = await fetch(
     `${API_URL}/api/markets`,
@@ -12,13 +21,8 @@ export async function getMarkets() {
   );
 
   if (!response.ok) {
-
-    throw new Error(
-      "Failed to fetch markets"
-    );
-
+    throw new Error("Failed to fetch markets");
   }
 
   return response.json();
-
 }

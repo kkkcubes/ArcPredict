@@ -20,31 +20,28 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class AnalyticsController {
 
-    private final AnalyticsService
-        analyticsService;
-    
-        @Operation(
-    summary = "Get analytics",
-    description = "Returns overall protocol analytics."
-)
-    @GetMapping
-    public AnalyticsEntity
-    analytics() {
+    private final AnalyticsService analyticsService;
 
-        return analyticsService
-            .getAnalytics();
+    @Operation(
+        summary = "Get analytics",
+        description = "Returns overall protocol analytics."
+    )
+    @GetMapping
+    public AnalyticsEntity analytics() {
+
+        return analyticsService.getAnalytics();
+
     }
 
     @Operation(
-    summary = "Get analytics history",
-    description = "Returns historical analytics for charts."
-)
+        summary = "Get analytics history",
+        description = "Returns historical analytics for charts."
+    )
     @GetMapping("/history")
-public AnalyticsHistoryResponse
-history() {
+    public AnalyticsHistoryResponse history() {
 
-    return analyticsService
-        .getAnalyticsHistory();
+        return analyticsService.getAnalyticsHistory();
 
-}
+    }
+
 }

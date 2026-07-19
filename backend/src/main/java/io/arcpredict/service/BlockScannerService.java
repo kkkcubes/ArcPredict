@@ -8,8 +8,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-
-import org.web3j.protocol.core.DefaultBlockParameter;
 import org.web3j.protocol.core.methods.response.EthBlock;
 import org.web3j.protocol.core.methods.response.Transaction;
 
@@ -22,8 +20,6 @@ public class BlockScannerService {
             BlockScannerService.class
         );
 
-    private final RpcClientService rpcClientService;
-
     private final ReceiptScannerService
         receiptScannerService;
 
@@ -35,9 +31,9 @@ public class BlockScannerService {
     ) {
 
         log.info(
-    "=== Scanning Block {} ===",
-    block.getNumber()
-);
+            "=== Scanning Block {} ===",
+            block.getNumber()
+        );
 
         log.debug(
             "Scanning block {}",
@@ -45,30 +41,20 @@ public class BlockScannerService {
         );
 
         log.debug(
-    "Configured PredictionMarket: {}",
-    predictionMarketAddress
-);
+            "Configured PredictionMarket: {}",
+            predictionMarketAddress
+        );
 
         try {
 
-            EthBlock fullBlock =
-    rpcClientService.getBlock(
-        DefaultBlockParameter.valueOf(
-            block.getNumber()
-        ),
-        true
-    );
-
             log.debug(
                 "Block transaction count: {}",
-                fullBlock
-                    .getBlock()
+                block
                     .getTransactions()
                     .size()
             );
 
-            fullBlock
-                .getBlock()
+            block
                 .getTransactions()
                 .forEach(txResult -> {
 
@@ -78,10 +64,10 @@ public class BlockScannerService {
                             (Transaction) txResult.get();
 
                         log.info(
-    "Scanning transaction: {} -> {}",
-    tx.getHash(),
-    tx.getTo()
-);
+                            "Scanning transaction: {} -> {}",
+                            tx.getHash(),
+                            tx.getTo()
+                        );
 
                         if (
                             tx.getTo() == null
@@ -95,32 +81,21 @@ public class BlockScannerService {
                         );
 
                         if (
-                            !tx.getTo().equalsIgnoreCase(
+                            tx.getTo().equalsIgnoreCase(
                                 predictionMarketAddress
                             )
                         ) {
 
                             log.info(
-                                "Skipping transaction"
-                            );
-
-                            return;
-
-                        }
-
-                        log.info(
-                            "PredictionMarket transaction detected"
-                        );
-
-                        receiptScannerService
-                            .scanReceipt(
+                                "PredictionMarket transaction detected: {}",
                                 tx.getHash()
                             );
 
-                        log.info(
-                            "PredictionMarket transaction: {}",
-                            tx.getHash()
-                        );
+                            receiptScannerService.scanReceipt(
+                                tx.getHash()
+                            );
+
+                        }
 
                     } catch (Exception e) {
 

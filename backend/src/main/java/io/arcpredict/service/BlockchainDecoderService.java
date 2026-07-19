@@ -35,15 +35,12 @@ public class BlockchainDecoderService {
     String topic0 =
         receiptLog.getTopics().get(0);
 
-    log.info(
-        "Receipt topic0: {}",
-        topic0
-    );
+    log.info("Receipt topic0           : {}", topic0);
 
-    log.info(
-        "Expected SHARES_PURCHASED: {}",
-        ContractEvents.SHARES_PURCHASED
-    );
+log.info("Expected MARKET_CREATED : {}", ContractEvents.MARKET_CREATED);
+log.info("Expected SHARES_PURCHASED: {}", ContractEvents.SHARES_PURCHASED);
+log.info("Expected MARKET_RESOLVED : {}", ContractEvents.MARKET_RESOLVED);
+log.info("Expected REWARD_CLAIMED  : {}", ContractEvents.REWARD_CLAIMED);
 
     if (
         ContractEvents.MARKET_CREATED

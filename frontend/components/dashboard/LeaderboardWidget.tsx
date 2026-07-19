@@ -8,6 +8,7 @@ import {
 
 import { useLeaderboard } from "@/hooks/useLeaderboard";
 import LoadingSkeleton from "@/components/ui/LoadingSkeleton";
+import EmptyState from "@/components/ui/EmptyState";
 
 export default function LeaderboardWidget() {
 
@@ -28,6 +29,20 @@ export default function LeaderboardWidget() {
       "
     />
   );
+}
+
+if (leaderboard.length === 0) {
+    return (
+        <section
+            id="leaderboard"
+            className="dashboard-card p-8"
+        >
+            <EmptyState
+                title="No Leaderboard Data"
+                description="Leaderboard rankings will appear once users start trading."
+            />
+        </section>
+    );
 }
 
   return (

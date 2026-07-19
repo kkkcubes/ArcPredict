@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 
@@ -42,6 +43,9 @@ public class ReceiptScannerService {
 
     private final WebSocketBroadcastService
         webSocketBroadcastService;
+
+        @Value("${contracts.prediction-market-address}")
+private String predictionMarketAddress;
 
     public void scanReceipt(
         String txHash
@@ -89,6 +93,11 @@ public class ReceiptScannerService {
                     "Log address: {}",
                     receiptLog.getAddress()
                 );
+
+                log.info(
+    "Configured PredictionMarket: {}",
+    predictionMarketAddress
+);
 
                 if (
                     !receiptLog.getTopics().isEmpty()

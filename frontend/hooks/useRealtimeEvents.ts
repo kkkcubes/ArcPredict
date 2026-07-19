@@ -64,47 +64,45 @@ export function useRealtimeEvents() {
         );
 
       setEvents(
-        (previous) => [
+  (previous) => [
 
-          {
+    {
 
-            id: Date.now(),
+      id: Date.now(),
 
-            eventType:
-              event.eventType,
+      eventType:
+        event.eventType,
 
-            marketId:
-              event.marketId,
+      marketId:
+        event.marketId,
 
-            wallet:
-              event.wallet,
+      wallet:
+        event.wallet,
 
-            amount:
-              event.amount,
+      amount:
+        event.amount,
 
-            position:
-              "-",
+      position:
+        event.position,
 
-            txHash:
-              "",
+      txHash:
+        event.txHash,
 
-            blockNumber:
-              0,
+      blockNumber:
+        event.blockNumber,
 
-            timestamp:
-              event.timestamp,
+      timestamp:
+        event.timestamp,
 
-            summary:
-              event.eventType +
-              " on Market #" +
-              event.marketId,
+      summary:
+        event.summary,
 
-          },
+    },
 
-          ...previous,
+    ...previous,
 
-        ].slice(0, 50)
-      );
+  ].slice(0, 50)
+);
 
     }
 

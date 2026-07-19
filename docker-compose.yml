@@ -5,12 +5,12 @@ services:
 
     container_name: arcpredict-postgres
 
-    restart: always
+    restart: unless-stopped
 
     environment:
-      POSTGRES_DB: arcpredict
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: Postgress
+      POSTGRES_DB: ${POSTGRES_DB:-arcpredict}
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-Postgress}
 
     ports:
       - "5432:5432"
@@ -19,7 +19,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d arcpredict"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres} -d ${POSTGRES_DB:-arcpredict}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -28,6 +28,8 @@ services:
     build: ./backend
 
     container_name: arcpredict-backend
+
+    restart: unless-stopped
 
     depends_on:
       postgres:
@@ -39,13 +41,26 @@ services:
     env_file:
       - ./backend/.env
 
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      args:
+        NEXT_PUBLIC_API_URL: http://backend:8080
 
     container_name: arcpredict-frontend
 
+    restart: unless-stopped
+
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
 
     ports:
       - "3000:3000"
@@ -53,12 +68,12 @@ services:
     env_file:
       - ./frontend/.env.local
 
-    restart: unless-stopped
-
   mcp:
     build: ./mcp
 
     container_name: arcpredict-mcp
+
+    restart: unless-stopped
 
     ports:
       - "3001:3001"

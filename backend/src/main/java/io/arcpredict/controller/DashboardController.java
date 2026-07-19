@@ -24,14 +24,14 @@ public class DashboardController {
     private final DashboardService dashboardService;
 
     @Operation(
-    summary = "Get dashboard statistics",
-    description = "Returns the aggregated dashboard metrics."
-)
-@GetMapping
-   public DashboardResponse getDashboard()
-    throws Exception {
+        summary = "Get dashboard statistics",
+        description = "Returns the aggregated dashboard metrics."
+    )
+    @GetMapping
+    public DashboardResponse getDashboard() {
 
         return dashboardService.getDashboard();
 
     }
+
 }

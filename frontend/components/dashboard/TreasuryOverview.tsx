@@ -3,83 +3,9 @@
 import Link from "next/link";
 import CountUp from "react-countup";
 
-import {
-  Wallet,
-  Coins,
-  Lock,
-  Unlock,
-  PiggyBank,
-  Activity,
-  ShieldCheck,
-} from "lucide-react";
-
 type Props = {
   stats: any;
 };
-
-type TreasuryCardProps = {
-  title: string;
-  value: React.ReactNode;
-  icon: React.ReactNode;
-};
-
-function TreasuryCard({
-  title,
-  value,
-  icon,
-}: TreasuryCardProps) {
-
-  return (
-
-    <div
-      className="
-        rounded-2xl
-        border
-        border-gray-200
-        bg-white
-        p-5
-        shadow-sm
-      "
-    >
-
-      <div
-        className="
-          flex
-          items-center
-          justify-between
-          mb-4
-        "
-      >
-
-        <p className="text-gray-500">
-          {title}
-        </p>
-
-        <div
-          className="
-            w-10
-            h-10
-            rounded-xl
-            bg-violet-50
-            flex
-            items-center
-            justify-center
-          "
-        >
-          {icon}
-        </div>
-
-      </div>
-
-      <div className="text-3xl font-bold">
-        {value}
-      </div>
-
-    </div>
-
-  );
-
-}
 
 export default function TreasuryOverview({
   stats,
@@ -115,35 +41,35 @@ export default function TreasuryOverview({
     >
 
       <div
-  className="
-    flex
-    items-center
-    justify-between
-    mb-6
-  "
->
+        className="
+          flex
+          items-center
+          justify-between
+          mb-6
+        "
+      >
 
-  <h2
-    className="
-      text-2xl
-      font-bold
-    "
-  >
-    Treasury Overview
-  </h2>
+        <h2
+          className="
+            text-2xl
+            font-bold
+          "
+        >
+          Treasury Overview
+        </h2>
 
-  <Link
-    href="/treasury"
-    className="
-      text-violet-600
-      font-semibold
-      hover:underline
-    "
-  >
-    View More →
-  </Link>
+        <Link
+          href="/treasury"
+          className="
+            text-violet-600
+            font-semibold
+            hover:underline
+          "
+        >
+          View More →
+        </Link>
 
-</div>
+      </div>
 
       <div
         className="
@@ -249,7 +175,7 @@ export default function TreasuryOverview({
                   width: `${Math.min(
                     utilization,
                     100
-                  )}%`
+                  )}%`,
                 }}
               />
 

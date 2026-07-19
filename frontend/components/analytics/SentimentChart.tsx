@@ -5,6 +5,7 @@ import {
 } from "lucide-react";
 
 import LoadingSkeleton from "@/components/ui/LoadingSkeleton";
+
 import {
   useAnalyticsContext,
 } from "@/providers/AnalyticsProvider";
@@ -12,23 +13,34 @@ import {
 export default function SentimentChart() {
 
   const {
-  analytics,
-  loading,
-} = useAnalyticsContext();
+    analytics,
+    loading,
+  } = useAnalyticsContext();
 
-  <LoadingSkeleton
-  className="
-    h-[280px]
-    md:h-[360px]
-    rounded-3xl
-    bg-white
-    border
-    border-gray-200
-  "
-/>
+  if (loading) {
 
-  const bullish = analytics?.bullish ?? 0;
-  const bearish = analytics?.bearish ?? 0;
+    return (
+
+      <LoadingSkeleton
+        className="
+          h-[280px]
+          md:h-[360px]
+          rounded-3xl
+          bg-white
+          border
+          border-gray-200
+        "
+      />
+
+    );
+
+  }
+
+  const bullish =
+  analytics?.bullishPercentage ?? 0;
+
+const bearish =
+  analytics?.bearishPercentage ?? 0;
 
   return (
 
@@ -59,10 +71,12 @@ export default function SentimentChart() {
             justify-center
           "
         >
+
           <TrendingUp
             size={26}
             className="text-green-600"
           />
+
         </div>
 
       </div>
@@ -128,4 +142,5 @@ export default function SentimentChart() {
     </section>
 
   );
+
 }

@@ -50,16 +50,6 @@ export function MarketsProvider({
         const data =
           await getMarkets();
 
-        console.log(
-          "[MarketsProvider] API returned:",
-          data
-        );
-
-        console.log(
-          "[MarketsProvider] Count:",
-          data?.length
-        );
-
         setMarkets(data);
 
       } catch (error) {
@@ -82,16 +72,6 @@ export function MarketsProvider({
 
   useEffect(() => {
 
-    console.log(
-      "[MarketsProvider] Current markets:",
-      markets.length,
-      markets
-    );
-
-  }, [markets]);
-
-  useEffect(() => {
-
     const unsubscribe = subscribe(
 
       "/topic/markets",
@@ -102,11 +82,6 @@ export function MarketsProvider({
           JSON.parse(
             message.body
           );
-
-        console.log(
-          "[MarketsProvider] received",
-          updatedMarket
-        );
 
         setMarkets(
           previous => {

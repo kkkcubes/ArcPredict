@@ -37,8 +37,7 @@ public class TreasuryReaderService {
     @Value("${contracts.treasury-address}")
     private String treasuryAddress;
 
-    public Long getVaultBalance()
-        throws Exception {
+    public Long getVaultBalance() {
 
         log.info(
             "Calling getVaultBalance()"
@@ -47,10 +46,10 @@ public class TreasuryReaderService {
         return callUint256Function(
             "getVaultBalance"
         );
+
     }
 
-    public Long getTotalLiquidity()
-        throws Exception {
+    public Long getTotalLiquidity() {
 
         log.info(
             "Calling totalLiquidity()"
@@ -59,10 +58,10 @@ public class TreasuryReaderService {
         return callUint256Function(
             "totalLiquidity"
         );
+
     }
 
-    public Long getTotalLockedLiquidity()
-        throws Exception {
+    public Long getTotalLockedLiquidity() {
 
         log.info(
             "Calling totalLockedLiquidity()"
@@ -71,10 +70,10 @@ public class TreasuryReaderService {
         return callUint256Function(
             "totalLockedLiquidity"
         );
+
     }
 
-    public Long getTotalReleasedLiquidity()
-        throws Exception {
+    public Long getTotalReleasedLiquidity() {
 
         log.info(
             "Calling totalReleasedLiquidity()"
@@ -83,11 +82,12 @@ public class TreasuryReaderService {
         return callUint256Function(
             "totalReleasedLiquidity"
         );
+
     }
 
     private Long callUint256Function(
         String functionName
-    ) throws Exception {
+    ) {
 
         try {
 
@@ -101,43 +101,44 @@ public class TreasuryReaderService {
                 );
 
             var ethCallResponse =
-    web3j
-        .ethCall(
-            Transaction.createEthCallTransaction(
-                null,
-                treasuryAddress,
-                FunctionEncoder.encode(
-                    function
-                )
-            ),
-            DefaultBlockParameterName.LATEST
-        )
-        .send();
+                web3j
+                    .ethCall(
+                        Transaction.createEthCallTransaction(
+                            null,
+                            treasuryAddress,
+                            FunctionEncoder.encode(
+                                function
+                            )
+                        ),
+                        DefaultBlockParameterName.LATEST
+                    )
+                    .send();
 
-if (ethCallResponse.hasError()) {
+            if (ethCallResponse.hasError()) {
 
-    System.out.println(
-        "RPC Error Code: "
-        + ethCallResponse
-            .getError()
-            .getCode()
-    );
+                System.out.println(
+                    "RPC Error Code: "
+                    + ethCallResponse
+                        .getError()
+                        .getCode()
+                );
 
-    System.out.println(
-        "RPC Error Message: "
-        + ethCallResponse
-            .getError()
-            .getMessage()
-    );
-}
+                System.out.println(
+                    "RPC Error Message: "
+                    + ethCallResponse
+                        .getError()
+                        .getMessage()
+                );
 
-String response =
-    ethCallResponse.getValue();
+            }
 
-log.debug(
-    "Raw Response: {}",
-    response
-);
+            String response =
+                ethCallResponse.getValue();
+
+            log.debug(
+                "Raw Response: {}",
+                response
+            );
 
             List<Type> output =
                 FunctionReturnDecoder.decode(
@@ -154,18 +155,21 @@ log.debug(
 
         } catch (Exception e) {
 
-    log.error(
-    "RPC failed for function: {}",
-    functionName,
-    e
-);
+            log.error(
+                "RPC failed for function: {}",
+                functionName,
+                e
+            );
 
-    log.warn(
-    "Returning default value 0 for function: {}",
-    functionName
-);
+            log.warn(
+                "Returning default value 0 for function: {}",
+                functionName
+            );
 
-    return 0L;
-}
+            return 0L;
+
+        }
+
     }
+
 }
