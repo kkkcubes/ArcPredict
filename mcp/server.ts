@@ -76,13 +76,13 @@ function createServer() {
 
 
                     {
-                        name:
-                            "get_market_summary",
+    name:
+        "get_market_summary",
 
-                        description:
-                            "Returns current ArcPredict prediction markets",
+    description:
+        "Returns all active ArcPredict prediction markets including market ID, question, category, liquidity, trading volume, participants and status. Use this tool when the user asks about available markets or requests a market overview.",
 
-                        inputSchema:{
+    inputSchema:{
                             type:"object",
                             properties:{}
                         }
@@ -95,7 +95,7 @@ function createServer() {
                             "get_market_analytics",
 
                         description:
-                            "Returns ArcPredict protocol analytics",
+    "Returns protocol analytics including total volume, market statistics, participation metrics and aggregated insights. Use this tool when users ask about protocol performance or analytics.",
 
                         inputSchema:{
                             type:"object",
@@ -110,7 +110,7 @@ function createServer() {
                             "get_portfolio_summary",
 
                         description:
-                            "Returns ArcPredict portfolio summary for a wallet",
+    "Returns a wallet portfolio including holdings, positions and trading summary. Requires a wallet address. Use this tool when users ask about a specific wallet.",
 
                         inputSchema:{
                             type:"object",
@@ -139,7 +139,7 @@ function createServer() {
                             "get_market_sentiment",
 
                         description:
-                            "Returns current ArcPredict market sentiment",
+    "Returns bullish and bearish sentiment for active prediction markets based on current trading activity. Use this tool when users ask which markets are bullish or bearish.",
 
                         inputSchema:{
                             type:"object",
@@ -153,7 +153,7 @@ function createServer() {
                             "get_leaderboard",
 
                         description:
-                            "Returns top ArcPredict traders leaderboard",
+    "Returns the top traders ranked by trading activity and volume. Use this tool when users ask about the most active traders.",
 
                         inputSchema:{
                             type:"object",
@@ -166,7 +166,7 @@ function createServer() {
         "get_recent_events",
 
     description:
-        "Returns latest ArcPredict market activity events",
+    "Returns the latest blockchain events including market creation, trades and settlements. Use this tool when users ask about recent protocol activity.",
 
     inputSchema:{
         type:"object",
@@ -179,7 +179,7 @@ function createServer() {
         "get_market_details",
 
     description:
-        "Returns details of a specific ArcPredict prediction market",
+    "Returns detailed information for a specific prediction market identified by market ID, including pools, participants, status and metadata.",
 
     inputSchema:{
         type:"object",
@@ -516,16 +516,35 @@ if(
             );
 
 
-        } catch(error) {
+        } catch (error) {
 
-            console.error(
-                "TOOL EXECUTION ERROR:",
-                error
-            );
+    console.error(
+        "TOOL EXECUTION ERROR:",
+        error
+    );
 
-            throw error;
+    return {
 
-        }
+        content: [
+
+            {
+
+                type: "text",
+
+                text:
+                    error instanceof Error
+                        ? error.message
+                        : "Unknown MCP error"
+
+            }
+
+        ],
+
+        isError: true
+
+    };
+
+}
 
 
         }
