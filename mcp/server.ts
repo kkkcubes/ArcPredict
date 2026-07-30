@@ -43,6 +43,11 @@ import {
 }
 from "./tools/marketDetails.js";
 
+import {
+    analyzeMarket
+}
+from "./tools/analyzeMarket.js";
+
 
 
 function createServer() {
@@ -199,7 +204,20 @@ function createServer() {
             "marketId"
         ]
     }
-}
+},
+
+{
+    name: "analyze_market",
+
+    description:
+        "Provides a complete market intelligence report by combining market summary, sentiment, analytics, leaderboard, and recent events into a single response.",
+
+    inputSchema: {
+        type: "object",
+        properties: {},
+        required: []
+    }
+},
 
 
                 ]
@@ -356,41 +374,40 @@ function createServer() {
 
 
 
+if (
+    request.params.name ===
+    "get_market_sentiment"
+) {
 
+    console.log("Market sentiment tool invoked");
 
-            if(
-                request.params.name ===
-                "get_market_sentiment"
-            ){
+    const result =
+        await getMarketSentiment();
 
+    return {
 
-                const result =
-                    await getMarketSentiment();
+        content: [
 
+            {
 
+                type: "text",
 
-                return {
-
-                    content:[
-
-                        {
-
-                            type:"text",
-
-                            text:
-                                JSON.stringify(
-                                    result,
-                                    null,
-                                    2
-                                )
-
-                        }
-
-                    ]
-
-                };
+                text:
+                    JSON.stringify(
+                        result,
+                        null,
+                        2
+                    )
 
             }
+
+        ]
+
+    };
+
+}
+
+            
 
                         if(
                 request.params.name ===
@@ -498,12 +515,48 @@ if(
                     )
 
             }
+            
+
+        ]
+
+    };
+
+
+}
+
+if (
+    request.params.name ===
+    "get_market_analytics"
+) {
+
+    console.log("Analytics tool invoked");
+
+    const result =
+        await getAnalyticsSummary();
+
+    return {
+
+        content: [
+
+            {
+
+                type: "text",
+
+                text:
+                    JSON.stringify(
+                        result,
+                        null,
+                        2
+                    )
+
+            }
 
         ]
 
     };
 
 }
+
 
 
 
@@ -604,11 +657,16 @@ const httpServer =
             ) {
 
 
+                console.log(
+    "Incoming MCP Request:",
+    req.method,
+    req.url
+);
+
+const server =
+    createServer();
+
                 try {
-
-
-                    const server =
-                        createServer();
 
 
 
