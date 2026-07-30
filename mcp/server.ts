@@ -57,6 +57,20 @@ import { formatMcpSuccess } from "./utils/success.js";
 
 import { logger } from "./utils/logger.js";
 
+import { config } from "./config.js";
+
+import { registerGracefulShutdown } from "./utils/shutdown.js";
+
+import { isBackendHealthy } from "./services/healthService.js";
+
+import {
+    ROUTES,
+    SERVICE_NAME,
+    HEADERS
+} from "./constants.js";
+
+import { sendJson } from "./utils/http.js";
+
 
 
 function createServer() {
@@ -451,143 +465,170 @@ export const httpServer =
     http.createServer(
         async (req, res) => {
 
-
-            if (
-                req.url === "/health"
-            ) {
-
-
-                res.writeHead(
-                    200,
-                    {
-                        "Content-Type":
-                            "application/json"
-                    }
-                );
-
-
-                res.end(
-                    JSON.stringify(
-                        {
-                            status: "ok",
-                            service: "ArcPredict MCP"
-                        }
-                    )
-                );
-
-
-                return;
-
-            }
-
-
-
-
-            if (
-                req.url === "/mcp"
-            ) {
-
-
-                logger.info(
-    {
-        method: req.method,
-        url: req.url
-    },
-    "Incoming MCP Request"
+            res.setHeader(
+    HEADERS.X_SERVICE,
+    SERVICE_NAME
 );
 
-const server =
-    createServer();
+res.setHeader(
+    "X-Content-Type-Options",
+    "nosniff"
+);
 
-                try {
-
-
-
-                    const transport =
-                        new StreamableHTTPServerTransport(
-                            {
-                                sessionIdGenerator:
-                                    undefined
-                            }
-                        );
-
-
-
-                    await server.connect(
-                        transport
-                    );
-
-
-
-                    await transport.handleRequest(
-                        req,
-                        res
-                    );
-
-
-                } catch(error) {
-
-
-                    logger.error(
-    {
-        error
-    },
-    "MCP REQUEST ERROR"
+res.setHeader(
+    "Cache-Control",
+    "no-store"
 );
 
 
-                    if (!res.headersSent) {
-
-                        res.writeHead(
-                            500
-                        );
-
-                        res.end(
-                            JSON.stringify(
-                                {
-                                    error:
-                                        "MCP request failed"
-                                }
-                            )
-                        );
-
-                    }
-
-                }
+            if (req.url === ROUTES.HEALTH) {
 
 
-                return;
+                sendJson(res, 200, {
+    status: "ok",
+    service: SERVICE_NAME
+});
+
+return;
 
             }
 
+            if (req.url === ROUTES.READY) {
 
+    const healthy =
+        await isBackendHealthy();
 
+    if (!healthy) {
 
-            res.writeHead(
-                404
-            );
+    sendJson(res, 503, {
+        status: "unavailable",
+        service: SERVICE_NAME
+    });
 
-            res.end();
+    return;
+}
 
-
+    res.writeHead(
+        200,
+        {
+            "Content-Type": "application/json"
         }
     );
+
+    res.end(
+        JSON.stringify({
+            status: "ready",
+            service: SERVICE_NAME
+        })
+    );
+
+    return;
+}
+
+
+
+
+           if (req.url === ROUTES.MCP) {
+
+    if (req.method !== "POST") {
+        res.writeHead(405, {
+            "Content-Type": "application/json"
+        });
+
+        res.end(
+            JSON.stringify({
+                error: "Method Not Allowed"
+            })
+        );
+
+        return;
+    }
+
+    logger.info(
+        {
+            method: req.method,
+            url: req.url
+        },
+        "Incoming MCP Request"
+    );
+
+    const server = createServer();
+
+    try {
+
+        const transport =
+            new StreamableHTTPServerTransport({
+                sessionIdGenerator: undefined
+            });
+
+        await server.connect(transport);
+
+        await transport.handleRequest(req, res);
+
+if (res.headersSent) {
+    return;
+}
+
+        return;
+
+    } catch (error) {
+
+        logger.error(
+            { error },
+            "MCP REQUEST ERROR"
+        );
+
+        if (!res.headersSent) {
+
+            res.writeHead(500);
+
+            res.end(
+                JSON.stringify({
+                    error: "MCP request failed"
+                })
+            );
+        }
+
+        return;
+    }
+}
+
+if (!res.headersSent) {
+    res.writeHead(404, {
+        "Content-Type": "application/json"
+    });
+
+    res.end(
+        JSON.stringify({
+            error: "Not Found"
+        })
+    );
+}
+
+}
+);
+
+    httpServer.requestTimeout = config.requestTimeout;
 
 
 
 if (import.meta.url === `file://${process.argv[1]}`) {
 
     httpServer.listen(
-        3001,
+        config.port,
         () => {
 
             logger.info(
-                "ArcPredict MCP Server running on port 3001"
-            );
+    {
+        port: config.port,
+        requestTimeout: config.requestTimeout
+    },
+    "ArcPredict MCP Server started"
+);
 
         }
     );
 
+    registerGracefulShutdown(httpServer);
+
 }
-
-

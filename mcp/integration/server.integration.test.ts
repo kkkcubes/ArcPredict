@@ -1,5 +1,9 @@
 import request from "supertest";
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
+
+vi.mock("../services/healthService.js", () => ({
+    isBackendHealthy: vi.fn(() => Promise.resolve(true))
+}));
 
 import { httpServer } from "../server.js";
 
@@ -14,6 +18,20 @@ describe("HTTP Server Integration", () => {
 
         expect(response.body).toEqual({
             status: "ok",
+            service: "ArcPredict MCP"
+        });
+
+    });
+
+    it("should return readiness status", async () => {
+
+        const response = await request(httpServer)
+            .get("/ready");
+
+        expect(response.status).toBe(200);
+
+        expect(response.body).toEqual({
+            status: "ready",
             service: "ArcPredict MCP"
         });
 
@@ -67,29 +85,93 @@ describe("HTTP Server Integration", () => {
         expect(response.status).not.toBe(404);
         expect(response.status).toBeLessThan(500);
 
-        // We'll validate the response body in the next step.
+    });
+
+    it("should accept a tools/call request", async () => {
+
+        const response = await request(httpServer)
+            .post("/mcp")
+            .set("Accept", "application/json, text/event-stream")
+            .send({
+                jsonrpc: "2.0",
+                id: 3,
+                method: "tools/call",
+                params: {
+                    name: "get_market_summary",
+                    arguments: {}
+                }
+            });
+
+        expect(response.status).not.toBe(404);
+        expect(response.status).toBeLessThan(500);
 
     });
 
-});
+    it("should reject non-POST requests to /mcp", async () => {
 
-it("should accept a tools/call request", async () => {
+        const response = await request(httpServer)
+            .get("/mcp");
 
-    const response = await request(httpServer)
-        .post("/mcp")
-        .set("Accept", "application/json, text/event-stream")
-        .send({
-            jsonrpc: "2.0",
-            id: 3,
-            method: "tools/call",
-            params: {
-                name: "get_market_summary",
-                arguments: {}
-            }
+        expect(response.status).toBe(405);
+
+        expect(response.body).toEqual({
+            error: "Method Not Allowed"
         });
 
+    });
 
-    expect(response.status).not.toBe(404);
-    expect(response.status).toBeLessThan(500);
+    it("should include the X-Service header", async () => {
+
+        const response = await request(httpServer)
+            .get("/health");
+
+        expect(response.status).toBe(200);
+
+        expect(response.headers["x-service"])
+            .toBe("ArcPredict MCP");
+
+    });
+
+    it("should include the X-Content-Type-Options header", async () => {
+
+        const response = await request(httpServer)
+            .get("/health");
+
+        expect(response.status).toBe(200);
+
+        expect(
+            response.headers["x-content-type-options"]
+        ).toBe("nosniff");
+
+    });
+
+    it("should return JSON for unknown routes", async () => {
+
+        const response = await request(httpServer)
+            .get("/unknown-route");
+
+        expect(response.status).toBe(404);
+
+        expect(response.body).toEqual({
+            error: "Not Found"
+        });
+
+        expect(response.headers["content-type"])
+            .toContain("application/json");
+
+    });
+
+    it("should include the Cache-Control header", async () => {
+
+        const response = await request(httpServer)
+            .get("/health");
+
+        expect(response.status).toBe(200);
+
+        expect(
+            response.headers["cache-control"]
+        ).toBe("no-store");
+
+    });
 
 });
