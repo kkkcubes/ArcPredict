@@ -447,7 +447,7 @@ if (
 const server = createServer();
 
 
-const httpServer =
+export const httpServer =
     http.createServer(
         async (req, res) => {
 
@@ -575,15 +575,19 @@ const server =
 
 
 
-httpServer.listen(
-    3001,
-    () => {
+if (import.meta.url === `file://${process.argv[1]}`) {
 
-        logger.info(
-    "ArcPredict MCP Server running on port 3001"
-);
+    httpServer.listen(
+        3001,
+        () => {
 
-    }
-);
+            logger.info(
+                "ArcPredict MCP Server running on port 3001"
+            );
+
+        }
+    );
+
+}
 
 
