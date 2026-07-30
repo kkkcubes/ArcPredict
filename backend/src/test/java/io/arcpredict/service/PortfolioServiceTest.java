@@ -21,6 +21,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class PortfolioServiceTest {
@@ -307,5 +308,65 @@ class PortfolioServiceTest {
         );
 
     }
+
+    @Test
+void shouldHandleNullPositionValuesInAnalytics() {
+
+    WalletPositionEntity position =
+        WalletPositionEntity.builder()
+            .walletAddress("0xwallet")
+            .marketId(1L)
+            .currentValue(null)
+            .claimableRewards(null)
+            .build();
+
+
+    when(
+        tradeRepository.findByTraderOrderByTimestampDesc(
+            "0xwallet"
+        )
+    ).thenReturn(
+        List.of()
+    );
+
+
+    when(
+        walletRepository.findByWalletAddress(
+            "0xwallet"
+        )
+    ).thenReturn(
+        List.of(
+            position
+        )
+    );
+
+
+    PortfolioAnalyticsResponse analytics =
+        portfolioService.getPortfolioAnalytics(
+            "0xwallet"
+        );
+
+
+    assertEquals(
+        0L,
+        analytics.getCurrentValue()
+    );
+
+    assertEquals(
+        0L,
+        analytics.getRealizedPnL()
+    );
+
+    assertEquals(
+        0L,
+        analytics.getTotalInvested()
+    );
+
+    assertEquals(
+        0L,
+        analytics.getTotalTrades()
+    );
+
+}
 
 }

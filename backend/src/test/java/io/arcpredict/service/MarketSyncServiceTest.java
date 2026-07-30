@@ -16,15 +16,17 @@ import io.arcpredict.repository.WalletRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 
 import static org.mockito.Mockito.never;
@@ -257,31 +259,51 @@ private MetricsService metricsService;
     }
 
     @Test
-    void shouldReturnWhenMarketDoesNotExist() {
+void shouldSaveTradeWhenMarketDoesNotExist() {
 
-        when(
-            walletRepository.findByMarketId(1L)
-        ).thenReturn(
-            Collections.emptyList()
-        );
+    when(tradeRepository.findByTxHash("0xnew"))
+            .thenReturn(Optional.empty());
 
-        when(
-            marketRepository.findById(1L)
-        ).thenReturn(
-            Optional.empty()
-        );
+    when(walletRepository
+            .findByWalletAddressAndMarketIdAndYesPosition(
+                    "0xwallet",
+                    1L,
+                    true))
+            .thenReturn(Optional.empty());
 
-        marketSyncService.resolveMarket(
+    when(marketRepository.findById(1L))
+            .thenReturn(Optional.empty());
+
+    marketSyncService.saveTrade(
             1L,
-            true
-        );
+            "0xWallet",
+            true,
+            100L,
+            "0xnew",
+            1000L
+    );
 
-        verify(
-            walletRepository,
-            never()
-        ).save(any());
+    verify(tradeRepository)
+            .save(any(TradeEntity.class));
 
-    }
+    verify(walletRepository)
+            .save(any(WalletPositionEntity.class));
+
+    verify(metricsService)
+            .incrementTradesProcessed();
+
+    verify(marketRepository, never())
+            .save(any(MarketEntity.class));
+
+    verify(webSocketBroadcastService, never())
+            .broadcastMarket(any());
+
+    verify(webSocketBroadcastService)
+            .broadcastPortfolio(any());
+
+    verify(webSocketBroadcastService)
+            .broadcastTrade(any());
+}
 
     @Test
 void shouldResolveWinningWallet() {
@@ -304,16 +326,13 @@ void shouldResolveWinningWallet() {
             .build();
 
     when(
-        walletRepository.findByMarketId(1L)
-    ).thenReturn(
-        List.of(winner)
-    );
-
-    when(
         marketRepository.findById(1L)
     ).thenReturn(
         Optional.of(market)
     );
+
+    when(walletRepository.findByMarketId(1L))
+    .thenReturn(List.of(winner));
 
     marketSyncService.resolveMarket(
         1L,
@@ -520,10 +539,771 @@ void shouldMarkRewardClaimedSuccessfully() {
     );
 
     verify(walletRepository)
-        .save(any(WalletPositionEntity.class));
+    .save(any(WalletPositionEntity.class));
+
+verify(webSocketBroadcastService)
+    .broadcastPortfolio(any());
+
+ArgumentCaptor<WalletPositionEntity> walletCaptor =
+    ArgumentCaptor.forClass(
+        WalletPositionEntity.class
+    );
+
+verify(
+    walletRepository
+).save(
+    walletCaptor.capture()
+);
+
+assertTrue(
+    walletCaptor
+        .getValue()
+        .getClaimed()
+);
+
+assertTrue(
+    walletCaptor
+        .getValue()
+        .getClaimableRewards() == 0
+);
+
+assertTrue(
+    walletCaptor
+        .getValue()
+        .getInvestedAmount() == 100L
+);
+
+verify(
+    walletRepository
+).save(
+    walletCaptor.getValue()
+);
+
+}
+
+@Test
+void shouldUpdateNoPoolWhenTradeIsNoPosition() {
+
+    MarketEntity market =
+        MarketEntity.builder()
+            .marketId(1L)
+            .yesPool(100L)
+            .noPool(50L)
+            .totalVolume(150L)
+            .participants(1L)
+            .build();
+
+    WalletPositionEntity position =
+        WalletPositionEntity.builder()
+            .walletAddress("0xwallet")
+            .marketId(1L)
+            .yesPosition(false)
+            .shares(10L)
+            .investedAmount(10L)
+            .currentValue(10L)
+            .build();
+
+    when(tradeRepository.findByTxHash("0xno"))
+        .thenReturn(Optional.empty());
+
+    when(walletRepository
+        .findByWalletAddressAndMarketIdAndYesPosition(
+            "0xwallet",
+            1L,
+            false))
+        .thenReturn(Optional.of(position));
+
+    when(marketRepository.findById(1L))
+        .thenReturn(Optional.of(market));
+
+    when(tradeRepository.findByMarketId(1L))
+        .thenReturn(Collections.emptyList());
+
+    when(tradeRepository.findByTrader("0xwallet"))
+        .thenReturn(Collections.emptyList());
+
+    when(leaderboardService.getLeaderboard())
+        .thenReturn(Collections.emptyList());
+
+    when(analyticsService.getAnalytics())
+        .thenReturn(AnalyticsEntity.builder().build());
+
+    marketSyncService.saveTrade(
+        1L,
+        "0xWallet",
+        false,
+        100L,
+        "0xno",
+        1000L
+    );
+
+    verify(marketRepository)
+        .save(any(MarketEntity.class));
+}
+
+@Test
+void shouldIgnoreDuplicateTransactionWhenSaveThrowsException() {
+
+    when(tradeRepository.findByTxHash("0xdup"))
+        .thenReturn(Optional.empty());
+
+    when(tradeRepository.save(any(TradeEntity.class)))
+        .thenThrow(new DataIntegrityViolationException("Duplicate"));
+
+    marketSyncService.saveTrade(
+        1L,
+        "0xWallet",
+        true,
+        100L,
+        "0xdup",
+        1000L
+    );
+
+    verify(metricsService, never())
+        .incrementTradesProcessed();
+
+    verify(walletRepository, never())
+        .save(any());
+
+    verify(marketRepository, never())
+        .save(any());
+
+    verify(webSocketBroadcastService, never())
+        .broadcastTrade(any());
+}
+
+@Test
+void shouldHandleNullTotalVolume() {
+
+    MarketEntity market =
+        MarketEntity.builder()
+            .marketId(1L)
+            .yesPool(100L)
+            .noPool(50L)
+            .totalVolume(null)
+            .participants(1L)
+            .build();
+
+    when(tradeRepository.findByTxHash("0xnull"))
+        .thenReturn(Optional.empty());
+
+    when(walletRepository
+        .findByWalletAddressAndMarketIdAndYesPosition(
+            "0xwallet",
+            1L,
+            true))
+        .thenReturn(Optional.empty());
+
+    when(marketRepository.findById(1L))
+        .thenReturn(Optional.of(market));
+
+    when(tradeRepository.findByMarketId(1L))
+        .thenReturn(Collections.emptyList());
+
+    when(tradeRepository.findByTrader("0xwallet"))
+        .thenReturn(Collections.emptyList());
+
+    when(leaderboardService.getLeaderboard())
+        .thenReturn(Collections.emptyList());
+
+    when(analyticsService.getAnalytics())
+        .thenReturn(AnalyticsEntity.builder().build());
+
+    marketSyncService.saveTrade(
+        1L,
+        "0xWallet",
+        true,
+        100L,
+        "0xnull",
+        1000L
+    );
+
+    verify(marketRepository)
+        .save(any(MarketEntity.class));
+}
+
+@Test
+void shouldCalculatePortfolioFromTraderHistory() {
+
+    MarketEntity market = MarketEntity.builder()
+    .marketId(1L)
+    .yesPool(100L)
+    .noPool(200L)
+    .totalVolume(300L)
+    .participants(1L)
+    .build();
+
+    TradeEntity yesTrade = TradeEntity.builder()
+    .trader("0xwallet")
+    .amount(100L)
+    .yesPosition(true)
+    .build();
+
+TradeEntity noTrade = TradeEntity.builder()
+    .trader("0xwallet")
+    .amount(50L)
+    .yesPosition(false)
+    .build();
+
+    when(marketRepository.findById(1L))
+    .thenReturn(Optional.of(market));
+
+when(tradeRepository.findByMarketId(1L))
+    .thenReturn(List.of());
+
+when(tradeRepository.findByTrader("0xwallet"))
+    .thenReturn(List.of(yesTrade, noTrade));
+
+    when(tradeRepository.findByTxHash("0xhistory"))
+    .thenReturn(Optional.empty());
+
+when(walletRepository
+    .findByWalletAddressAndMarketIdAndYesPosition(
+        "0xwallet",
+        1L,
+        true))
+    .thenReturn(Optional.empty());
+
+when(leaderboardService.getLeaderboard())
+    .thenReturn(Collections.emptyList());
+
+when(analyticsService.getAnalytics())
+    .thenReturn(AnalyticsEntity.builder().build());
+
+    TradeEntity newTrade = TradeEntity.builder()
+    .txHash("0xhistory")
+    .marketId(1L)
+    .trader("0xwallet")
+    .amount(25L)
+    .yesPosition(true)
+    .build();
+
+    marketSyncService.saveTrade(
+    1L,
+    "0xWallet",
+    true,
+    25L,
+    "0xhistory",
+    1000L
+);
+
+verify(webSocketBroadcastService)
+    .broadcastPortfolio(any());
+
+    verify(marketRepository)
+    .save(any(MarketEntity.class));
+
+    verify(tradeRepository)
+    .save(any(TradeEntity.class));
+
+}
+
+@Test
+void shouldBroadcastUpdatedPortfolioAfterRewardClaim() {
+
+    WalletPositionEntity position =
+    WalletPositionEntity.builder()
+        .walletAddress("0xwallet")
+        .marketId(1L)
+        .settled(true)
+        .claimed(false)
+        .claimableRewards(500L)
+        .investedAmount(100L)
+        .build();
+
+        when(
+    walletRepository.findByWalletAddressAndMarketId(
+        "0xwallet",
+        1L
+    )
+).thenReturn(
+    Optional.of(position)
+);
+
+TradeEntity yesTrade =
+    TradeEntity.builder()
+        .amount(100L)
+        .yesPosition(true)
+        .build();
+
+TradeEntity noTrade =
+    TradeEntity.builder()
+        .amount(50L)
+        .yesPosition(false)
+        .build();
+
+when(
+    tradeRepository.findByTrader(
+        "0xwallet"
+    )
+).thenReturn(
+    List.of(
+        yesTrade,
+        noTrade
+    )
+);
+
+marketSyncService.markRewardClaimed(
+    1L,
+    "0xWallet",
+    500L
+);
+
+verify(walletRepository)
+    .save(any(WalletPositionEntity.class));
 
     verify(webSocketBroadcastService)
-        .broadcastPortfolio(any());
+    .broadcastPortfolio(any());
+
+    
+
+}
+
+@Test
+void shouldReturnWhenMarketDoesNotExist() {
+
+    when(
+    walletRepository.findByMarketId(
+        1L
+    )
+).thenReturn(
+    Collections.emptyList()
+);
+
+marketSyncService.resolveMarket(
+    1L,
+    true
+);
+
+verify(
+    walletRepository,
+    never()
+).save(any());
+
+verify(
+    marketRepository,
+    never()
+).save(any());
+
+verify(
+    webSocketBroadcastService,
+    never()
+).broadcastMarket(any());
+
+}
+
+@Test
+void shouldResolveWinningPosition() {
+
+    WalletPositionEntity position =
+    WalletPositionEntity.builder()
+        .walletAddress("alice")
+        .yesPosition(true)
+        .shares(10L)
+        .investedAmount(100L)
+        .build();
+
+        when(
+    walletRepository.findByMarketId(
+        1L
+    )
+).thenReturn(
+    List.of(position)
+);
+
+when(
+    marketRepository.findById(
+        1L
+    )
+).thenReturn(
+    Optional.of(
+        MarketEntity.builder()
+            .marketId(1L)
+            .yesPool(0L)
+            .noPool(100L)
+            .build()
+    )
+);
+
+marketSyncService.resolveMarket(
+    1L,
+    true
+);
+
+verify(
+    walletRepository
+).save(any(WalletPositionEntity.class));
+
+verify(
+    marketRepository
+).save(any(MarketEntity.class));
+
+ArgumentCaptor<WalletPositionEntity> walletCaptor =
+    ArgumentCaptor.forClass(
+        WalletPositionEntity.class
+    );
+
+verify(
+    walletRepository
+).save(
+    walletCaptor.capture()
+);
+
+assertTrue(
+    walletCaptor
+        .getValue()
+        .getSettled()
+);
+
+assertTrue(
+    walletCaptor
+        .getValue()
+        .getWinner()
+);
+
+assertTrue(
+    walletCaptor
+        .getValue()
+        .getClaimableRewards() > 0
+);
+
+}
+
+@Test
+void shouldReturnWhenMarketNotFoundDuringResolve()
+{
+
+    when(
+        marketRepository.findById(1L)
+    )
+    .thenReturn(
+        Optional.empty()
+    );
+
+
+    marketSyncService.resolveMarket(
+        1L,
+        true
+    );
+
+
+    verify(
+        walletRepository,
+        never()
+    )
+    .save(any());
+
+
+    verify(
+        marketRepository,
+        never()
+    )
+    .save(any());
+
+}
+
+@Test
+void shouldReturnWhenMarketDoesNotExistInResolve()
+{
+
+    when(
+        marketRepository.findById(1L)
+    )
+    .thenReturn(
+        Optional.empty()
+    );
+
+
+    marketSyncService.resolveMarket(
+        1L,
+        true
+    );
+
+
+    verify(
+        walletRepository,
+        never()
+    )
+    .save(any());
+
+
+    verify(
+        marketRepository,
+        never()
+    )
+    .save(any());
+
+}
+
+@Test
+void shouldHandleWinnerWithZeroWinningShares()
+{
+
+    MarketEntity market =
+        MarketEntity.builder()
+            .marketId(1L)
+            .yesPool(1000L)
+            .noPool(500L)
+            .protocolFees(0L)
+            .build();
+
+
+    WalletPositionEntity position =
+        WalletPositionEntity.builder()
+            .walletAddress("0xzero")
+            .marketId(1L)
+            .yesPosition(true)
+            .shares(0L)
+            .investedAmount(100L)
+            .build();
+
+
+    when(
+        walletRepository.findByMarketId(1L)
+    )
+    .thenReturn(
+        List.of(position)
+    );
+
+
+    when(
+        marketRepository.findById(1L)
+    )
+    .thenReturn(
+        Optional.of(market)
+    );
+
+
+    marketSyncService.resolveMarket(
+        1L,
+        true
+    );
+
+
+    verify(
+        walletRepository
+    )
+    .save(
+        any(WalletPositionEntity.class)
+    );
+
+
+    verify(
+        marketRepository
+    )
+    .save(
+        any(MarketEntity.class)
+    );
+
+}
+
+@Test
+void shouldHandleWinnerWhenTotalWinningSharesIsZero()
+{
+
+    MarketEntity market =
+        MarketEntity.builder()
+            .marketId(1L)
+            .yesPool(1000L)
+            .noPool(500L)
+            .protocolFees(0L)
+            .build();
+
+
+    WalletPositionEntity position =
+        WalletPositionEntity.builder()
+            .walletAddress("0xzero")
+            .marketId(1L)
+            .yesPosition(true)
+            .shares(0L)
+            .investedAmount(100L)
+            .build();
+
+
+    when(
+        marketRepository.findById(1L)
+    )
+    .thenReturn(
+        Optional.of(market)
+    );
+
+
+    when(
+        walletRepository.findByMarketId(1L)
+    )
+    .thenReturn(
+        List.of(position)
+    );
+
+
+    marketSyncService.resolveMarket(
+        1L,
+        true
+    );
+
+
+    verify(
+        marketRepository
+    )
+    .save(
+        any(MarketEntity.class)
+    );
+
+
+    verify(
+        walletRepository
+    )
+    .save(
+        any(WalletPositionEntity.class)
+    );
+
+}
+
+@Test
+void shouldResolveMarketWithNoWalletPositions()
+{
+
+    MarketEntity market =
+        MarketEntity.builder()
+            .marketId(1L)
+            .yesPool(1000L)
+            .noPool(500L)
+            .protocolFees(0L)
+            .build();
+
+
+    when(
+        marketRepository.findById(1L)
+    )
+    .thenReturn(
+        Optional.of(market)
+    );
+
+
+    when(
+        walletRepository.findByMarketId(1L)
+    )
+    .thenReturn(
+        List.of()
+    );
+
+
+    marketSyncService.resolveMarket(
+        1L,
+        true
+    );
+
+
+    verify(
+        marketRepository
+    )
+    .save(
+        any(MarketEntity.class)
+    );
+
+}
+
+@Test
+void shouldReturnWhenMarketDoesNotExistDuringResolve()
+{
+
+    when(
+        marketRepository.findById(
+            999L
+        )
+    )
+    .thenReturn(
+        Optional.empty()
+    );
+
+
+    marketSyncService.resolveMarket(
+        999L,
+        true
+    );
+
+
+    verify(
+        marketRepository,
+        never()
+    )
+    .save(
+        org.mockito.ArgumentMatchers.any(
+            MarketEntity.class
+        )
+    );
+
+
+    verify(
+        walletRepository,
+        never()
+    )
+    .save(
+        org.mockito.ArgumentMatchers.any(
+            WalletPositionEntity.class
+        )
+    );
+
+}
+
+@Test
+void shouldHandleResolveMarketWhenNoWinningShares()
+{
+
+    WalletPositionEntity position =
+        WalletPositionEntity.builder()
+            .walletAddress("0xwallet")
+            .marketId(1L)
+            .yesPosition(true)
+            .shares(0L)
+            .investedAmount(100L)
+            .build();
+
+
+    MarketEntity market =
+        MarketEntity.builder()
+            .marketId(1L)
+            .yesPool(500L)
+            .noPool(500L)
+            .build();
+
+
+    when(
+        walletRepository.findByMarketId(1L)
+    )
+    .thenReturn(
+        List.of(position)
+    );
+
+
+    when(
+        marketRepository.findById(1L)
+    )
+    .thenReturn(
+        Optional.of(market)
+    );
+
+
+    marketSyncService.resolveMarket(
+        1L,
+        false
+    );
+
+
+    verify(
+        walletRepository
+    )
+    .save(
+        position
+    );
+
+
+    verify(
+        marketRepository
+    )
+    .save(
+        market
+    );
 
 }
 

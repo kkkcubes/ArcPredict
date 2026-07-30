@@ -1,6 +1,7 @@
 package io.arcpredict.controller;
 
 import io.arcpredict.config.SecurityConfig;
+import io.arcpredict.dto.AnalyticsHistoryResponse;
 import io.arcpredict.entity.AnalyticsEntity;
 import io.arcpredict.service.AnalyticsService;
 
@@ -24,6 +25,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 
 import org.springframework.test.web.servlet.MockMvc;
+
+import static org.hamcrest.Matchers.*;
 
 @WebMvcTest(
     AnalyticsController.class
@@ -95,5 +98,35 @@ class AnalyticsControllerTest {
 );
 
     }
+
+    @Test
+void shouldReturnAnalyticsHistory() throws Exception {
+
+    AnalyticsHistoryResponse history =
+        new AnalyticsHistoryResponse();
+
+
+    when(
+        analyticsService.getAnalyticsHistory()
+    )
+    .thenReturn(
+        history
+    );
+
+
+    mockMvc.perform(
+            get("/api/analytics/history")
+        )
+        .andExpect(
+            status().isOk()
+        )
+        .andExpect(
+            content()
+                .contentTypeCompatibleWith(
+                    MediaType.APPLICATION_JSON
+                )
+        );
+
+}
 
 }

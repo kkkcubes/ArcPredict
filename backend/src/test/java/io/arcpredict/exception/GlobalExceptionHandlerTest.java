@@ -11,8 +11,11 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
-import java.lang.reflect.Method;
+import jakarta.validation.ConstraintViolationException;
+
+
 import java.util.Map;
+import java.util.NoSuchElementException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -44,18 +47,16 @@ class GlobalExceptionHandlerTest {
 
         );
 
-        Method method =
-            Object.class.getDeclaredMethods()[0];
 
-        MethodArgumentNotValidException exception =
-
-            new MethodArgumentNotValidException(
-
-                null,
-
-                bindingResult
-
-            );
+            MethodArgumentNotValidException exception =
+    new MethodArgumentNotValidException(
+        new org.springframework.core.MethodParameter(
+            GlobalExceptionHandler.class
+                .getDeclaredMethods()[0],
+            -1
+        ),
+        bindingResult
+    );
 
         ResponseEntity<Map<String, Object>> response =
 
@@ -184,6 +185,147 @@ void shouldHandleGenericException() {
         response.getBody()
             .getTimestamp() > 0
 
+    );
+
+}
+
+@Test
+void shouldHandleNotFoundException() {
+
+    NoSuchElementException exception =
+        new NoSuchElementException(
+            "Market not found"
+        );
+
+
+    ResponseEntity<ApiError> response =
+        handler.handleNotFound(
+            exception
+        );
+
+
+    assertEquals(
+        HttpStatus.NOT_FOUND,
+        response.getStatusCode()
+    );
+
+
+    assertNotNull(
+        response.getBody()
+    );
+
+
+    assertEquals(
+        "Resource Not Found",
+        response.getBody().getError()
+    );
+
+
+    assertEquals(
+        "Market not found",
+        response.getBody().getMessage()
+    );
+
+
+    assertTrue(
+        response.getBody()
+            .getTimestamp() > 0
+    );
+
+}
+
+
+
+@Test
+void shouldHandleIllegalArgumentException() {
+
+    IllegalArgumentException exception =
+        new IllegalArgumentException(
+            "Invalid wallet address"
+        );
+
+
+    ResponseEntity<ApiError> response =
+        handler.handleIllegalArgument(
+            exception
+        );
+
+
+    assertEquals(
+        HttpStatus.BAD_REQUEST,
+        response.getStatusCode()
+    );
+
+
+    assertNotNull(
+        response.getBody()
+    );
+
+
+    assertEquals(
+        "Bad Request",
+        response.getBody().getError()
+    );
+
+
+    assertEquals(
+        "Invalid wallet address",
+        response.getBody().getMessage()
+    );
+
+
+    assertTrue(
+        response.getBody()
+            .getTimestamp() > 0
+    );
+
+}
+
+
+
+@Test
+void shouldHandleConstraintViolationException() {
+
+
+    ConstraintViolationException exception =
+        new ConstraintViolationException(
+            "Wallet validation failed",
+            java.util.Set.of()
+        );
+
+
+    ResponseEntity<ApiError> response =
+        handler.handleConstraintViolation(
+            exception
+        );
+
+
+    assertEquals(
+        HttpStatus.BAD_REQUEST,
+        response.getStatusCode()
+    );
+
+
+    assertNotNull(
+        response.getBody()
+    );
+
+
+    assertEquals(
+        "Validation Failed",
+        response.getBody().getError()
+    );
+
+
+    assertEquals(
+        "Wallet validation failed",
+        response.getBody().getMessage()
+    );
+
+
+    assertTrue(
+        response.getBody()
+            .getTimestamp() > 0
     );
 
 }

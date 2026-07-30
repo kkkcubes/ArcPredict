@@ -400,4 +400,117 @@ void shouldBuildCategoryBreakdown() {
 
 }
 
+@Test
+void shouldHandleZeroVolumeAnalytics() {
+
+    MarketEntity market =
+        MarketEntity.builder()
+            .marketId(1L)
+            .yesPool(0L)
+            .noPool(0L)
+            .totalVolume(0L)
+            .build();
+
+
+    when(
+        marketRepository.findAll()
+    ).thenReturn(
+        List.of(
+            market
+        )
+    );
+
+
+    when(
+        tradeRepository.count()
+    ).thenReturn(
+        0L
+    );
+
+
+    when(
+        marketRepository.countByResolved(true)
+    ).thenReturn(
+        0L
+    );
+
+
+    AnalyticsEntity analytics =
+        analyticsService.getAnalytics();
+
+
+    assertEquals(
+    50.0,
+    analytics.getBullishPercentage(),
+    0.01
+);
+
+assertEquals(
+    50.0,
+    analytics.getBearishPercentage(),
+    0.01
+);
+
+}
+
+@Test
+void shouldCalculateAnalyticsWhenNoPoolIsHigherThanYesPool() {
+
+    MarketEntity market =
+        MarketEntity.builder()
+            .marketId(1L)
+            .yesPool(50L)
+            .noPool(200L)
+            .totalVolume(250L)
+            .build();
+
+
+    when(
+        marketRepository.findAll()
+    ).thenReturn(
+        List.of(
+            market
+        )
+    );
+
+
+    when(
+        tradeRepository.count()
+    ).thenReturn(
+        5L
+    );
+
+
+    when(
+        marketRepository.countByResolved(true)
+    ).thenReturn(
+        0L
+    );
+
+
+    AnalyticsEntity analytics =
+        analyticsService.getAnalytics();
+
+
+    assertEquals(
+        250L,
+        analytics.getTotalVolume()
+    );
+
+
+    assertEquals(
+    20.0,
+    analytics.getBullishPercentage(),
+    0.01
+);
+
+
+assertEquals(
+    80.0,
+    analytics.getBearishPercentage(),
+    0.01
+);
+
+}
+
 }

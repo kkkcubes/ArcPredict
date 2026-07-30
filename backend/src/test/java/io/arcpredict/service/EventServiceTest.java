@@ -311,4 +311,166 @@ void shouldBuildActivityFeedWithoutMatchingTrade() {
 
 }
 
+@Test
+void shouldBuildActivityFeedWithNoPositionAndEmptyTxHash() {
+
+    EventEntity event =
+        EventEntity.builder()
+            .id(2L)
+            .eventType("TRADE_EXECUTED")
+            .marketId(10L)
+            .txHash("")
+            .blockNumber(555L)
+            .timestamp(
+                Instant.now()
+            )
+            .build();
+
+
+    when(
+        eventRepository
+            .findTop50ByOrderByTimestampDesc()
+    ).thenReturn(
+        List.of(event)
+    );
+
+
+    List<ActivityResponse> feed =
+        eventService.getActivityFeed();
+
+
+    assertEquals(
+        1,
+        feed.size()
+    );
+
+
+    ActivityResponse activity =
+        feed.get(0);
+
+
+    assertEquals(
+        null,
+        activity.getWallet()
+    );
+
+
+    assertEquals(
+        null,
+        activity.getAmount()
+    );
+
+
+    assertEquals(
+        null,
+        activity.getPosition()
+    );
+
+}
+
+@Test
+void shouldBuildActivityFeedWithNoPosition() {
+
+    EventEntity event =
+        EventEntity.builder()
+            .id(3L)
+            .eventType("TRADE_EXECUTED")
+            .marketId(3L)
+            .txHash("0xno")
+            .blockNumber(333L)
+            .timestamp(
+                Instant.now()
+            )
+            .build();
+
+
+    TradeEntity trade =
+        TradeEntity.builder()
+            .txHash("0xno")
+            .trader("0xwallet")
+            .amount(100L)
+            .yesPosition(false)
+            .build();
+
+
+    when(
+        eventRepository
+            .findTop50ByOrderByTimestampDesc()
+    ).thenReturn(
+        List.of(event)
+    );
+
+
+    when(
+        tradeRepository.findByTxHashIn(
+            List.of("0xno")
+        )
+    ).thenReturn(
+        List.of(trade)
+    );
+
+
+    ActivityResponse activity =
+        eventService
+            .getActivityFeed()
+            .get(0);
+
+
+    assertEquals(
+        "NO",
+        activity.getPosition()
+    );
+
+}
+
+@Test
+void shouldBuildActivityFeedWithNullTxHash() {
+
+    EventEntity event =
+        EventEntity.builder()
+            .id(4L)
+            .eventType("MARKET_CREATED")
+            .marketId(7L)
+            .txHash(null)
+            .blockNumber(777L)
+            .timestamp(
+                Instant.now()
+            )
+            .build();
+
+
+    when(
+        eventRepository
+            .findTop50ByOrderByTimestampDesc()
+    ).thenReturn(
+        List.of(event)
+    );
+
+
+    List<ActivityResponse> feed =
+        eventService.getActivityFeed();
+
+
+    assertEquals(
+        1,
+        feed.size()
+    );
+
+
+    ActivityResponse activity =
+        feed.get(0);
+
+
+    assertEquals(
+        null,
+        activity.getTxHash()
+    );
+
+    assertEquals(
+        null,
+        activity.getWallet()
+    );
+
+}
+
 }

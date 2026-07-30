@@ -31,6 +31,10 @@ import org.springframework.http.MediaType;
 
 import org.springframework.test.web.servlet.MockMvc;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+
 @WebMvcTest(
     PortfolioController.class
 )
@@ -259,5 +263,74 @@ class PortfolioControllerTest {
             );
 
     }
+
+    @Test
+void shouldReturnTransactionHistory() throws Exception {
+
+
+    TradeEntity trade =
+        TradeEntity.builder()
+            .marketId(1L)
+            .trader(VALID_WALLET)
+            .yesPosition(true)
+            .amount(100L)
+            .txHash("0x111")
+            .blockNumber(1L)
+            .timestamp(Instant.now())
+            .build();
+
+
+    Page<TradeEntity> page =
+        new PageImpl<>(
+            List.of(
+                trade
+            ),
+            PageRequest.of(
+                0,
+                20
+            ),
+            1
+        );
+
+
+    when(
+        tradeRepository.findByTraderOrderByTimestampDesc(
+            VALID_WALLET,
+            PageRequest.of(
+                0,
+                20
+            )
+        )
+    )
+    .thenReturn(
+        page
+    );
+
+
+    mockMvc.perform(
+            get(
+                "/api/portfolio/transactions/"
+                + VALID_WALLET
+            )
+        )
+        .andExpect(
+            status().isOk()
+        )
+        .andExpect(
+            content()
+                .contentTypeCompatibleWith(
+                    MediaType.APPLICATION_JSON
+                )
+        )
+        .andExpect(
+            jsonPath("$.content[0].marketId")
+                .value(1)
+        )
+        .andExpect(
+            jsonPath("$.content[0].amount")
+                .value(100)
+        );
+
+}
 
 }
