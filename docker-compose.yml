@@ -24,6 +24,7 @@ services:
       timeout: 5s
       retries: 5
 
+
   backend:
     build: ./backend
 
@@ -48,6 +49,7 @@ services:
       retries: 5
       start_period: 30s
 
+
   frontend:
     build:
       context: ./frontend
@@ -68,6 +70,7 @@ services:
     env_file:
       - ./frontend/.env.local
 
+
   mcp:
     build: ./mcp
 
@@ -75,8 +78,16 @@ services:
 
     restart: unless-stopped
 
+    environment:
+      BACKEND_URL: http://arcpredict-backend:8080
+
+    depends_on:
+      backend:
+        condition: service_healthy
+
     ports:
       - "3001:3001"
+
 
 volumes:
   postgres_data:
