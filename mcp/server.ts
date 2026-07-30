@@ -316,7 +316,9 @@ if (
     "get_market_sentiment"
 ) {
 
-    console.log("Market sentiment tool invoked");
+    logger.info(
+        "Market sentiment tool invoked"
+    );
 
     const result =
         await getMarketSentiment();
@@ -376,30 +378,14 @@ if(
 
 if (!validationResult.success) {
 
-    return {
-
-        content: [
-
-            {
-
-                type: "text",
-
-                text: JSON.stringify({
-
-                    success: false,
-
-                    error: "Invalid input",
-
-                    details:
-                        validationResult.error.flatten()
-
-                })
-
-            }
-
-        ]
-
-    };
+    return formatMcpError(
+        new Error(
+            JSON.stringify({
+                error: "Invalid input",
+                details: validationResult.error.flatten()
+            })
+        )
+    );
 
 }
 
@@ -412,48 +398,19 @@ const result =
 
     return formatMcpSuccess(result);
 
-
 }
 
 if (
     request.params.name ===
-    "get_market_analytics"
+    "analyze_market"
 ) {
 
-    console.log("Analytics tool invoked");
-
     const result =
-        await getAnalyticsSummary();
+        await analyzeMarket();
 
-    return {
-
-        content: [
-
-            {
-
-                type: "text",
-
-                text:
-                    JSON.stringify(
-                        result,
-                        null,
-                        2
-                    )
-
-            }
-
-        ]
-
-    };
+    return formatMcpSuccess(result);
 
 }
-
-
-
-
-
-
-
 
                         throw new Error(
                 "Unknown tool"
