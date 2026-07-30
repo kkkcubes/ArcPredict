@@ -1,20 +1,11 @@
-import axios from "axios";
-
-
-const BACKEND_URL =
-    process.env.BACKEND_URL ||
-    "http://localhost:8080";
-
-
+import { httpClient } from "../services/httpClient.js";
 
 export async function getRecentEvents() {
 
-
     const response =
-        await axios.get(
-            `${BACKEND_URL}/api/events`
+        await httpClient.get(
+            "/api/events"
         );
-
 
     return response.data;
 

@@ -1,6 +1,7 @@
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StreamableHTTPServerTransport } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 
+
 import {
     ListToolsRequestSchema,
     CallToolRequestSchema
@@ -47,6 +48,14 @@ import {
     analyzeMarket
 }
 from "./tools/analyzeMarket.js";
+
+import { marketDetailsSchema } from "./validation/market.js";
+
+import { formatMcpError } from "./utils/error.js";
+
+import { formatMcpSuccess } from "./utils/success.js";
+
+import { logger } from "./utils/logger.js";
 
 
 
@@ -255,32 +264,9 @@ function createServer() {
 
 
 
-                return {
-
-                    content:[
-
-                        {
-
-                            type:"text",
-
-                            text:
-                                JSON.stringify(
-                                    result,
-                                    null,
-                                    2
-                                )
-
-                        }
-
-                    ]
-
-                };
+                return formatMcpSuccess(result);
 
             }
-
-
-
-
 
 
 
@@ -295,34 +281,9 @@ function createServer() {
 
 
 
-                return {
-
-                    content:[
-
-                        {
-
-                            type:"text",
-
-                            text:
-                                JSON.stringify(
-                                    result,
-                                    null,
-                                    2
-                                )
-
-                        }
-
-                    ]
-
-                };
+                return formatMcpSuccess(result);
 
             }
-
-
-
-
-
-
 
 
             if(
@@ -345,33 +306,9 @@ function createServer() {
 
 
 
-                return {
-
-                    content:[
-
-                        {
-
-                            type:"text",
-
-                            text:
-                                JSON.stringify(
-                                    result,
-                                    null,
-                                    2
-                                )
-
-                        }
-
-                    ]
-
-                };
+                return formatMcpSuccess(result);
 
             }
-
-
-
-
-
 
 
 if (
@@ -384,26 +321,7 @@ if (
     const result =
         await getMarketSentiment();
 
-    return {
-
-        content: [
-
-            {
-
-                type: "text",
-
-                text:
-                    JSON.stringify(
-                        result,
-                        null,
-                        2
-                    )
-
-            }
-
-        ]
-
-    };
+    return formatMcpSuccess(result);
 
 }
 
@@ -420,28 +338,11 @@ if (
 
 
 
-                return {
-
-                    content:[
-
-                        {
-
-                            type:"text",
-
-                            text:
-                                JSON.stringify(
-                                    result,
-                                    null,
-                                    2
-                                )
-
-                        }
-
-                    ]
-
-                };
+                return formatMcpSuccess(result);
 
             }
+
+
 
             if(
     request.params.name ===
@@ -455,26 +356,7 @@ if (
 
 
 
-    return {
-
-        content:[
-
-            {
-
-                type:"text",
-
-                text:
-                    JSON.stringify(
-                        result,
-                        null,
-                        2
-                    )
-
-            }
-
-        ]
-
-    };
+    return formatMcpSuccess(result);
 
 }
 
@@ -485,41 +367,50 @@ if(
 {
 
 
-    const marketId =
-        Number(
+    const validationResult =
+    marketDetailsSchema.safeParse({
+        marketId: Number(
             request.params.arguments?.marketId
-        );
+        )
+    });
 
-
-
-    const result =
-        await getMarketDetails(
-            marketId
-        );
-
-
+if (!validationResult.success) {
 
     return {
 
-        content:[
+        content: [
 
             {
 
-                type:"text",
+                type: "text",
 
-                text:
-                    JSON.stringify(
-                        result,
-                        null,
-                        2
-                    )
+                text: JSON.stringify({
+
+                    success: false,
+
+                    error: "Invalid input",
+
+                    details:
+                        validationResult.error.flatten()
+
+                })
 
             }
-            
 
         ]
 
     };
+
+}
+
+const result =
+    await getMarketDetails(
+        validationResult.data.marketId
+    );
+
+
+
+    return formatMcpSuccess(result);
 
 
 }
@@ -571,31 +462,14 @@ if (
 
         } catch (error) {
 
-    console.error(
-        "TOOL EXECUTION ERROR:",
+    logger.error(
+    {
         error
-    );
+    },
+    "TOOL EXECUTION ERROR"
+);
 
-    return {
-
-        content: [
-
-            {
-
-                type: "text",
-
-                text:
-                    error instanceof Error
-                        ? error.message
-                        : "Unknown MCP error"
-
-            }
-
-        ],
-
-        isError: true
-
-    };
+    return formatMcpError(error);
 
 }
 
@@ -657,10 +531,12 @@ const httpServer =
             ) {
 
 
-                console.log(
-    "Incoming MCP Request:",
-    req.method,
-    req.url
+                logger.info(
+    {
+        method: req.method,
+        url: req.url
+    },
+    "Incoming MCP Request"
 );
 
 const server =
@@ -695,10 +571,12 @@ const server =
                 } catch(error) {
 
 
-                    console.error(
-                        "MCP REQUEST ERROR:",
-                        error
-                    );
+                    logger.error(
+    {
+        error
+    },
+    "MCP REQUEST ERROR"
+);
 
 
                     if (!res.headersSent) {
@@ -744,9 +622,9 @@ httpServer.listen(
     3001,
     () => {
 
-        console.error(
-            "ArcPredict MCP Server running on port 3001"
-        );
+        logger.info(
+    "ArcPredict MCP Server running on port 3001"
+);
 
     }
 );

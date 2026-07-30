@@ -1,23 +1,12 @@
-import axios from "axios";
-
-
-const BACKEND_URL =
-    process.env.BACKEND_URL ||
-    "http://localhost:8080";
-
-
+import { httpClient } from "../services/httpClient.js";
 
 export async function getMarketDetails(
-    marketId:number
+    marketId: number
 ) {
-
-
     const response =
-        await axios.get(
-            `${BACKEND_URL}/api/markets/${marketId}`
+        await httpClient.get(
+            `/api/markets/${marketId}`
         );
 
-
     return response.data;
-
 }

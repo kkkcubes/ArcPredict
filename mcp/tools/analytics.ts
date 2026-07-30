@@ -1,20 +1,11 @@
-import axios from "axios";
-
-
-const BACKEND_URL =
-    process.env.BACKEND_URL ||
-    "http://localhost:8080";
-
-
+import { httpClient } from "../services/httpClient.js";
 
 export async function getAnalyticsSummary() {
 
-
     const response =
-        await axios.get(
-            `${BACKEND_URL}/api/analytics`
+        await httpClient.get(
+            "/api/analytics"
         );
-
 
     return response.data;
 

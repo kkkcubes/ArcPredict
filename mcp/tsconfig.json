@@ -14,16 +14,20 @@
 
     "skipLibCheck": true,
 
-"types": [
-  "node"
-],
+    "types": [
+      "node"
+    ],
 
-"forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true
   },
 
   "include": [
     "server.ts",
-    "tools/**/*.ts"
+    "tools/**/*.ts",
+    "services/**/*.ts",
+    "utils/**/*.ts",
+    "validation/**/*.ts",
+    "config/**/*.ts"
   ],
 
   "exclude": [
