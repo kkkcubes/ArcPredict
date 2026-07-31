@@ -233,7 +233,7 @@ function createServer() {
     name: "analyze_market",
 
     description:
-        "Provides a complete market intelligence report by combining market summary, sentiment, analytics, leaderboard, and recent events into a single response.",
+    "Generate a comprehensive AI-driven analysis of ArcPredict prediction markets by combining market details, sentiment, trading activity, liquidity, analytics, leaderboard insights, and recent blockchain events. Use this tool whenever a user asks for market analysis, trading recommendations, market outlook, risk assessment, investment insights, or an overall evaluation of a prediction market.",
 
     inputSchema: {
         type: "object",
