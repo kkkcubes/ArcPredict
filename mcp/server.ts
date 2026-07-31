@@ -207,7 +207,7 @@ function createServer() {
         "get_market_details",
 
     description:
-    "Returns detailed information for a specific prediction market identified by market ID, including pools, participants, status and metadata.",
+    "Retrieve detailed information for a specific ArcPredict prediction market using its market ID, including the market question, category, YES and NO liquidity pools, participant count, trading volume, resolution status, creator, end time, and blockchain metadata. Use this tool whenever a user asks about a specific market, requests market details, wants to inspect a market by ID, or needs information about an individual prediction market.",
 
     inputSchema:{
         type:"object",
