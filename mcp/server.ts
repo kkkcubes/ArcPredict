@@ -167,7 +167,7 @@ function createServer() {
                             "get_market_sentiment",
 
                         description:
-    "Returns bullish and bearish sentiment for active prediction markets based on current trading activity. Use this tool when users ask which markets are bullish or bearish.",
+    "Retrieve real-time market sentiment across ArcPredict prediction markets, including bullish and bearish trends, YES versus NO positioning, sentiment percentages, trading bias, and overall market outlook. Use this tool whenever a user asks about market sentiment, bullish or bearish conditions, YES/NO ratios, trader confidence, or the current prediction market outlook.",
 
                         inputSchema:{
                             type:"object",
@@ -181,7 +181,7 @@ function createServer() {
                             "get_leaderboard",
 
                         description:
-    "Returns the top traders ranked by trading activity and volume. Use this tool when users ask about the most active traders.",
+    "Retrieve the ArcPredict trading leaderboard, ranking the most active traders by trading volume, transaction count, market participation, and overall activity. Use this tool whenever a user asks about top traders, leaderboard rankings, most active wallets, highest trading volume, or leading participants on the platform.",
 
                         inputSchema:{
                             type:"object",
