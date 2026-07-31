@@ -123,7 +123,7 @@ function createServer() {
                             "get_market_analytics",
 
                         description:
-    "Returns protocol analytics including total volume, market statistics, participation metrics and aggregated insights. Use this tool when users ask about protocol performance or analytics.",
+    "Retrieve aggregated analytics for the ArcPredict protocol, including total trading volume, active markets, participant statistics, market performance, protocol metrics, and overall ecosystem insights. Use this tool whenever a user asks about analytics, statistics, metrics, protocol performance, platform activity, trading volume, or overall market health.",
 
                         inputSchema:{
                             type:"object",
