@@ -108,7 +108,7 @@ function createServer() {
         "get_market_summary",
 
     description:
-        "Returns all active ArcPredict prediction markets including market ID, question, category, liquidity, trading volume, participants and status. Use this tool when the user asks about available markets or requests a market overview.",
+"Retrieve all active prediction markets on ArcPredict, including market ID, question, category, liquidity, trading volume, participant count, market status, and blockchain metadata. Use this tool whenever a user asks about active markets, open markets, available prediction markets, market listings, trading opportunities, or requests an overview of all markets.",
 
     inputSchema:{
                             type:"object",
