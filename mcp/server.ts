@@ -138,7 +138,7 @@ function createServer() {
                             "get_portfolio_summary",
 
                         description:
-    "Returns a wallet portfolio including holdings, positions and trading summary. Requires a wallet address. Use this tool when users ask about a specific wallet.",
+    "Retrieve a wallet's portfolio on ArcPredict, including active prediction positions, YES and NO holdings, invested amount, trading history, portfolio summary, and participation across markets. Requires a wallet address. Use this tool whenever a user asks about their portfolio, wallet holdings, positions, investments, trades, or overall account activity.",
 
                         inputSchema:{
                             type:"object",
