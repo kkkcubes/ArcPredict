@@ -194,7 +194,7 @@ function createServer() {
         "get_recent_events",
 
     description:
-    "Returns the latest blockchain events including market creation, trades and settlements. Use this tool when users ask about recent protocol activity.",
+    "Retrieve the most recent blockchain activity on ArcPredict, including market creation, share purchases, settlements, trading events, protocol actions, and event timelines. Use this tool whenever a user asks about recent events, latest activity, recent trades, blockchain history, protocol actions, or what has happened recently on the platform.",
 
     inputSchema:{
         type:"object",
